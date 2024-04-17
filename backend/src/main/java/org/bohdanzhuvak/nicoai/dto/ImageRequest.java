@@ -1,6 +1,5 @@
 package org.bohdanzhuvak.nicoai.dto;
 import lombok.*;
-import org.bohdanzhuvak.nicoai.model.ImageData;
 import org.springframework.web.multipart.MultipartFile;
 
 @Data

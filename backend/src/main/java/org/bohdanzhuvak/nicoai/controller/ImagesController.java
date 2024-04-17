@@ -1,7 +1,5 @@
 package org.bohdanzhuvak.nicoai.controller;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.bohdanzhuvak.nicoai.dto.ImageRequest;
 import org.bohdanzhuvak.nicoai.dto.ImageResponse;
