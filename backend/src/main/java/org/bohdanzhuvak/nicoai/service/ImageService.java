@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ImageService {
     private final ImageRepository imageRepository;
-    private final String FOLDER_PATH = "C:/Users/Nico/Downloads/Photos/";
+    private final String FOLDER_PATH = "/";
 
     public void createImage(ImageRequest imageRequest) {
         imageRepository.save(toImage(imageRequest));

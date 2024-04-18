@@ -6,8 +6,7 @@ COPY src ./src
 RUN mvn -e -B package -Dmaven.test.skip
 
 FROM eclipse-temurin:21-jre-alpine
-WORKDIR /app
 ARG JAR_FILE=/app/target/*.jar
 RUN apk add dumb-init
-COPY --from=builder $JAR_FILE /app/app.jar
-CMD "dumb-init" "java" "-jar" "/app/app.jar"
+COPY --from=builder $JAR_FILE app.jar
+CMD "dumb-init" "java" "-jar" "app.jar"
