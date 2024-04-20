@@ -1,37 +1,38 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Photo from '../models/Photo.ts'
-import Photos from '../data/Photos.ts'
+import { axiosInstance } from '../api/axios.ts'
+import { Link } from 'react-router-dom'
+import { IMAGE } from '../constants/urlConstants.ts'
+import { PICTURE } from '../constants/routeContants.ts'
 
 const Home = () => {
-  const [photos, setPhotos] = useState<Photo[]>(Photos)
+  const [photos, setPhotos] = useState<Photo[]>([])
 
-  const handleLike = (id: number) => {
-    setPhotos((prevPhotos) =>
-      prevPhotos.map((photo) =>
-        photo.id === id ? { ...photo, likes: photo.likes + 1 } : photo
-      )
-    )
-  }
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axiosInstance.get(`${IMAGE}`) // Assuming your backend endpoint is '/images'
+        setPhotos(response.data) // Assuming the response data is an array of photos
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      }
+    }
+
+    fetchData()
+  }, [])
+
   return (
     <div className="container mx-auto">
-      <h1 className="my-8 text-3xl font-bold">Photos</h1>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {photos.map((photo) => (
           <div key={photo.id} className="relative">
-            <img
-              src={photo.url}
-              alt={`Photo ${photo.id}`}
-              className="mb-2 h-auto w-full"
-            />
-            <button
-              className="absolute right-2 top-2 rounded bg-blue-500 px-2 py-1 font-bold text-white hover:bg-blue-700"
-              onClick={() => handleLike(photo.id)}
-            >
-              Like
-            </button>
-            <span className="absolute bottom-2 left-2 font-bold text-white">
-              Likes: {photo.likes}
-            </span>
+            <Link to={`${PICTURE}/${photo.id}`}>
+              <img
+                src={`data:image/jpeg;base64,${photo.imageData}`} // Assuming imageData is a base64-encoded string
+                alt={`Photo ${photo.id}`}
+                className="mb-2 h-auto w-full"
+              />
+            </Link>
           </div>
         ))}
       </div>

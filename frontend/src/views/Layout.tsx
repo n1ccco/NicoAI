@@ -6,8 +6,7 @@ const Layout = () => {
   const appName = getConfiguration().applicationName
   return (
     <>
-      <p>{appName}</p>
-      <Header />
+      <Header name={appName} />
       <Outlet />
     </>
   )

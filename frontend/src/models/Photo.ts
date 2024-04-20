@@ -1,7 +1,7 @@
 interface Photo {
   id: number
-  url: string
-  likes: number
+  description: string
+  imageData: string
 }
 
 export default Photo
