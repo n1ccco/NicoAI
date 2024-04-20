@@ -11,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost/")
 @RequestMapping("/api/image")
 public class ImagesController {
     private final ImageService imageService;
@@ -20,6 +21,13 @@ public class ImagesController {
     public List<ImageResponse> getImages() {
         return imageService.getAllImages();
     }
+
+    @GetMapping(value = "{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ImageResponse getImage(@PathVariable("id") Long id) {
+        return imageService.getImage(id);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void createImage(@ModelAttribute ImageRequest imageRequest) {

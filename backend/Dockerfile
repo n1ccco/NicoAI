@@ -9,4 +9,5 @@ FROM eclipse-temurin:21-jre-alpine
 ARG JAR_FILE=/app/target/*.jar
 RUN apk add dumb-init
 COPY --from=builder $JAR_FILE app.jar
+RUN mkdir -p /images
 CMD "dumb-init" "java" "-jar" "app.jar"

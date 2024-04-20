@@ -10,13 +10,14 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ImageService {
     private final ImageRepository imageRepository;
-    private final String FOLDER_PATH = "/";
+    private final String FOLDER_PATH = "/images/";
 
     public void createImage(ImageRequest imageRequest) {
         imageRepository.save(toImage(imageRequest));
@@ -31,11 +32,22 @@ public class ImageService {
         List<Image> images = imageRepository.findAll();
         return images.stream().map(this::toImageResponse).toList();
     }
+    public ImageResponse getImage(Long id) {
+        return toImageResponse(imageRepository.findById(id).get());
+    }
 
     private ImageResponse toImageResponse(Image image) {
+        String filePath = image.getImageData().getPath();
+        byte[] images;
+        try {
+            images = Files.readAllBytes(new File(filePath).toPath());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return ImageResponse.builder()
                 .id(image.getId())
                 .description(image.getDescription())
+                .imageData(images)
                 .build();
     }
     private Image toImage(ImageRequest imageRequest) {
