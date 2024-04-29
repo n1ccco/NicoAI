@@ -1,17 +1,21 @@
 package org.bohdanzhuvak.nicoai.service;
 
-import lombok.RequiredArgsConstructor;
-import org.bohdanzhuvak.nicoai.dto.ImageRequest;
-import org.bohdanzhuvak.nicoai.dto.ImageResponse;
-import org.bohdanzhuvak.nicoai.model.Image;
-import org.bohdanzhuvak.nicoai.model.ImageData;
-import org.bohdanzhuvak.nicoai.repository.ImageRepository;
-import org.springframework.stereotype.Service;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
+
+import org.bohdanzhuvak.nicoai.dto.ImageRequest;
+import org.bohdanzhuvak.nicoai.dto.ImageResponse;
+import org.bohdanzhuvak.nicoai.dto.PromptRequest;
+import org.bohdanzhuvak.nicoai.model.Image;
+import org.bohdanzhuvak.nicoai.model.ImageData;
+import org.bohdanzhuvak.nicoai.repository.ImageRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +30,17 @@ public class ImageService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void generateImage(PromptRequest promptRequest) {
+        RestTemplate restTemplate = new RestTemplate();
+        byte[] imageBytes = restTemplate.getForObject("http://localhost:5000/generate", byte[].class);
+        //TODO Write CustomMultipartFile
+        MultipartFile multipartFile = new CustomMultipartFile("file",
+                "filename.jpg",
+                "image/png",
+                imageBytes);
+        createImage(new ImageRequest(promptRequest.getPrompt(), multipartFile));
     }
 
     public List<ImageResponse> getAllImages() {
