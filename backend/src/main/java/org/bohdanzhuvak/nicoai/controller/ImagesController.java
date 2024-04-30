@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000/")
-@RequestMapping("/api/image")
+@RequestMapping("/api/images")
 public class ImagesController {
     private final ImageService imageService;
 
@@ -30,14 +30,8 @@ public class ImagesController {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public void createImage(@ModelAttribute ImageRequest imageRequest) {
-        imageService.createImage(imageRequest);
-    }
-
-    @PostMapping("/generate")
     @ResponseStatus(HttpStatus.OK)
-    public void generate(@ModelAttribute PromptRequest promptRequest) {
+    public void generateImage(@ModelAttribute PromptRequest promptRequest) {
         imageService.generateImage(promptRequest);
     }
 }

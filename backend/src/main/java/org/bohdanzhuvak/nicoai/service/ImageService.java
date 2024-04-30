@@ -16,6 +16,7 @@ import org.bohdanzhuvak.nicoai.repository.ImageRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,7 +26,7 @@ public class ImageService {
     private final ImageRepository imageRepository;
     private final String FOLDER_PATH = "/home/nico/images/";
 
-    public void createImage(ImageRequest imageRequest) {
+    private void createImage(ImageRequest imageRequest) {
         imageRepository.save(toImage(imageRequest));
         try {
             imageRequest.getImageFile().transferTo(new File(FOLDER_PATH + imageRequest.getImageFile().getName()));
@@ -36,8 +37,17 @@ public class ImageService {
 
     public void generateImage(PromptRequest promptRequest) {
         RestTemplate restTemplate = new RestTemplate();
-        //TODO Fix query params
-        byte[] imageBytes = restTemplate.getForObject("http://localhost:5000/generate", byte[].class, promptRequest);
+        String uri = UriComponentsBuilder.fromHttpUrl("http://localhost:5000")
+            .pathSegment("generate")
+            .queryParam("prompt", promptRequest.getPrompt())
+            .queryParam("negativePrompt", promptRequest.getNegativePrompt())
+            .queryParam("height", promptRequest.getHeight())
+            .queryParam("width", promptRequest.getWidth())
+            .queryParam("numInterferenceSteps", promptRequest.getNumInterferenceSteps())
+            .queryParam("guidanceScale", promptRequest.getGuidanceScale())
+            .build()
+            .toUriString();
+        byte[] imageBytes = restTemplate.getForObject(uri, byte[].class, promptRequest);
         MultipartFile multipartFile = new CustomMultipartFile(UUID.randomUUID() +".png", imageBytes);
         createImage(new ImageRequest(promptRequest.getPrompt(), multipartFile));
     }
