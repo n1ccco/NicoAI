@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.UUID;
 
+import org.bohdanzhuvak.nicoai.dto.CustomMultipartFile;
 import org.bohdanzhuvak.nicoai.dto.ImageRequest;
 import org.bohdanzhuvak.nicoai.dto.ImageResponse;
 import org.bohdanzhuvak.nicoai.dto.PromptRequest;
@@ -21,12 +23,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ImageService {
     private final ImageRepository imageRepository;
-    private final String FOLDER_PATH = "/images/";
+    private final String FOLDER_PATH = "/home/nico/images/";
 
     public void createImage(ImageRequest imageRequest) {
         imageRepository.save(toImage(imageRequest));
         try {
-            imageRequest.getImageFile().transferTo(new File(FOLDER_PATH + imageRequest.getImageFile().getOriginalFilename()));
+            imageRequest.getImageFile().transferTo(new File(FOLDER_PATH + imageRequest.getImageFile().getName()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -34,12 +36,9 @@ public class ImageService {
 
     public void generateImage(PromptRequest promptRequest) {
         RestTemplate restTemplate = new RestTemplate();
-        byte[] imageBytes = restTemplate.getForObject("http://localhost:5000/generate", byte[].class);
-        //TODO Write CustomMultipartFile
-        MultipartFile multipartFile = new CustomMultipartFile("file",
-                "filename.jpg",
-                "image/png",
-                imageBytes);
+        //TODO Fix query params
+        byte[] imageBytes = restTemplate.getForObject("http://localhost:5000/generate", byte[].class, promptRequest);
+        MultipartFile multipartFile = new CustomMultipartFile(UUID.randomUUID() +".png", imageBytes);
         createImage(new ImageRequest(promptRequest.getPrompt(), multipartFile));
     }
 
@@ -66,8 +65,8 @@ public class ImageService {
                 .build();
     }
     private Image toImage(ImageRequest imageRequest) {
-        String filePath = FOLDER_PATH + imageRequest.getImageFile().getOriginalFilename();
-        ImageData imageData = new ImageData(imageRequest.getImageFile().getOriginalFilename(),imageRequest.getImageFile().getContentType(), filePath);
+        String filePath = FOLDER_PATH + imageRequest.getImageFile().getName();
+        ImageData imageData = new ImageData(imageRequest.getImageFile().getName(),imageRequest.getImageFile().getContentType(), filePath);
         return new Image(imageRequest.getDescription(), imageData);
     }
 
