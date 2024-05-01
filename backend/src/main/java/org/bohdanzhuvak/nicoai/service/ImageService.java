@@ -26,16 +26,17 @@ public class ImageService {
     private final ImageRepository imageRepository;
     private final String FOLDER_PATH = "/home/nico/images/";
 
-    private void createImage(ImageRequest imageRequest) {
-        imageRepository.save(toImage(imageRequest));
+    private Long createImage(ImageRequest imageRequest) {
+        Long imageId = imageRepository.save(toImage(imageRequest)).getId();
         try {
             imageRequest.getImageFile().transferTo(new File(FOLDER_PATH + imageRequest.getImageFile().getName()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        return imageId;
     }
 
-    public void generateImage(PromptRequest promptRequest) {
+    public Long generateImage(PromptRequest promptRequest) {
         RestTemplate restTemplate = new RestTemplate();
         String uri = UriComponentsBuilder.fromHttpUrl("http://localhost:5000")
             .pathSegment("generate")
@@ -49,7 +50,7 @@ public class ImageService {
             .toUriString();
         byte[] imageBytes = restTemplate.getForObject(uri, byte[].class, promptRequest);
         MultipartFile multipartFile = new CustomMultipartFile(UUID.randomUUID() +".png", imageBytes);
-        createImage(new ImageRequest(promptRequest.getPrompt(), multipartFile));
+        return createImage(new ImageRequest(promptRequest.getPrompt(), multipartFile));
     }
 
     public List<ImageResponse> getAllImages() {

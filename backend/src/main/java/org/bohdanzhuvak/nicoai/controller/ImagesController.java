@@ -31,7 +31,7 @@ public class ImagesController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
-    public void generateImage(@ModelAttribute PromptRequest promptRequest) {
-        imageService.generateImage(promptRequest);
+    public Long generateImage(@ModelAttribute PromptRequest promptRequest) {
+        return imageService.generateImage(promptRequest);
     }
 }
