@@ -1,3 +1,3 @@
 export const BASE = '/'
-export const PICTURE = 'picture'
+export const PICTURES = 'pictures'
 export const CREATE = 'create'

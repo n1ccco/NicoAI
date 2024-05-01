@@ -4,7 +4,7 @@ import Home from './views/Home.tsx'
 import NoPage from './views/NoPage.tsx'
 import Create from './views/Create.tsx'
 import Picture from './views/Picture.tsx'
-import { BASE, CREATE, PICTURE } from './constants/routeContants.ts'
+import { BASE, CREATE, PICTURES } from './constants/routeContants.ts'
 
 function App() {
   return (
@@ -12,7 +12,7 @@ function App() {
       <Routes>
         <Route path={BASE} element={<Layout />}>
           <Route index element={<Home />} />
-          <Route path={`${PICTURE}/:id`} element={<Picture />} />
+          <Route path={`${PICTURES}/:id`} element={<Picture />} />
           <Route path={CREATE} element={<Create />} />
           {/*<Route path="blogs" element={<Blogs />} />
           <Route path="contact" element={<Contact />} />*/}

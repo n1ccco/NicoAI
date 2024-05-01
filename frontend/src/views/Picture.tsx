@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import Photo from '../models/Photo.ts'
 import { axiosInstance } from '../api/axios.ts'
 import { useParams } from 'react-router-dom'
+import { IMAGES } from '../constants/urlConstants.ts'
 
 interface PictureProps {
   id: string
@@ -16,7 +17,7 @@ const Picture = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axiosInstance.get(`/image/${id}`)
+        const response = await axiosInstance.get(`${IMAGES}/${id}`)
         setPhoto(response.data)
       } catch (error) {
         console.error('Error fetching data:', error)
