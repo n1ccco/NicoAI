@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import Photo from '../models/Photo.ts'
 import { axiosInstance } from '../api/axios.ts'
 import { useParams } from 'react-router-dom'
-import { IMAGES } from '../constants/urlConstants.ts'
+import { IMAGES } from '../constants/apiConstants.ts'
 
 interface PictureProps {
   id: string

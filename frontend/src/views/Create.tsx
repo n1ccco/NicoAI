@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { axiosInstance } from '../api/axios'
-import { IMAGES } from '../constants/urlConstants'
+import { IMAGES } from '../constants/apiConstants'
 import Prompt from '../models/Prompt'
 
 const InputField = ({

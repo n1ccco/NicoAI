@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import Photo from '../models/Photo.ts'
 import { axiosInstance } from '../api/axios.ts'
 import { Link } from 'react-router-dom'
-import { IMAGES } from '../constants/urlConstants.ts'
+import { IMAGES } from '../constants/apiConstants.ts'
 import { PICTURES } from '../constants/routeContants.ts'
 
 const Home = () => {
