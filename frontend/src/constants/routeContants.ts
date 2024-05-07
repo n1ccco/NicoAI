@@ -1,4 +1,4 @@
-export const BASE = '/'
+export const CLIENT_BASEURL = '/'
 export const PICTURES = 'pictures'
 export const CREATE = 'create'
 export const SIGNIN = 'signin'

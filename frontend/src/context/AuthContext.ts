@@ -1,15 +1,11 @@
 import { createContext } from 'react'
-
-export interface User {
-  username: string
-  password: string
-  // Define your user object properties here
-}
+import { User } from '../models/User'
 
 export interface AuthContextType {
   token: string
-  user: User | null
-  loginAction: (data: any) => void
+  user: string | null
+  loginAction: (data: User) => void
+  registerAction: (data: User) => void
   logOut: () => void
 }
 

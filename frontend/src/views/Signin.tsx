@@ -17,7 +17,7 @@ const Signin = () => {
         auth.loginAction(input)
         return
       }
-      alert('pleae provide a valid input')
+      alert('please provide a valid input')
     } catch (error) {
       setError('Invalid username or password')
     }

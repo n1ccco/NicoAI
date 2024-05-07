@@ -1,6 +1,5 @@
 import { ChangeEvent, useState } from 'react'
-import { axiosInstance } from '../api/axios'
-import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
 
 const Signup = () => {
   const [input, setInput] = useState({
@@ -8,8 +7,8 @@ const Signup = () => {
     password: '',
     confirmPassword: '',
   })
+  const auth = useAuth()
   const [error, setError] = useState('')
-  const navigate = useNavigate()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -20,9 +19,7 @@ const Signup = () => {
         input.password === input.confirmPassword
       ) {
         const { confirmPassword, ...model } = input
-        await axiosInstance.post('auth/signup', model)
-        navigate('/signin')
-        return
+        auth.registerAction(model)
       }
       setError('Input correct data')
     } catch (error) {

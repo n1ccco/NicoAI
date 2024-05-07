@@ -1,8 +1,8 @@
 import axios from 'axios'
-import { BASE_URL } from '../constants/apiConstants.ts'
+import { API_BASEURL } from '../constants/apiConstants.ts'
 
 const axiosInstance = axios.create({
-  baseURL: BASE_URL,
+  baseURL: API_BASEURL,
   timeout: 200000,
   headers: {
     Accept: 'application/json',

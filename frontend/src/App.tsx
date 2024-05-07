@@ -11,7 +11,7 @@ import NoPage from './views/NoPage.tsx'
 import Create from './views/Create.tsx'
 import Picture from './views/Picture.tsx'
 import {
-  BASE,
+  CLIENT_BASEURL,
   CREATE,
   PICTURES,
   SIGNIN,
@@ -24,7 +24,7 @@ import { useAuth } from './hooks/useAuth.ts'
 
 const PrivateRoute = () => {
   const user = useAuth()
-  if (!user.token) return <Navigate to="/signin" />
+  if (!user.token) return <Navigate to={SIGNIN} />
   return <Outlet />
 }
 
@@ -33,7 +33,7 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-          <Route path={BASE} element={<Layout />}>
+          <Route path={CLIENT_BASEURL} element={<Layout />}>
             <Route index element={<Home />} />
             <Route path={`${PICTURES}/:id`} element={<Picture />} />
             <Route element={<PrivateRoute />}>
