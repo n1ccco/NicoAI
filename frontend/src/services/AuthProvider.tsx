@@ -50,8 +50,8 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const logOut = () => {
     setUser(null)
     setToken('')
-    localStorage.removeItem('site')
-    navigate(SIGNIN)
+    localStorage.removeItem('authtoken')
+    navigate(CLIENT_BASEURL)
   }
 
   const authContextValue: AuthContextType = {
