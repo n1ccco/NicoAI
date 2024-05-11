@@ -14,12 +14,16 @@ public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String description;
+    @ManyToOne
+    @JoinColumn
+    private User author;
+    private String prompt;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn
     private ImageData imageData;
-    public Image(String description, ImageData imageData) {
-        this.description = description;
+    public Image(String prompt, ImageData imageData, User author) {
+        this.prompt = prompt;
         this.imageData = imageData;
+        this.author = author;
     }
 }

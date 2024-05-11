@@ -26,9 +26,8 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue
     private Long Id;
-
-    private String firstName;
-    private String lastName;
+    @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "author")
+    private List<Image> images;
     private String username;
     private String password;
 
