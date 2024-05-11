@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { axiosInstance } from '../api/axios'
 import { IMAGES } from '../constants/apiConstants'
 import Prompt from '../models/Prompt'
+import { useNavigate } from 'react-router-dom'
+import { PICTURES } from '../constants/routeContants'
 
 const InputField = ({
   label,
@@ -26,6 +28,7 @@ const InputField = ({
     />
   </div>
 )
+
 const Create = () => {
   const initialPrompt: Prompt = {
     prompt: 'cat',
@@ -38,7 +41,7 @@ const Create = () => {
 
   const [promptData, setPromptData] = useState<Prompt>(initialPrompt)
   const [loading, setLoading] = useState<boolean>(false)
-  const [imageUrl, setImageUrl] = useState<string>('')
+  const navigate = useNavigate()
 
   const handleSubmit = async () => {
     setLoading(true)
@@ -55,7 +58,9 @@ const Create = () => {
       const response = await axiosInstance.post(
         `${IMAGES}?${queryParams.toString()}`
       )
-      setImageUrl(response.data.imageUrl)
+      console.log(response.data)
+      const { imageId } = response.data
+      navigate(`/${PICTURES}/${imageId}`)
     } catch (error) {
       console.error('Error generating image:', error)
     } finally {
@@ -123,9 +128,6 @@ const Create = () => {
         {loading ? 'Generating...' : 'Generate Image'}
       </button>
       {loading && <p className="mt-2">Loading...</p>}
-      {imageUrl && (
-        <img className="mt-4" src={imageUrl} alt="Generated Image" />
-      )}
     </div>
   )
 }
