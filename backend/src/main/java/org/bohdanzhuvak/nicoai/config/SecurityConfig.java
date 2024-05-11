@@ -35,11 +35,13 @@ public class SecurityConfig {
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(c -> c.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/auth/signin").permitAll()
-                        .requestMatchers("/api/auth/signup").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/images/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/images").hasRole("ADMIN")
-                        .anyRequest().authenticated()
+                    .requestMatchers("/api/auth/signin").permitAll()
+                    .requestMatchers("/api/auth/signup").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/images/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/images").hasRole("ADMIN")
+                    .requestMatchers("/swagger-ui/**").permitAll()
+                    .requestMatchers("/v3/api-docs/**").permitAll()
+                    .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtTokenAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .build();
