@@ -72,9 +72,7 @@ public class JwtTokenProvider {
     
     public boolean validateToken(String token) {
         try {
-            Jws<Claims> claims = Jwts
-                    .parser().verifyWith(this.secretKey).build()
-                    .parseSignedClaims(token);
+            Jwts.parser().verifyWith(this.secretKey).build().parseSignedClaims(token);
             //  parseClaimsJws will check expiration date. No need do here.
             return true;
         } catch (JwtException | IllegalArgumentException e) {
