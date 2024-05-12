@@ -41,7 +41,7 @@ export async function getImage(id: number): Promise<Photo | undefined> {
 
 export async function changeImagePrivacy(
   id: number,
-  privacyPayload: { imagePublic: boolean }
+  privacyPayload: { isPublic: boolean }
 ) {
   try {
     await axiosInstance.put(`${IMAGES}/${id}`, privacyPayload)

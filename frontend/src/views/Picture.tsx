@@ -26,7 +26,7 @@ const Picture = () => {
   const handleToggle = async () => {
     try {
       // Update user settings or perform any other action based on the toggle state
-      await changeImagePrivacy(Number(id), { imagePublic: !photo?.public })
+      await changeImagePrivacy(Number(id), { isPublic: !photo?.isPublic })
     } catch (error) {
       console.error('Error updating user settings:', error)
     }
@@ -46,7 +46,7 @@ const Picture = () => {
             />
             {photo.authorId === userId && (
               <Toggle
-                initialState={photo.public}
+                initialState={photo.isPublic}
                 onToggle={handleToggle}
                 toggleName="Make public"
               />

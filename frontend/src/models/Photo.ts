@@ -1,7 +1,7 @@
 interface Photo {
   id: number
   description: string
-  public: boolean
+  isPublic: boolean
   authorId: number
   imageData: string
 }
