@@ -98,7 +98,7 @@ public class ImageService {
 
     public void changePrivacy(Long id, ChangeImagePrivacyRequest changeImagePrivacyRequest) {
         Image image = imageRepository.findById(id).get();
-        image.setPublic(changeImagePrivacyRequest.isImagePublic());
+        image.setPublic(changeImagePrivacyRequest.isPublic());
         imageRepository.save(image);
     }
 

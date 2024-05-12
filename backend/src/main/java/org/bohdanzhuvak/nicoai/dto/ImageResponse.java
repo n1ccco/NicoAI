@@ -1,5 +1,7 @@
 package org.bohdanzhuvak.nicoai.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class ImageResponse {
     private Long id;
     private String description;
+    @JsonProperty(value = "isPublic")
     private boolean isPublic;
     private Long authorId;
     private byte[] imageData;
