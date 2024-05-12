@@ -20,13 +20,15 @@ public class DataInitializer implements CommandLineRunner {
     
     @Override
     public void run(String... args) {
-        
-        userRepository.save(User.builder()
+        if (!userRepository.existsByUsername("admin")){
+            userRepository.save(User.builder()
                 .username("admin")
                 .password(passwordEncoder.encode("password"))
                 .roles(Arrays.asList("ROLE_USER", "ROLE_ADMIN"))
                 .build()
-        );
+            );
+        }
+        
         
     }
 }

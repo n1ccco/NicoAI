@@ -12,5 +12,7 @@ import lombok.NoArgsConstructor;
 public class ImageResponse {
     private Long id;
     private String description;
+    private boolean isPublic;
+    private Long authorId;
     private byte[] imageData;
 }

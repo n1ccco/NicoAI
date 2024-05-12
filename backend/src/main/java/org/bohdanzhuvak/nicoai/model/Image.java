@@ -17,6 +17,7 @@ public class Image {
     @ManyToOne
     @JoinColumn
     private User author;
+    private boolean isPublic;
     private String prompt;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn
@@ -25,5 +26,6 @@ public class Image {
         this.prompt = prompt;
         this.imageData = imageData;
         this.author = author;
+        this.isPublic = false;
     }
 }

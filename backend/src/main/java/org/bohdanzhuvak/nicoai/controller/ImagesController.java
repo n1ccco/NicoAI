@@ -2,6 +2,7 @@ package org.bohdanzhuvak.nicoai.controller;
 
 import lombok.RequiredArgsConstructor;
 
+import org.bohdanzhuvak.nicoai.dto.ChangeImagePrivacyRequest;
 import org.bohdanzhuvak.nicoai.dto.GenerateResponse;
 import org.bohdanzhuvak.nicoai.dto.ImageResponse;
 import org.bohdanzhuvak.nicoai.dto.PromptRequest;
@@ -32,10 +33,15 @@ public class ImagesController {
         return imageService.getImage(id);
     }
 
+    @PutMapping(value = "{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void makePublic(@PathVariable("id") Long id, @RequestBody ChangeImagePrivacyRequest changePrivacyRequest) {
+        imageService.changePrivacy(id, changePrivacyRequest);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
     public GenerateResponse generateImage(@ModelAttribute PromptRequest promptRequest, @AuthenticationPrincipal UserDetails user) {
-
         return imageService.generateImage(promptRequest, user);
     }
 }

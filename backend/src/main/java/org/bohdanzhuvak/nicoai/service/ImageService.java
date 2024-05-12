@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.UUID;
 
+import org.bohdanzhuvak.nicoai.dto.ChangeImagePrivacyRequest;
 import org.bohdanzhuvak.nicoai.dto.CustomMultipartFile;
 import org.bohdanzhuvak.nicoai.dto.GenerateResponse;
 import org.bohdanzhuvak.nicoai.dto.ImageRequest;
@@ -61,7 +62,7 @@ public class ImageService {
     }
 
     public List<ImageResponse> getAllImages() {
-        List<Image> images = imageRepository.findAll();
+        List<Image> images = imageRepository.findByIsPublic(true);
         return images.stream().map(this::toImageResponse).toList();
     }
     public ImageResponse getImage(Long id) {
@@ -79,6 +80,8 @@ public class ImageService {
         return ImageResponse.builder()
                 .id(image.getId())
                 .description(image.getPrompt())
+                .authorId(image.getAuthor().getId())
+                .isPublic(image.isPublic())
                 .imageData(images)
                 .build();
     }
@@ -91,6 +94,12 @@ public class ImageService {
     public List<ImageResponse> getAllUserImages(Long id) {
         List<Image> images = imageRepository.findByAuthorId(id);
         return images.stream().map(this::toImageResponse).toList();
+    }
+
+    public void changePrivacy(Long id, ChangeImagePrivacyRequest changeImagePrivacyRequest) {
+        Image image = imageRepository.findById(id).get();
+        image.setPublic(changeImagePrivacyRequest.isImagePublic());
+        imageRepository.save(image);
     }
 
 

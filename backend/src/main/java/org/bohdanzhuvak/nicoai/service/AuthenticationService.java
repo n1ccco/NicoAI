@@ -28,12 +28,14 @@ public class AuthenticationService {
     public AuthenticationResponse signin(AuthenticationRequest authenticationRequest){
         try {
             String username = authenticationRequest.getUsername();
+            Long userId = userRepository.findByUsername(username).get().getId();
             String password = authenticationRequest.getPassword();
             var authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
             String token = jwtTokenProvider.createToken(authentication);
             return AuthenticationResponse
                 .builder()
                 .username(username)
+                .userId(userId)
                 .token(token)
                 .build();
         } catch (AuthenticationException e) {
