@@ -1,16 +1,18 @@
 import { useState, useEffect } from 'react'
 import Photo from '../models/Photo.ts'
 import { axiosInstance } from '../api/axios.ts'
-import { IMAGES } from '../constants/apiConstants.ts'
+import { IMAGES, USERS } from '../constants/apiConstants.ts'
 import Image from '../components/Image.tsx'
+import { useParams } from 'react-router-dom'
 
-const Home = () => {
+const UserImages = () => {
+  const { id } = useParams<{ id: string }>()
   const [photos, setPhotos] = useState<Photo[]>([])
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axiosInstance.get(`${IMAGES}`)
+        const response = await axiosInstance.get(`${USERS}/${id}/${IMAGES}`)
         setPhotos(response.data)
       } catch (error) {
         console.error('Error fetching data:', error)
@@ -31,4 +33,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default UserImages

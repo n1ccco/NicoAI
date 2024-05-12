@@ -13,14 +13,16 @@ import Picture from './views/Picture.tsx'
 import {
   CLIENT_BASEURL,
   CREATE,
-  PICTURES,
+  IMAGES,
   SIGNIN,
   SIGNUP,
+  USERS,
 } from './constants/routeContants.ts'
 import Signin from './views/Signin.tsx'
 import Signup from './views/Signup.tsx'
 import AuthProvider from './services/AuthProvider.tsx'
 import { useAuth } from './hooks/useAuth.ts'
+import UserImages from './views/UserImages.tsx'
 
 const PrivateRoute = () => {
   const user = useAuth()
@@ -35,9 +37,10 @@ function App() {
         <Routes>
           <Route path={CLIENT_BASEURL} element={<Layout />}>
             <Route index element={<Home />} />
-            <Route path={`${PICTURES}/:id`} element={<Picture />} />
+            <Route path={`${IMAGES}/:id`} element={<Picture />} />
             <Route element={<PrivateRoute />}>
               <Route path={CREATE} element={<Create />} />
+              <Route path={`${USERS}/:id/${IMAGES}`} element={<UserImages />} />
             </Route>
             <Route path={SIGNIN} element={<Signin />} />
             <Route path={SIGNUP} element={<Signup />} />

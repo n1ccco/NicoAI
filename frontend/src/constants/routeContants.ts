@@ -1,5 +1,6 @@
 export const CLIENT_BASEURL = '/'
-export const PICTURES = 'pictures'
+export const IMAGES = 'images'
+export const USERS = 'users'
 export const CREATE = 'create'
 export const SIGNIN = 'signin'
 export const SIGNUP = 'signup'

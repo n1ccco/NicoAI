@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { CLIENT_BASEURL, CREATE } from '../constants/routeContants.ts'
+import { CLIENT_BASEURL, CREATE, SIGNIN } from '../constants/routeContants.ts'
 import { useAuth } from '../hooks/useAuth.ts'
 import UserDropdownMenu from './UserDropdownMenu.tsx'
 
@@ -8,7 +8,8 @@ interface HeaderProps {
 }
 
 function Header({ name }: HeaderProps) {
-  const username: string | null = useAuth().user
+  const username: string | null = useAuth().username
+  const userId: number = useAuth().userId
 
   return (
     <nav className="bg-blue-500 p-4">
@@ -38,7 +39,13 @@ function Header({ name }: HeaderProps) {
             </Link>
           </li>*/}
         </ul>
-        {username && <UserDropdownMenu username={username} />}
+        {username && userId ? (
+          <UserDropdownMenu username={username} userId={userId} />
+        ) : (
+          <Link to={SIGNIN} className="text-white hover:text-gray-200">
+            Login
+          </Link>
+        )}
       </div>
     </nav>
   )

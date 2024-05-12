@@ -9,8 +9,11 @@ import { User } from '../models/User'
 const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [user, setUser] = useState<string | null>(
+  const [username, setUser] = useState<string>(
     localStorage.getItem('username') || ''
+  )
+  const [userId, setUserId] = useState<number>(
+    parseInt(localStorage.getItem('userId') || '0')
   )
   const [token, setToken] = useState<string>(
     localStorage.getItem('authtoken') || ''
@@ -27,6 +30,8 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         localStorage.setItem('username', res.username)
         setToken(res.token)
         localStorage.setItem('authtoken', res.token)
+        setUserId(res.userId)
+        localStorage.setItem('userId', res.userId)
         navigate(CLIENT_BASEURL)
         return
       }
@@ -48,7 +53,8 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }
 
   const logOut = () => {
-    setUser(null)
+    setUser('')
+    setUserId(0)
     setToken('')
     localStorage.removeItem('authtoken')
     navigate(CLIENT_BASEURL)
@@ -56,7 +62,8 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const authContextValue: AuthContextType = {
     token,
-    user,
+    username,
+    userId,
     loginAction,
     registerAction,
     logOut,

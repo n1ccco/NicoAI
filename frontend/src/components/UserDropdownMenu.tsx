@@ -1,20 +1,43 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { Link } from 'react-router-dom'
+import { IMAGES, USERS } from '../constants/routeContants'
 
-const UserDropdownMenu: React.FC<{ username: string }> = ({ username }) => {
+const UserDropdownMenu: React.FC<{ username: string; userId: number }> = ({
+  username,
+  userId,
+}) => {
   const [isOpen, setIsOpen] = useState(false)
   const auth = useAuth()
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
+
   const toggleMenu = () => {
     setIsOpen(!isOpen)
   }
+
   const handleLogout = () => {
     auth.logOut()
     setIsOpen(false) // Close the dropdown after logout
   }
 
   return (
-    <div className="relative inline-block text-left">
+    <div className="relative inline-block text-left" ref={dropdownRef}>
       <div>
         <button
           type="button"
@@ -46,13 +69,13 @@ const UserDropdownMenu: React.FC<{ username: string }> = ({ username }) => {
           aria-labelledby="options-menu"
         >
           <div className="py-1" role="none">
-            <a
-              href="#"
+            <Link
+              to={`${USERS}/${userId}/${IMAGES}`}
               className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
               role="menuitem"
             >
               My Images
-            </a>
+            </Link>
             <a
               href="#"
               className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"

@@ -1,9 +1,8 @@
 import { useState } from 'react'
-import { axiosInstance } from '../api/axios'
-import { IMAGES } from '../constants/apiConstants'
 import Prompt from '../models/Prompt'
 import { useNavigate } from 'react-router-dom'
-import { PICTURES } from '../constants/routeContants'
+import { IMAGES } from '../constants/routeContants'
+import { postImageData } from '../services/ImageProvider'
 
 const InputField = ({
   label,
@@ -46,21 +45,8 @@ const Create = () => {
   const handleSubmit = async () => {
     setLoading(true)
     try {
-      const queryParams = new URLSearchParams({
-        prompt: promptData.prompt,
-        negativePrompt: promptData.negativePrompt,
-        height: promptData.height.toString(),
-        width: promptData.width.toString(),
-        numInterferenceSteps: promptData.numInterferenceSteps.toString(),
-        guidanceScale: promptData.guidanceScale.toString(),
-      })
-
-      const response = await axiosInstance.post(
-        `${IMAGES}?${queryParams.toString()}`
-      )
-      console.log(response.data)
-      const { imageId } = response.data
-      navigate(`/${PICTURES}/${imageId}`)
+      const imageId = await postImageData(promptData)
+      navigate(`/${IMAGES}/${imageId}`)
     } catch (error) {
       console.error('Error generating image:', error)
     } finally {
