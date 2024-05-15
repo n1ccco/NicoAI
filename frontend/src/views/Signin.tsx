@@ -1,6 +1,7 @@
 import React, { ChangeEvent, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
+import { SIGNUP } from '../constants/routeContants'
 
 const Signin = () => {
   const auth = useAuth()
@@ -32,43 +33,52 @@ const Signin = () => {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100">
-      <div className="rounded bg-white p-8 shadow-md">
-        <h2 className="mb-4 text-2xl font-semibold">Sign In</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="username" className="block text-gray-700">
+    <div className="flex min-h-screen items-center justify-center">
+      <div className="w-full max-w-md rounded-lg bg-gray-800 p-8 shadow-lg">
+        <h2 className="mb-6 text-center text-3xl font-bold">Sign In</h2>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label htmlFor="username" className="block text-xl font-medium">
               Username
             </label>
             <input
               type="text"
               id="username"
               name="username"
-              className="form-input mt-1 block w-full"
+              className="mt-2 w-full rounded-lg bg-gray-700 p-3 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Type your username"
               onChange={handleInput}
+              required
             />
           </div>
-          <div className="mb-4">
-            <label htmlFor="password" className="block text-gray-700">
+          <div>
+            <label htmlFor="password" className="block text-xl font-medium">
               Password
             </label>
             <input
               type="password"
               id="password"
               name="password"
-              className="form-input mt-1 block w-full"
+              className="mt-2 w-full rounded-lg bg-gray-700 p-3 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="********"
               onChange={handleInput}
+              required
             />
           </div>
           {error && <p className="mb-2 text-red-500">{error}</p>}
           <button
             type="submit"
-            className="w-full rounded bg-blue-500 px-4 py-2 font-semibold text-white"
+            className="w-full rounded-lg bg-blue-500 p-3 text-white transition duration-300 hover:bg-blue-600"
           >
             Sign In
           </button>
         </form>
-        <Link to="/signup">Don't have an account? Register</Link>
+        <p className="mt-6 text-center text-sm text-gray-400">
+          Don't have an account?&nbsp;
+          <Link className="text-blue-500 hover:text-blue-600" to={`/${SIGNUP}`}>
+            Register
+          </Link>
+        </p>
       </div>
     </div>
   )

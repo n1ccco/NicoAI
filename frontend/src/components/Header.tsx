@@ -1,5 +1,10 @@
 import { Link } from 'react-router-dom'
-import { CLIENT_BASEURL, CREATE, SIGNIN } from '../constants/routeContants.ts'
+import {
+  CLIENT_BASEURL,
+  CREATE,
+  GALLERY,
+  SIGNIN,
+} from '../constants/routeContants.ts'
 import { useAuth } from '../hooks/useAuth.ts'
 import UserDropdownMenu from './UserDropdownMenu.tsx'
 
@@ -12,42 +17,35 @@ function Header({ name }: HeaderProps) {
   const userId: number = useAuth().userId
 
   return (
-    <nav className="bg-blue-500 p-4">
-      <div className="container mx-auto flex items-center justify-between">
-        <ul className="flex">
-          <li className="mr-6">
-            <Link
-              to={CLIENT_BASEURL}
-              className="text-white hover:text-gray-200"
-            >
-              {name}
-            </Link>
-          </li>
-          <li className="mr-6">
-            <Link to={CREATE} className="text-white hover:text-gray-200">
-              Create
-            </Link>
-          </li>
-          {/*          <li className="mr-6">
-            <Link to="/blogs" className="text-white hover:text-gray-200">
-              Blogs
-            </Link>
-          </li>
-          <li>
-            <Link to="/contact" className="text-white hover:text-gray-200">
-              Contact
-            </Link>
-          </li>*/}
-        </ul>
-        {username && userId ? (
-          <UserDropdownMenu username={username} userId={userId} />
-        ) : (
-          <Link to={SIGNIN} className="text-white hover:text-gray-200">
-            Login
+    <header className="bg-gray-800 py-4">
+      <div className="container mx-auto flex items-center justify-between px-4 md:px-20">
+        <Link to={CLIENT_BASEURL} className="text-3xl font-bold">
+          {name}
+        </Link>
+
+        <nav>
+          <Link
+            to={CLIENT_BASEURL}
+            className="px-3 text-gray-400 hover:text-white"
+          >
+            Home
           </Link>
-        )}
+          <Link to={CREATE} className="px-3 text-gray-400 hover:text-white">
+            Generate
+          </Link>
+          <Link to={GALLERY} className="px-3 text-gray-400 hover:text-white">
+            Gallery
+          </Link>
+          {username && userId ? (
+            <UserDropdownMenu username={username} userId={userId} />
+          ) : (
+            <Link to={SIGNIN} className="px-3 text-gray-400 hover:text-white">
+              Login
+            </Link>
+          )}
+        </nav>
       </div>
-    </nav>
+    </header>
   )
 }
 
