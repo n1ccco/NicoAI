@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 public class ImageService {
     private final ImageRepository imageRepository;
     private final UserRepository userRepository;
-    private final String FOLDER_PATH = "/home/nico/images/";
+    private final String FOLDER_PATH = "/images/";
 
     private GenerateResponse createImage(ImageRequest imageRequest) {
         Long imageId = imageRepository.save(toImage(imageRequest)).getId();
@@ -44,7 +44,7 @@ public class ImageService {
 
     public GenerateResponse generateImage(PromptRequest promptRequest, UserDetails authorDetails) {
         RestTemplate restTemplate = new RestTemplate();
-        String uri = UriComponentsBuilder.fromHttpUrl("http://localhost:5000")
+        String uri = UriComponentsBuilder.fromHttpUrl("http://generator:5000")
             .pathSegment("generate")
             .queryParam("prompt", promptRequest.getPrompt())
             .queryParam("negativePrompt", promptRequest.getNegativePrompt())

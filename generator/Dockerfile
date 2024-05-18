@@ -6,14 +6,16 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Set the working directory in the container
-WORKDIR /app
+WORKDIR /app/generator
 
 # Copy the current directory contents into the container at /app
-COPY . /app
+COPY ./requirements.txt .
 
 # Install any needed dependencies specified in requirements.txt
 RUN pip install -r requirements.txt
 
+# Copy only the necessary files from the build stage
+COPY . .
 # Expose the port Flask will run on
 EXPOSE 5000
 

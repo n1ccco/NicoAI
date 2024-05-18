@@ -1,11 +1,11 @@
 from flask import Flask, request, send_file
 from PIL import Image
 import io, os
+from diffusers import StableDiffusionPipeline
 
 app = Flask(__name__)
 
-
-from diffusers import StableDiffusionPipeline
+pipe = StableDiffusionPipeline.from_single_file(os.path.abspath("./picxReal_10.safetensors")).to("cuda")
 
 @app.route('/generate', methods=['GET'])
 def generate_image():
@@ -17,10 +17,11 @@ def generate_image():
     steps = request.args.get('num_inference_steps', default=20, type=int)
     guidance = request.args.get('guidance_scale', default=7.5, type=float)
 
-    # Generate the image using parameters
-    pipe = StableDiffusionPipeline.from_single_file(os.path.abspath("./picxReal_10.safetensors")).to("cuda")
-    image = pipe(prompt=prompt, height=height, width=width, num_inference_steps=steps, guidance_scale=guidance, negative_prompt=neg_p).images[0]
 
+    # Generate the image using parameters
+    
+    image = pipe(prompt=prompt, height=height, width=width, num_inference_steps=steps, guidance_scale=guidance, negative_prompt=neg_p).images[0]
+ 
     # Save the image to a byte buffer
     img_byte_array = io.BytesIO()
     image.save(img_byte_array, format='PNG')
