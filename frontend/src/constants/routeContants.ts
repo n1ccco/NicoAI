@@ -1,0 +1,7 @@
+export const CLIENT_BASEURL = '/'
+export const IMAGES = 'images'
+export const GALLERY = 'gallery'
+export const USERS = 'users'
+export const CREATE = 'create'
+export const SIGNIN = 'signin'
+export const SIGNUP = 'signup'
