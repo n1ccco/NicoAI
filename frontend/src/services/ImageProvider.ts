@@ -44,7 +44,11 @@ export async function changeImagePrivacy(
   privacyPayload: { isPublic: boolean }
 ) {
   try {
-    await axiosInstance.put(`${IMAGES}/${id}`, privacyPayload)
+    if (privacyPayload.isPublic) {
+      await axiosInstance.put(`${IMAGES}/${id}`, { action: 'makePublic' })
+    } else {
+      await axiosInstance.put(`${IMAGES}/${id}`, { action: 'makePrivate' })
+    }
   } catch (error) {
     console.error('Error fetching data:', error)
   }

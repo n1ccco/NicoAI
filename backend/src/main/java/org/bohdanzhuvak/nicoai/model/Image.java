@@ -1,5 +1,8 @@
 package org.bohdanzhuvak.nicoai.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +21,14 @@ public class Image {
     @JoinColumn
     private User author;
     private boolean isPublic;
+    @ManyToMany
+    @JoinTable(
+        name = "user_likes",
+        joinColumns = @JoinColumn(name = "image_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<User> likes;
+
     private String prompt;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn
@@ -27,5 +38,6 @@ public class Image {
         this.imageData = imageData;
         this.author = author;
         this.isPublic = false;
+        this.likes = new ArrayList<User>();
     }
 }

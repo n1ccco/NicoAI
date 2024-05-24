@@ -11,6 +11,7 @@ import org.bohdanzhuvak.nicoai.dto.CustomMultipartFile;
 import org.bohdanzhuvak.nicoai.dto.GenerateResponse;
 import org.bohdanzhuvak.nicoai.dto.ImageRequest;
 import org.bohdanzhuvak.nicoai.dto.ImageResponse;
+import org.bohdanzhuvak.nicoai.dto.InteractionImageRequest;
 import org.bohdanzhuvak.nicoai.dto.PromptRequest;
 import org.bohdanzhuvak.nicoai.model.Image;
 import org.bohdanzhuvak.nicoai.model.ImageData;
@@ -100,6 +101,33 @@ public class ImageService {
         Image image = imageRepository.findById(id).get();
         image.setPublic(changeImagePrivacyRequest.isPublic());
         imageRepository.save(image);
+    }
+
+    public void changeImage(Long id, UserDetails userDetails, InteractionImageRequest interactionImageRequest) {
+        if (interactionImageRequest.getAction() == null){
+            System.out.println("Action is null");
+            return;
+        }
+        Image image = imageRepository.findById(id).get();
+        switch (interactionImageRequest.getAction()) {
+            case "like":
+                User user = userRepository.findByUsername(userDetails.getUsername()).get();
+                List<User> likedImagesUsers = image.getLikes();
+                likedImagesUsers.add(user);
+                image.setLikes(likedImagesUsers);
+                imageRepository.save(image);
+                break;
+            case "makePublic":
+                image.setPublic(true);
+                imageRepository.save(image);
+                break;
+            case "makePrivate":
+                image.setPublic(false);
+                imageRepository.save(image);
+                break;
+            default:
+                break;
+        }
     }
 
 

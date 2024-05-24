@@ -24,11 +24,22 @@ const Picture = () => {
   }, [id])
 
   const handleToggle = async () => {
-    try {
-      // Update user settings or perform any other action based on the toggle state
-      await changeImagePrivacy(Number(id), { isPublic: !photo?.isPublic })
-    } catch (error) {
-      console.error('Error updating user settings:', error)
+    if (photo) {
+      try {
+        // Toggle the isPublic state and update the server
+        await changeImagePrivacy(Number(id), {
+          isPublic: !photo.isPublic,
+        })
+
+        // Update the local state with the new isPublic value
+        setPhoto((prevPhoto) =>
+          prevPhoto
+            ? { ...prevPhoto, isPublic: !prevPhoto.isPublic }
+            : prevPhoto
+        )
+      } catch (error) {
+        console.error('Error updating photo privacy:', error)
+      }
     }
   }
 

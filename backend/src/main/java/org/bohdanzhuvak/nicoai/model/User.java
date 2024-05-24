@@ -2,6 +2,7 @@ package org.bohdanzhuvak.nicoai.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -30,6 +31,9 @@ public class User implements UserDetails {
     private List<Image> images;
     private String username;
     private String password;
+
+    @ManyToMany(mappedBy = "likes")
+    private List<Image> likes;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default

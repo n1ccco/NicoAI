@@ -2,9 +2,9 @@ package org.bohdanzhuvak.nicoai.controller;
 
 import lombok.RequiredArgsConstructor;
 
-import org.bohdanzhuvak.nicoai.dto.ChangeImagePrivacyRequest;
 import org.bohdanzhuvak.nicoai.dto.GenerateResponse;
 import org.bohdanzhuvak.nicoai.dto.ImageResponse;
+import org.bohdanzhuvak.nicoai.dto.InteractionImageRequest;
 import org.bohdanzhuvak.nicoai.dto.PromptRequest;
 import org.bohdanzhuvak.nicoai.service.ImageService;
 import org.springframework.http.HttpStatus;
@@ -33,10 +33,16 @@ public class ImagesController {
         return imageService.getImage(id);
     }
 
+    // @PutMapping(value = "{id}")
+    // @ResponseStatus(HttpStatus.OK)
+    // public void makePublic(@PathVariable("id") Long id, @RequestBody ChangeImagePrivacyRequest changePrivacyRequest) {
+    //     imageService.changePrivacy(id, changePrivacyRequest);
+    // }
+
     @PutMapping(value = "{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void makePublic(@PathVariable("id") Long id, @RequestBody ChangeImagePrivacyRequest changePrivacyRequest) {
-        imageService.changePrivacy(id, changePrivacyRequest);
+    public void upvoteImage(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetails user, @RequestBody InteractionImageRequest interactionImageRequest) {
+        imageService.changeImage(id, user, interactionImageRequest);
     }
 
     @PostMapping
