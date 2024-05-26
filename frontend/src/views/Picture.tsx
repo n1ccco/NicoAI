@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth.ts'
-import Toggle from '../components/Toggle.tsx'
-import { changeImagePrivacy, getImage } from '../services/ImageProvider.ts'
+import { useAuth } from '@/hooks/useAuth.ts'
+import Toggle from '@/components/ui/Toggle.tsx'
+import { changeImagePrivacy, getImage } from '@/services/ImageProvider.ts'
 import { Photo } from '@/types/api.ts'
 
 const Picture = () => {
   const { id } = useParams<{ id: string }>()
   const [photo, setPhoto] = useState<Photo>()
-  const userId = useAuth().userId
+  const userId = useAuth().user?.id
 
   useEffect(() => {
     const fetchImage = async () => {
@@ -46,7 +46,7 @@ const Picture = () => {
   return (
     <div>
       {photo && (
-        <div className="mx-auto max-w-md overflow-hidden rounded-lg bg-white shadow-md">
+        <div className="mx-auto max-w-md overflow-hidden rounded-lg bg-gray-800 shadow-md">
           <div className="p-6">
             <h2 className="mb-2 text-xl font-semibold">Picture Details</h2>
             <p className="mb-2 text-gray-600">ID: {photo.id}</p>

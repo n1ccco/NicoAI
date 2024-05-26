@@ -1,11 +1,13 @@
 import React, { ChangeEvent, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
-import { SIGNUP } from '../constants/routeContants'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '@/hooks/useAuth'
+import { GALLERY, SIGNUP } from '@/constants/routeContants'
+import { SigninInput } from '@/types/formData'
 
 const Signin = () => {
   const auth = useAuth()
-  const [input, setInput] = useState({
+  const navigate = useNavigate()
+  const [input, setInput] = useState<SigninInput>({
     username: '',
     password: '',
   })
@@ -15,10 +17,10 @@ const Signin = () => {
     e.preventDefault()
     try {
       if (input.username !== '' && input.password !== '') {
-        auth.loginAction(input)
+        await auth.loginAction(input)
+        navigate(`/${GALLERY}`)
         return
       }
-      alert('please provide a valid input')
     } catch (error) {
       setError('Invalid username or password')
     }

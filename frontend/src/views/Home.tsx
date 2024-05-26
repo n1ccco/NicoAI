@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { GALLERY } from '../constants/routeContants'
+import { GALLERY } from '@/constants/routeContants'
 
 const Home = () => {
   return (

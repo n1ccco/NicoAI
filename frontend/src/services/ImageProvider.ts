@@ -1,9 +1,9 @@
-import Prompt from '../models/Prompt'
-import { axiosInstance } from '../api/axios'
-import { IMAGES } from '../constants/apiConstants'
+import { PromptInput } from '@/types/formData'
+import { axiosInstance } from '@/api/axios'
+import { IMAGES } from '@/constants/apiConstants'
 import { Photo } from '@/types/api'
 
-export async function postImageData(promptData: Prompt): Promise<number> {
+export async function postImageData(promptData: PromptInput): Promise<number> {
   try {
     const queryParams = new URLSearchParams({
       prompt: promptData.prompt,

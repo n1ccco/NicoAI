@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import Prompt from '../models/Prompt'
 import { useNavigate } from 'react-router-dom'
-import { IMAGES } from '../constants/routeContants'
-import { postImageData } from '../services/ImageProvider'
+import { IMAGES } from '@/constants/routeContants'
+import { postImageData } from '@/services/ImageProvider'
+import { PromptInput } from '@/types/formData'
 
 const InputField = ({
   label,
@@ -29,7 +29,7 @@ const InputField = ({
 )
 
 const Create = () => {
-  const initialPrompt: Prompt = {
+  const initialPrompt: PromptInput = {
     prompt: 'cat',
     negativePrompt: 'ugly',
     height: 512,
@@ -38,7 +38,7 @@ const Create = () => {
     guidanceScale: 7,
   }
 
-  const [promptData, setPromptData] = useState<Prompt>(initialPrompt)
+  const [promptData, setPromptData] = useState<PromptInput>(initialPrompt)
   const [loading, setLoading] = useState<boolean>(false)
   const navigate = useNavigate()
 
@@ -113,7 +113,6 @@ const Create = () => {
       >
         {loading ? 'Generating...' : 'Generate Image'}
       </button>
-      {loading && <p className="mt-2">Loading...</p>}
     </div>
   )
 }

@@ -4,17 +4,17 @@ import {
   CREATE,
   GALLERY,
   SIGNIN,
-} from '../constants/routeContants.ts'
-import { useAuth } from '../hooks/useAuth.ts'
-import UserDropdownMenu from './UserDropdownMenu.tsx'
+} from '@/constants/routeContants.ts'
+import { useAuth } from '@/hooks/useAuth.ts'
+import UserDropdownMenu from './ui/UserDropdownMenu.tsx'
 
 interface HeaderProps {
   name?: string
 }
 
 function Header({ name }: HeaderProps) {
-  const username: string | undefined = useAuth().getAuth()?.user.username
-  const userId: number | undefined = useAuth().getAuth()?.user.id
+  const username: string | undefined = useAuth().user?.username
+  const userId: number | undefined = useAuth().user?.id
 
   return (
     <header className="bg-gray-800 py-4">

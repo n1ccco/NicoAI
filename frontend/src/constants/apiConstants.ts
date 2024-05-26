@@ -1,4 +1,4 @@
-import { getConfiguration } from '../configuration/Configuration.ts'
+import { getConfiguration } from '@/configuration/Configuration.ts'
 
 export const API_BASEURL = getConfiguration().apiBaseAddress
 export const IMAGES = 'images'

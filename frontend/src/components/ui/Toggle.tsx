@@ -6,17 +6,12 @@ interface ToggleProps {
   onToggle: (newState: boolean) => void
 }
 
-const Toggle: React.FC<ToggleProps> = ({
-  initialState,
-  onToggle,
-  toggleName,
-}) => {
+function Toggle({ initialState, onToggle, toggleName }: ToggleProps) {
   const [toggleState, setToggleState] = useState<boolean>(initialState)
 
   const handleToggle = () => {
     const newState = !toggleState
     setToggleState(newState)
-    // Call the callback function with the new state
     onToggle(newState)
   }
 
@@ -41,7 +36,7 @@ const Toggle: React.FC<ToggleProps> = ({
           } inline-block h-4 w-4 transform rounded-full bg-white shadow-md transition-all duration-300`}
         />
       </label>
-      <span className="text-gray-700">{toggleName}</span>
+      <span className="text-gray-300">{toggleName}</span>
     </div>
   )
 }

@@ -6,7 +6,7 @@ interface ImageProps {
   photo: Photo
 }
 
-const Image: React.FC<ImageProps> = ({ photo }) => {
+function Image({ photo }: ImageProps) {
   return (
     <div key={photo.id} className="rounded-lg bg-gray-800 p-4 shadow-lg">
       <Link to={`/${IMAGES}/${photo.id}`}>

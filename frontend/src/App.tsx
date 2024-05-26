@@ -5,11 +5,11 @@ import {
   Route,
   Routes,
 } from 'react-router-dom'
-import Layout from './views/Layout.tsx'
-import Home from './views/Home.tsx'
-import NoPage from './views/NoPage.tsx'
-import Create from './views/Create.tsx'
-import Picture from './views/Picture.tsx'
+import Layout from '@/views/core/Layout.tsx'
+import Home from '@/views/Home.tsx'
+import NoPage from '@/views/core/NoPage.tsx'
+import Create from '@/views/Create.tsx'
+import Picture from '@/views/Picture.tsx'
 import {
   CLIENT_BASEURL,
   CREATE,
@@ -18,17 +18,17 @@ import {
   SIGNIN,
   SIGNUP,
   USERS,
-} from './constants/routeContants.ts'
-import Signin from './views/Signin.tsx'
-import Signup from './views/Signup.tsx'
-import AuthProvider from './services/AuthProvider.tsx'
-import { useAuth } from './hooks/useAuth.ts'
-import UserImages from './views/UserImages.tsx'
-import Gallery from './views/Gallery.tsx'
+} from '@/constants/routeContants.ts'
+import Signin from '@/views/auth/Signin.tsx'
+import Signup from '@/views/auth/Signup.tsx'
+import AuthProvider from '@/services/AuthProvider.tsx'
+import { useAuth } from '@/hooks/useAuth.ts'
+import UserImages from '@/views/UserImages.tsx'
+import Gallery from '@/views/Gallery.tsx'
 
 const PrivateRoute = () => {
-  const user = useAuth().getAuth()
-  if (!user?.jwt) return <Navigate to={SIGNIN} />
+  const jwt = useAuth().token
+  if (!jwt) return <Navigate to={SIGNIN} />
   return <Outlet />
 }
 

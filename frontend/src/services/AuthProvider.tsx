@@ -1,69 +1,71 @@
-import { useNavigate } from 'react-router-dom'
-import { axiosInstance } from '../api/axios'
-import AuthContext, { AuthContextType } from '../context/AuthContext'
-import { AUTHSIGNIN, AUTHSIGNUP } from '../constants/apiConstants'
-import { CLIENT_BASEURL, GALLERY, SIGNIN } from '../constants/routeContants'
+import AuthContext from '@/context/AuthContext'
+import { axiosInstance } from '@/api/axios'
+import { AUTHSIGNIN, AUTHSIGNUP } from '@/constants/apiConstants'
+import { AuthContextType } from '@/context/AuthContext'
 import { AuthResponse, User } from '@/types/api'
+import { SigninInput, SignupInput } from '@/types/formData'
+import { useEffect, useState } from 'react'
 
-const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  const navigate = useNavigate()
+interface AuthProviderProps {
+  children: React.ReactNode
+}
 
-  const getAuth = (): AuthResponse | null => {
-    const auth = localStorage.getItem('auth')
-    if (auth) {
-      try {
-        return JSON.parse(auth)
-      } catch (error) {
-        console.error('Error parsing data from localStorage', error)
-        return null
-      }
+function useAuthProvider(): AuthContextType {
+  const [user, setUser] = useState<User | null>(null)
+  const [token, setToken] = useState<string>('')
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user')
+    if (storedUser) {
+      setUser(JSON.parse(storedUser))
     }
-    return null
-  }
+    const storedToken = localStorage.getItem('jwt')
+    if (storedToken) {
+      setToken(storedToken)
+    }
+  }, [])
 
-  const loginAction = async (data: User) => {
+  async function loginAction(data: SigninInput) {
     return await axiosInstance
       .post(AUTHSIGNIN, data)
-      .then((response) => {
-        if (response.status < 200 || response.status >= 300) {
-          throw new Error(response.statusText)
-        }
-        navigate(GALLERY)
-        return response.data
-      })
+      .then((response): AuthResponse => response.data)
       .then((auth) => {
-        localStorage.setItem('auth', JSON.stringify(auth))
+        localStorage.setItem('jwt', auth.jwt)
+        localStorage.setItem('user', JSON.stringify(auth.user))
+        setUser(auth.user)
+        setToken(auth.jwt)
       })
-      .catch(() => {
-        throw new Error('Network Error')
+      .catch((error) => {
+        throw new Error(error)
       })
   }
 
-  const registerAction = async (data: User) => {
+  async function registerAction(data: SignupInput) {
     try {
-      const response = await axiosInstance.post(AUTHSIGNUP, data)
-      const res = response.data
-      navigate(SIGNIN)
-      throw new Error(res.message)
-    } catch (err) {
-      console.error(err)
+      await axiosInstance.post(AUTHSIGNUP, data)
+    } catch (error) {
+      throw new Error('Username is already used')
     }
   }
 
-  const logOut = () => {
-    localStorage.removeItem('auth')
-    navigate(CLIENT_BASEURL)
+  function logOut() {
+    localStorage.removeItem('jwt')
+    localStorage.removeItem('user')
+    setUser(null)
+    setToken('')
   }
 
-  const authContextValue: AuthContextType = {
-    getAuth,
+  return {
+    token,
+    user,
     loginAction,
     registerAction,
     logOut,
   }
+}
 
+function AuthProvider({ children }: AuthProviderProps) {
+  const authContextValue = useAuthProvider()
   return (
     <AuthContext.Provider value={authContextValue}>
       {children}

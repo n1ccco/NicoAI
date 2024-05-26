@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import { axiosInstance } from '../api/axios.ts'
-import { IMAGES, USERS } from '../constants/apiConstants.ts'
-import Image from '../components/Image.tsx'
+import { axiosInstance } from '@/api/axios.ts'
+import { IMAGES, USERS } from '@/constants/apiConstants.ts'
+import Image from '@/components/Image.tsx'
 import { useParams } from 'react-router-dom'
 import { Photo } from '@/types/api.ts'
 

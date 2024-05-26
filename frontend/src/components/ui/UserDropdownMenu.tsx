@@ -1,12 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
-import { useAuth } from '../hooks/useAuth'
+import { useAuth } from '@/hooks/useAuth'
 import { Link } from 'react-router-dom'
-import { IMAGES, USERS } from '../constants/routeContants'
+import { IMAGES, USERS } from '@/constants/routeContants'
 
-const UserDropdownMenu: React.FC<{ username: string; userId: number }> = ({
+function UserDropdownMenu({
   username,
   userId,
-}) => {
+}: {
+  username: string
+  userId: number
+}) {
   const [isOpen, setIsOpen] = useState(false)
   const auth = useAuth()
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -84,7 +87,7 @@ const UserDropdownMenu: React.FC<{ username: string; userId: number }> = ({
               User Settings
             </a>
             <Link
-              to="/"
+              to="#"
               onClick={handleLogout}
               className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
               role="menuitem"

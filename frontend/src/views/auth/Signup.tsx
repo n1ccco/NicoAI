@@ -1,9 +1,9 @@
 import { ChangeEvent, useState } from 'react'
-import { useAuth } from '../hooks/useAuth'
-import { Link } from 'react-router-dom'
-import { SIGNIN } from '../constants/routeContants'
+import { useAuth } from '@/hooks/useAuth'
+import { Link, useNavigate } from 'react-router-dom'
+import { SIGNIN } from '@/constants/routeContants'
 
-const Signup = () => {
+function Signup() {
   const [input, setInput] = useState({
     username: '',
     password: '',
@@ -11,6 +11,7 @@ const Signup = () => {
   })
   const auth = useAuth()
   const [error, setError] = useState('')
+  const navigate = useNavigate()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -21,11 +22,13 @@ const Signup = () => {
         input.password === input.confirmPassword
       ) {
         const { confirmPassword, ...model } = input
-        auth.registerAction(model)
+        await auth.registerAction(model)
+        navigate(`/${SIGNIN}`)
+      } else {
+        setError('Input correct data')
       }
-      setError('Input correct data')
-    } catch (error) {
-      setError('Invalid username or password')
+    } catch (error: any) {
+      setError(error.message)
     }
   }
 

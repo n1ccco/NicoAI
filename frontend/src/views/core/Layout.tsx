@@ -1,15 +1,15 @@
 import { Outlet } from 'react-router-dom'
-import Header from '../components/Header.tsx'
-import { getConfiguration } from '../configuration/Configuration.ts'
-import Footer from '../components/Footer.tsx'
+import Header from '@/components/Header.tsx'
+import { getConfiguration } from '@/configuration/Configuration.ts'
+import Footer from '@/components/Footer.tsx'
 
-const Layout = () => {
+function Layout() {
   const appName = getConfiguration().applicationName
   return (
     <>
       <div className="flex min-h-screen flex-col bg-gray-900 font-sans text-gray-200">
         <Header name={appName} />
-        <div className="flex-grow">
+        <div className="flex-grow p-10">
           <Outlet />
         </div>
         <Footer />
