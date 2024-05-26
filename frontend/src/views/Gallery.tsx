@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import Photo from '../models/Photo.ts'
 import { axiosInstance } from '../api/axios.ts'
 import { IMAGES } from '../constants/apiConstants.ts'
 import Image from '../components/Image.tsx'
+import { Photo } from '@/types/api.ts'
 
 const Gallery = () => {
   const [photos, setPhotos] = useState<Photo[]>([])

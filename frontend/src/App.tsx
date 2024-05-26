@@ -27,8 +27,8 @@ import UserImages from './views/UserImages.tsx'
 import Gallery from './views/Gallery.tsx'
 
 const PrivateRoute = () => {
-  const user = useAuth()
-  if (!user.token) return <Navigate to={SIGNIN} />
+  const user = useAuth().getAuth()
+  if (!user?.jwt) return <Navigate to={SIGNIN} />
   return <Outlet />
 }
 

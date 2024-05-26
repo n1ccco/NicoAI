@@ -1,44 +1,44 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { axiosInstance } from '../api/axios'
 import AuthContext, { AuthContextType } from '../context/AuthContext'
 import { AUTHSIGNIN, AUTHSIGNUP } from '../constants/apiConstants'
-import { CLIENT_BASEURL, SIGNIN } from '../constants/routeContants'
-import { User } from '../models/User'
+import { CLIENT_BASEURL, GALLERY, SIGNIN } from '../constants/routeContants'
+import { AuthResponse, User } from '@/types/api'
 
 const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [username, setUser] = useState<string>(
-    localStorage.getItem('username') || ''
-  )
-  const [userId, setUserId] = useState<number>(
-    parseInt(localStorage.getItem('userId') || '0')
-  )
-  const [token, setToken] = useState<string>(
-    localStorage.getItem('authtoken') || ''
-  )
   const navigate = useNavigate()
 
-  const loginAction = async (data: User) => {
-    try {
-      const response = await axiosInstance.post(AUTHSIGNIN, data)
-      const res = response.data
-      console.log(res)
-      if (res) {
-        setUser(res.username)
-        localStorage.setItem('username', res.username)
-        setToken(res.token)
-        localStorage.setItem('authtoken', res.token)
-        setUserId(res.userId)
-        localStorage.setItem('userId', res.userId)
-        navigate(CLIENT_BASEURL)
-        return
+  const getAuth = (): AuthResponse | null => {
+    const auth = localStorage.getItem('auth')
+    if (auth) {
+      try {
+        return JSON.parse(auth)
+      } catch (error) {
+        console.error('Error parsing data from localStorage', error)
+        return null
       }
-      throw new Error(res.message)
-    } catch (err) {
-      console.error(err)
     }
+    return null
+  }
+
+  const loginAction = async (data: User) => {
+    return await axiosInstance
+      .post(AUTHSIGNIN, data)
+      .then((response) => {
+        if (response.status < 200 || response.status >= 300) {
+          throw new Error(response.statusText)
+        }
+        navigate(GALLERY)
+        return response.data
+      })
+      .then((auth) => {
+        localStorage.setItem('auth', JSON.stringify(auth))
+      })
+      .catch(() => {
+        throw new Error('Network Error')
+      })
   }
 
   const registerAction = async (data: User) => {
@@ -53,17 +53,12 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }
 
   const logOut = () => {
-    setUser('')
-    setUserId(0)
-    setToken('')
-    localStorage.removeItem('authtoken')
+    localStorage.removeItem('auth')
     navigate(CLIENT_BASEURL)
   }
 
   const authContextValue: AuthContextType = {
-    token,
-    username,
-    userId,
+    getAuth,
     loginAction,
     registerAction,
     logOut,

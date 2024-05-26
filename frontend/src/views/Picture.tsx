@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import Photo from '../models/Photo.ts'
 import { useParams } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth.ts'
 import Toggle from '../components/Toggle.tsx'
 import { changeImagePrivacy, getImage } from '../services/ImageProvider.ts'
+import { Photo } from '@/types/api.ts'
 
 const Picture = () => {
   const { id } = useParams<{ id: string }>()

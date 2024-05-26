@@ -13,8 +13,8 @@ interface HeaderProps {
 }
 
 function Header({ name }: HeaderProps) {
-  const username: string | null = useAuth().username
-  const userId: number = useAuth().userId
+  const username: string | undefined = useAuth().getAuth()?.user.username
+  const userId: number | undefined = useAuth().getAuth()?.user.id
 
   return (
     <header className="bg-gray-800 py-4">

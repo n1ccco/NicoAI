@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { IMAGES } from '../constants/routeContants.ts'
-import Photo from '../models/Photo.ts'
+import { Photo } from '@/types/api.ts'
 
 interface ImageProps {
   photo: Photo

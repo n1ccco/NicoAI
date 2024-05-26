@@ -1,10 +1,8 @@
+import { AuthResponse, User } from '@/types/api'
 import { createContext } from 'react'
-import { User } from '../models/User'
 
 export interface AuthContextType {
-  token: string
-  username: string
-  userId: number
+  getAuth: () => AuthResponse | null
   loginAction: (data: User) => void
   registerAction: (data: User) => void
   logOut: () => void

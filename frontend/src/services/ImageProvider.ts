@@ -1,7 +1,7 @@
 import Prompt from '../models/Prompt'
 import { axiosInstance } from '../api/axios'
 import { IMAGES } from '../constants/apiConstants'
-import Photo from '../models/Photo'
+import { Photo } from '@/types/api'
 
 export async function postImageData(promptData: Prompt): Promise<number> {
   try {
