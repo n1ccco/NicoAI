@@ -1,6 +1,5 @@
 package org.bohdanzhuvak.nicoai.config;
 
-
 import org.bohdanzhuvak.nicoai.repository.UserRepository;
 import org.bohdanzhuvak.nicoai.security.jwt.JwtTokenAuthenticationFilter;
 import org.bohdanzhuvak.nicoai.security.jwt.JwtTokenProvider;
@@ -26,51 +25,50 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfig {
 
-    @Bean
-    SecurityFilterChain springWebFilterChain(HttpSecurity http,
-                                             JwtTokenProvider tokenProvider) throws Exception {
-        return http
-                .httpBasic(AbstractHttpConfigurer::disable)
-                .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(c -> c.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
-                .authorizeHttpRequests(authorize -> authorize
-                    .requestMatchers("/api/auth/signin").permitAll()
-                    .requestMatchers("/api/auth/signup").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/images/**").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/images").hasRole("USER")
-                    .requestMatchers("/swagger-ui/**").permitAll()
-                    .requestMatchers("/v3/api-docs/**").permitAll()
-                    .anyRequest().authenticated()
-                )
-                .addFilterBefore(new JwtTokenAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
-                .build();
-    }
+  @Bean
+  SecurityFilterChain springWebFilterChain(HttpSecurity http,
+      JwtTokenProvider tokenProvider) throws Exception {
+    return http
+        .httpBasic(AbstractHttpConfigurer::disable)
+        .csrf(AbstractHttpConfigurer::disable)
+        .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .exceptionHandling(c -> c.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+        .authorizeHttpRequests(authorize -> authorize
+            .requestMatchers("/api/auth/signin").permitAll()
+            .requestMatchers("/api/auth/signup").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/images/**").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/images").hasRole("USER")
+            .requestMatchers("/swagger-ui/**").permitAll()
+            .requestMatchers("/v3/api-docs/**").permitAll()
+            .anyRequest().authenticated())
+        .addFilterBefore(new JwtTokenAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
+        .build();
+  }
 
-    @Bean
-    UserDetailsService customUserDetailsService(UserRepository users) {
-        return (username) -> users.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Username: " + username + " not found"));
-    }
+  @Bean
+  UserDetailsService customUserDetailsService(UserRepository users) {
+    return (username) -> users.findByUsername(username)
+        .orElseThrow(() -> new UsernameNotFoundException("Username: " + username + " not found"));
+  }
 
-    @Bean
-    AuthenticationManager customAuthenticationManager(UserDetailsService userDetailsService, PasswordEncoder encoder) {
-        return authentication -> {
-            String username = authentication.getPrincipal() + "";
-            String password = authentication.getCredentials() + "";
+  @Bean
+  AuthenticationManager customAuthenticationManager(UserDetailsService userDetailsService, PasswordEncoder encoder) {
+    return authentication -> {
+      String username = authentication.getPrincipal() + "";
+      String password = authentication.getCredentials() + "";
 
-            UserDetails user = userDetailsService.loadUserByUsername(username);
+      UserDetails user = userDetailsService.loadUserByUsername(username);
 
-            if (!encoder.matches(password, user.getPassword())) {
-                throw new BadCredentialsException("Bad credentials");
-            }
+      if (!encoder.matches(password, user.getPassword())) {
+        throw new BadCredentialsException("Bad credentials");
+      }
 
-            if (!user.isEnabled()) {
-                throw new DisabledException("User account is not active");
-            }
+      if (!user.isEnabled()) {
+        throw new DisabledException("User account is not active");
+      }
 
-            return new UsernamePasswordAuthenticationToken(username, null, user.getAuthorities());
-        };
-    }
+      return new UsernamePasswordAuthenticationToken(username, null, user.getAuthorities());
+    };
+  }
 
 }

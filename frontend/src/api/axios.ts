@@ -1,5 +1,7 @@
 import axios from 'axios'
 import { API_BASEURL } from '@/constants/apiConstants.ts'
+import { useNavigate } from 'react-router-dom'
+import { SIGNIN } from '@/constants/routeContants'
 
 const axiosInstance = axios.create({
   baseURL: API_BASEURL,
@@ -14,18 +16,26 @@ axiosInstance.interceptors.request.use(
     const token = localStorage.getItem('jwt')
     if (token) {
       try {
-        // Assuming your auth object has a token property
-        config.headers.Authorization = `Bearer ${token}` // Set the Authorization header
+        config.headers.Authorization = `Bearer ${token}`
       } catch (error) {
         console.error('Error parsing auth from localStorage', error)
-        // Optionally, you might want to clear invalid auth data:
-        // localStorage.removeItem('auth');
       }
     }
-    return config // Return the config object with or without the Authorization header
+    return config
   },
   (error) => {
-    return Promise.reject(error) // Handle request error
+    return Promise.reject(error)
+  }
+)
+
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      const navigate = useNavigate()
+      navigate(SIGNIN)
+    }
+    return Promise.reject(error)
   }
 )
 
