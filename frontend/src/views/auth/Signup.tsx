@@ -1,7 +1,7 @@
 import { ChangeEvent, useState } from 'react'
-import { useAuth } from '@/hooks/useAuth'
 import { Link, useNavigate } from 'react-router-dom'
 import { SIGNIN } from '@/constants/routeContants'
+import { registerEffect } from '@/api/efects/auth/authEffects'
 
 function Signup() {
   const [input, setInput] = useState({
@@ -9,27 +9,31 @@ function Signup() {
     password: '',
     confirmPassword: '',
   })
-  const auth = useAuth()
   const [error, setError] = useState('')
   const navigate = useNavigate()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    try {
-      if (
+    if (
         input.username !== '' &&
         input.password !== '' &&
         input.password === input.confirmPassword
       ) {
-        const { confirmPassword, ...model } = input
-        await auth.registerAction(model)
-        navigate(`/${SIGNIN}`)
+        const { confirmPassword, ...model } = input;
+
+        registerEffect(model).then(res => {
+          if(res.type === "success"){
+            navigate(`/${SIGNIN}`);
+          }
+          else{
+            setError(res.state.error)
+          }
+        });
+
       } else {
         setError('Input correct data')
       }
-    } catch (error: any) {
-      setError(error.message)
-    }
+   
   }
 
   const handleInput = (e: ChangeEvent<HTMLInputElement>) => {

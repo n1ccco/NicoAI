@@ -1,17 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
-import { useAuth } from '@/hooks/useAuth'
 import { Link } from 'react-router-dom'
 import { IMAGES, USERS } from '@/constants/routeContants'
+import { User } from '@/types/api'
 
-function UserDropdownMenu({
-  username,
-  userId,
-}: {
-  username: string
-  userId: number
-}) {
+type UserDropdownProps = {
+  user: User,
+  logout: () => void
+}
+
+function UserDropdownMenu({ user, logout }: UserDropdownProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const auth = useAuth()
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -35,7 +33,7 @@ function UserDropdownMenu({
   }
 
   const handleLogout = () => {
-    auth.logOut()
+    logout()
     setIsOpen(false) // Close the dropdown after logout
   }
 
@@ -47,7 +45,7 @@ function UserDropdownMenu({
           className="inline-flex w-full items-center justify-center px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 focus:outline-none focus-visible:ring focus-visible:ring-gray-500 focus-visible:ring-opacity-50"
           onClick={toggleMenu}
         >
-          {username}
+          {user.username}
           <svg
             className="-mr-1 ml-2 h-5 w-5"
             xmlns="http://www.w3.org/2000/svg"
@@ -73,7 +71,7 @@ function UserDropdownMenu({
         >
           <div className="py-1" role="none">
             <Link
-              to={`${USERS}/${userId}/${IMAGES}`}
+              to={`${USERS}/${user.id}/${IMAGES}`}
               className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
               role="menuitem"
             >

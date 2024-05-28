@@ -1,71 +1,79 @@
-import AuthContext from '@/context/AuthContext'
-import { axiosInstance } from '@/api/axios'
-import { AUTHSIGNIN, AUTHSIGNUP } from '@/constants/apiConstants'
-import { AuthContextType } from '@/context/AuthContext'
-import { AuthResponse, User } from '@/types/api'
-import { SigninInput, SignupInput } from '@/types/formData'
-import { useEffect, useState } from 'react'
+import AuthContext, {
+  AuthActions,
+  AuthContextType,
+  AuthState,
+} from '@/context/AuthContext'
+import { useState } from 'react'
+import { UserManagementEntity, TokenManagementEntity } from '@/storage/auth'
+import { SigninResult } from '@/api/efects/auth/authEffects'
+import {
+  AUTH_TOKEN_NULL_VALUE,
+} from '@/constants/authConstants'
 
-interface AuthProviderProps {
-  children: React.ReactNode
-}
-
-function useAuthProvider(): AuthContextType {
-  const [user, setUser] = useState<User | null>(null)
-  const [token, setToken] = useState<string>('')
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user')
-    if (storedUser) {
-      setUser(JSON.parse(storedUser))
-    }
-    const storedToken = localStorage.getItem('jwt')
-    if (storedToken) {
-      setToken(storedToken)
-    }
-  }, [])
-
-  async function loginAction(data: SigninInput) {
-    return await axiosInstance
-      .post(AUTHSIGNIN, data)
-      .then((response): AuthResponse => response.data)
-      .then((auth) => {
-        localStorage.setItem('jwt', auth.jwt)
-        localStorage.setItem('user', JSON.stringify(auth.user))
-        setUser(auth.user)
-        setToken(auth.jwt)
-      })
-      .catch((error) => {
-        throw new Error(error)
-      })
-  }
-
-  async function registerAction(data: SignupInput) {
-    try {
-      await axiosInstance.post(AUTHSIGNUP, data)
-    } catch (error) {
-      throw new Error('Username is already used')
+const selectAuthStateFromStorage: () => AuthState = () => {
+  const token = TokenManagementEntity.selector()
+  if (token === AUTH_TOKEN_NULL_VALUE) {
+    return {
+      type: 'not-authenticated',
+      state: {},
     }
   }
-
-  function logOut() {
-    localStorage.removeItem('jwt')
-    localStorage.removeItem('user')
-    setUser(null)
-    setToken('')
-  }
+  const user = UserManagementEntity.selector()
 
   return {
-    token,
-    user,
-    loginAction,
-    registerAction,
-    logOut,
+    type: 'authenticated',
+    state: {
+      token,
+      user,
+    },
   }
+}
+
+type AuthProviderProps = {
+  children: React.JSX.Element
 }
 
 function AuthProvider({ children }: AuthProviderProps) {
-  const authContextValue = useAuthProvider()
+  const [authState, setAuthState] = useState(() => selectAuthStateFromStorage())
+  const postSignin = (signinResult: SigninResult) => {
+    //Storage patches
+    TokenManagementEntity.patcher(signinResult.token)
+    UserManagementEntity.patcher(signinResult.user)
+    //Enf of storage patches
+
+    //State patches
+    setAuthState({
+      type: 'authenticated',
+      state: {
+        token: signinResult.token,
+        user: signinResult.user,
+      },
+    })
+    //End of state patched
+  }
+
+  const postLogout = () => {
+    //Storage patches
+    TokenManagementEntity.clear()
+    UserManagementEntity.clear()
+    //Enf of storage patches
+
+    //State patches
+    setAuthState({
+      type: 'not-authenticated',
+      state: {},
+    })
+    //End of state patchhed
+  }
+
+  const authContextValue = {
+    actions: {
+      postLogout,
+      postSignin,
+    },
+    state: authState,
+  }
+
   return (
     <AuthContext.Provider value={authContextValue}>
       {children}

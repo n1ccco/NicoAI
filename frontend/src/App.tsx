@@ -22,15 +22,10 @@ import {
 import Signin from '@/views/auth/Signin.tsx'
 import Signup from '@/views/auth/Signup.tsx'
 import AuthProvider from '@/services/AuthProvider.tsx'
-import { useAuth } from '@/hooks/useAuth.ts'
 import UserImages from '@/views/UserImages.tsx'
 import Gallery from '@/views/Gallery.tsx'
+import { PrivateRoute } from './components/guards/PrivateRoute'
 
-const PrivateRoute = () => {
-  const jwt = useAuth().token
-  if (!jwt) return <Navigate to={SIGNIN} />
-  return <Outlet />
-}
 
 function App() {
   return (

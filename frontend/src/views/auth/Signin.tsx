@@ -3,9 +3,11 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { GALLERY, SIGNUP } from '@/constants/routeContants'
 import { SigninInput } from '@/types/formData'
+import { loginEffect } from '@/api/efects/auth/authEffects'
 
 const Signin = () => {
-  const auth = useAuth()
+  const {actions: {postSignin}} = useAuth()
+
   const navigate = useNavigate()
   const [input, setInput] = useState<SigninInput>({
     username: '',
@@ -15,14 +17,17 @@ const Signin = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    try {
-      if (input.username !== '' && input.password !== '') {
-        await auth.loginAction(input)
-        navigate(`/${GALLERY}`)
-        return
-      }
-    } catch (error) {
-      setError('Invalid username or password')
+
+    if(!!input.username && !!input.password){
+      loginEffect(input).then(res => {
+        if(res.type === "success"){
+         postSignin(res.state);
+         navigate(`/${GALLERY}`);
+        }
+        else{
+          setError(res.state.error)
+        }
+      });
     }
   }
 

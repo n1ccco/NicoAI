@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Navigate, useParams } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth.ts'
 import Toggle from '@/components/ui/Toggle.tsx'
 import { changeImagePrivacy, getImage } from '@/services/ImageService'
 import { Photo } from '@/types/api.ts'
+import { SIGNIN } from '@/constants/routeContants'
 
 const Picture = () => {
   const { id } = useParams<{ id: string }>()
   const [photo, setPhoto] = useState<Photo>()
-  const userId = useAuth().user?.id
+  const { state: authStateType} = useAuth()
+
 
   useEffect(() => {
     const fetchImage = async () => {
@@ -43,6 +45,11 @@ const Picture = () => {
     }
   }
 
+  if(authStateType.type === "not-authenticated"){
+    return <Navigate to={SIGNIN}/>
+  }
+
+  const userId = authStateType.state.user.id;
   return (
     <div>
       {photo && (

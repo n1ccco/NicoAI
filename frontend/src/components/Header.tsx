@@ -13,8 +13,7 @@ interface HeaderProps {
 }
 
 function Header({ name }: HeaderProps) {
-  const username: string | undefined = useAuth().user?.username
-  const userId: number | undefined = useAuth().user?.id
+  const { state: authState, actions: {postLogout}} = useAuth();
 
   return (
     <header className="bg-gray-800 py-4">
@@ -36,8 +35,8 @@ function Header({ name }: HeaderProps) {
           <Link to={GALLERY} className="px-3 text-gray-400 hover:text-white">
             Gallery
           </Link>
-          {username && userId ? (
-            <UserDropdownMenu username={username} userId={userId} />
+          {authState.type === "authenticated" ? (
+            <UserDropdownMenu user={authState.state.user} logout={postLogout}/>
           ) : (
             <Link to={SIGNIN} className="px-3 text-gray-400 hover:text-white">
               Login
