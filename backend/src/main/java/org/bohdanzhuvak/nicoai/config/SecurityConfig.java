@@ -1,5 +1,6 @@
 package org.bohdanzhuvak.nicoai.config;
 
+import org.bohdanzhuvak.nicoai.model.CustomUserDetails;
 import org.bohdanzhuvak.nicoai.repository.UserRepository;
 import org.bohdanzhuvak.nicoai.security.jwt.JwtTokenAuthenticationFilter;
 import org.bohdanzhuvak.nicoai.security.jwt.JwtTokenProvider;
@@ -47,8 +48,7 @@ public class SecurityConfig {
 
   @Bean
   UserDetailsService customUserDetailsService(UserRepository users) {
-    return (username) -> users.findByUsername(username)
-        .orElseThrow(() -> new UsernameNotFoundException("Username: " + username + " not found"));
+    return (username) -> new CustomUserDetails(users.findByUsername(username));
   }
 
   @Bean

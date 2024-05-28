@@ -60,7 +60,7 @@ public class ImageService {
     byte[] imageBytes = restTemplate.getForObject(uri, byte[].class, promptRequest);
     MultipartFile multipartFile = new CustomMultipartFile(UUID.randomUUID() + ".png", imageBytes);
 
-    User author = userRepository.findByUsername(authorDetails.getUsername()).get();
+    User author = userRepository.findByUsername(authorDetails.getUsername());
     return createImage(new ImageRequest(promptRequest.getPrompt(), multipartFile, author));
   }
 
@@ -200,12 +200,11 @@ public class ImageService {
     }
     Image image = optionalImage.get();
 
-    Optional<User> optionalUser = userRepository.findByUsername(userDetails.getUsername());
-    if (!optionalUser.isPresent()) {
+    User user = userRepository.findByUsername(userDetails.getUsername());
+    if (user == null) {
       System.out.println("User not found");
       return;
     }
-    User user = optionalUser.get();
 
     switch (interactionImageRequest.getAction()) {
       case "like":

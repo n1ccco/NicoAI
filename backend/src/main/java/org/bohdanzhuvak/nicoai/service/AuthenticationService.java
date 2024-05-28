@@ -30,7 +30,7 @@ public class AuthenticationService {
   public AuthenticationResponse signin(AuthenticationRequest authenticationRequest) {
     try {
       String username = authenticationRequest.getUsername();
-      User user = userRepository.findByUsername(username).get();
+      User user = userRepository.findByUsername(username);
       String password = authenticationRequest.getPassword();
       var authentication = authenticationManager
           .authenticate(new UsernamePasswordAuthenticationToken(username, password));
@@ -53,7 +53,7 @@ public class AuthenticationService {
   }
 
   public UserDto getCurrentUser(UserDetails userDetails) {
-    User user = userRepository.findByUsername(userDetails.getUsername()).get();
+    User user = userRepository.findByUsername(userDetails.getUsername());
     return UserDto.builder().Id(user.getId()).username(user.getUsername()).roles(user.getRoles()).build();
   }
 }

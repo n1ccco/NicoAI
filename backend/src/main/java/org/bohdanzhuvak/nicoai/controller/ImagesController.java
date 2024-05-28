@@ -6,10 +6,10 @@ import org.bohdanzhuvak.nicoai.dto.GenerateResponse;
 import org.bohdanzhuvak.nicoai.dto.ImageResponse;
 import org.bohdanzhuvak.nicoai.dto.InteractionImageRequest;
 import org.bohdanzhuvak.nicoai.dto.PromptRequest;
+import org.bohdanzhuvak.nicoai.security.CurrentUser;
 import org.bohdanzhuvak.nicoai.service.ImageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,7 +49,7 @@ public class ImagesController {
 
   @PutMapping(value = "{id}")
   @ResponseStatus(HttpStatus.OK)
-  public void upvoteImage(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetails user,
+  public void upvoteImage(@PathVariable("id") Long id, @CurrentUser UserDetails user,
       @RequestBody InteractionImageRequest interactionImageRequest) {
     imageService.changeImage(id, user, interactionImageRequest);
   }
@@ -57,7 +57,7 @@ public class ImagesController {
   @PostMapping
   @ResponseStatus(HttpStatus.OK)
   public GenerateResponse generateImage(@ModelAttribute PromptRequest promptRequest,
-      @AuthenticationPrincipal UserDetails user) {
+      @CurrentUser UserDetails user) {
     return imageService.generateImage(promptRequest, user);
   }
 }
