@@ -2,7 +2,6 @@ package org.bohdanzhuvak.nicoai.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -24,43 +23,48 @@ import static java.util.stream.Collectors.toList;
 @AllArgsConstructor
 @NoArgsConstructor
 public class User implements UserDetails {
-    @Id
-    @GeneratedValue
-    private Long Id;
-    @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "author")
-    private List<Image> images;
-    private String username;
-    private String password;
+  @Id
+  @GeneratedValue
+  private Long Id;
+  @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "author")
+  private List<Image> images;
+  private String username;
+  private String password;
 
-    @ManyToMany(mappedBy = "likes")
-    private List<Image> likes;
+  @ManyToMany(mappedBy = "likes")
+  private List<Image> likes;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @Builder.Default
-    private List<String> roles = new ArrayList<>();
+  @ElementCollection(fetch = FetchType.EAGER)
+  @Builder.Default
+  private List<String> roles = new ArrayList<>();
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles.stream().map(SimpleGrantedAuthority::new).collect(toList());
-    }
-    @Override
-    public String getUsername() {
-        return this.username;
-    }
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return this.roles.stream().map(SimpleGrantedAuthority::new).collect(toList());
+  }
+
+  @Override
+  public String getUsername() {
+    return this.username;
+  }
+
+  @Override
+  public boolean isAccountNonExpired() {
+    return true;
+  }
+
+  @Override
+  public boolean isAccountNonLocked() {
+    return true;
+  }
+
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return true;
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return true;
+  }
 }

@@ -52,7 +52,8 @@ public class AuthenticationService {
         .roles(Arrays.asList("ROLE_USER")).build());
   }
 
-  public User getCurrentUser(UserDetails userDetails) {
-    return userRepository.findByUsername(userDetails.getUsername()).get();
+  public UserDto getCurrentUser(UserDetails userDetails) {
+    User user = userRepository.findByUsername(userDetails.getUsername()).get();
+    return UserDto.builder().Id(user.getId()).username(user.getUsername()).roles(user.getRoles()).build();
   }
 }

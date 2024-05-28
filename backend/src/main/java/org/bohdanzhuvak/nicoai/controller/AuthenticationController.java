@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.bohdanzhuvak.nicoai.dto.AuthenticationRequest;
 import org.bohdanzhuvak.nicoai.dto.AuthenticationResponse;
 import org.bohdanzhuvak.nicoai.dto.RegistrationRequest;
+import org.bohdanzhuvak.nicoai.dto.UserDto;
 import org.bohdanzhuvak.nicoai.service.AuthenticationService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,7 +36,7 @@ public class AuthenticationController {
   }
 
   @GetMapping("/me")
-  public String getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
-    return getCurrentUser(userDetails);
+  public UserDto getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
+    return authenticationService.getCurrentUser(userDetails);
   }
 }
