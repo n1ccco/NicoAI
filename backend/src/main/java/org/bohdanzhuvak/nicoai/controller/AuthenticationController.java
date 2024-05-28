@@ -36,6 +36,6 @@ public class AuthenticationController {
 
   @GetMapping("/me")
   public String getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
-    return userDetails.getUsername();
+    return getCurrentUser(userDetails);
   }
 }

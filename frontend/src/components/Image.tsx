@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { IMAGES } from '../constants/routeContants.ts'
 import { Photo } from '@/types/api.ts'
 import LikeButton from '@/components/ui/LikeButton.tsx' // Adjust the import path if necessary
-import { likeImage } from '@/services/ImageProvider.ts' // Ensure this is imported here
+import { likeImage } from '@/services/ImageService.ts' // Ensure this is imported here
 
 interface ImageProps {
   photo: Photo

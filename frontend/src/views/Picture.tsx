@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth.ts'
 import Toggle from '@/components/ui/Toggle.tsx'
-import { changeImagePrivacy, getImage } from '@/services/ImageProvider.ts'
+import { changeImagePrivacy, getImage } from '@/services/ImageService'
 import { Photo } from '@/types/api.ts'
 
 const Picture = () => {

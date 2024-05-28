@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { IMAGES } from '@/constants/routeContants'
-import { postImageData } from '@/services/ImageProvider'
+import { postImageData } from '@/services/ImageService'
 import { PromptInput } from '@/types/formData'
 
 const InputField = ({

@@ -71,6 +71,13 @@ public class ImageService {
         .collect(Collectors.toList());
   }
 
+  public List<ImageResponse> getAllImages() {
+    List<Image> images = imageRepository.findByIsPublic(true);
+    return images.stream()
+        .map(image -> toImageResponse(image))
+        .collect(Collectors.toList());
+  }
+
   private ImageResponse toImageResponse(Image image, UserDetails userDetails) {
     String filePath = image.getImageData().getPath();
     byte[] images;
@@ -97,6 +104,28 @@ public class ImageService {
     }
     Image image = optionalImage.get();
     return buildImageResponse(image, userDetails);
+  }
+
+  public ImageResponse getImage(Long id) {
+    Optional<Image> optionalImage = imageRepository.findById(id);
+    if (!optionalImage.isPresent()) {
+      return ImageResponse.builder().build();
+    }
+    Image image = optionalImage.get();
+    String filePath = image.getImageData().getPath();
+    byte[] images;
+    try {
+      images = Files.readAllBytes(new File(filePath).toPath());
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+    return ImageResponse.builder()
+        .id(image.getId())
+        .description(image.getPrompt())
+        .authorId(image.getAuthor().getId())
+        .isPublic(image.isPublic())
+        .imageData(images)
+        .build();
   }
 
   private ImageResponse buildImageResponse(Image image, UserDetails userDetails) {

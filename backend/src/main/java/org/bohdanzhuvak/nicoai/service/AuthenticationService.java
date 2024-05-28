@@ -13,6 +13,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -41,7 +42,6 @@ public class AuthenticationService {
     }
   }
 
-
   public void signup(RegistrationRequest registrationRequest) {
     if (userRepository.existsByUsername(registrationRequest.getUsername())) {
       throw new IllegalArgumentException("Username is already taken");
@@ -52,4 +52,7 @@ public class AuthenticationService {
         .roles(Arrays.asList("ROLE_USER")).build());
   }
 
+  public User getCurrentUser(UserDetails userDetails) {
+    return userRepository.findByUsername(userDetails.getUsername()).get();
+  }
 }
