@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
 import { IMAGES } from '../constants/routeContants.ts'
 import { Photo } from '@/types/api.ts'
+import LikeButton from '@/components/ui/LikeButton.tsx' // Adjust the import path if necessary
+import { likeImage } from '@/services/ImageProvider.ts' // Ensure this is imported here
 
 interface ImageProps {
   photo: Photo
@@ -17,9 +19,11 @@ function Image({ photo }: ImageProps) {
         />
       </Link>
       <div className="flex items-center justify-between">
-        <button className="rounded-lg bg-blue-500 px-4 py-2 text-white">
-          Like
-        </button>
+        <LikeButton
+          initialLiked={photo.isLiked}
+          photoId={photo.id}
+          likeImage={likeImage}
+        />
         <button className="rounded-lg bg-gray-700 px-4 py-2 text-white">
           Comment
         </button>

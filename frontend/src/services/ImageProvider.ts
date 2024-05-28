@@ -53,3 +53,15 @@ export async function changeImagePrivacy(
     console.error('Error fetching data:', error)
   }
 }
+
+export async function likeImage(id: number, likePayload: { like: boolean }) {
+  try {
+    if (likePayload.like) {
+      await axiosInstance.put(`${IMAGES}/${id}`, { action: 'like' })
+    } else {
+      await axiosInstance.put(`${IMAGES}/${id}`, { action: 'dislike' })
+    }
+  } catch (error) {
+    console.error('Error fetching data:', error)
+  }
+}

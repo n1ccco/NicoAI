@@ -12,10 +12,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ImageResponse {
-    private Long id;
-    private String description;
-    @JsonProperty(value = "isPublic")
-    private boolean isPublic;
-    private Long authorId;
-    private byte[] imageData;
+  private Long id;
+  private String description;
+  @JsonProperty(value = "isPublic")
+  private boolean isPublic;
+  @JsonProperty(value = "isLiked")
+  private boolean isLiked;
+  private Long authorId;
+  private byte[] imageData;
 }

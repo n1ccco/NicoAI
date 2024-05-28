@@ -9,6 +9,7 @@ export type Entity<T> = {
 export type Photo = Entity<{
   description: string
   isPublic: boolean
+  isLiked: boolean
   authorId: number
   imageData: string
 }>
