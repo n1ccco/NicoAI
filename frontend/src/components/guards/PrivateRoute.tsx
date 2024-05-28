@@ -6,6 +6,6 @@ export const PrivateRoute = () => {
   const {
     state: { type },
   } = useAuth()
-  if (type === 'authenticated') return <Navigate to={SIGNIN} />
+  if (type === 'not-authenticated') return <Navigate to={SIGNIN} />
   return <Outlet />
 }
