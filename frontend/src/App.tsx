@@ -26,7 +26,6 @@ import UserImages from '@/views/UserImages.tsx'
 import Gallery from '@/views/Gallery.tsx'
 import { PrivateRoute } from './components/guards/PrivateRoute'
 
-
 function App() {
   return (
     <BrowserRouter>

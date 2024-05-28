@@ -3,8 +3,6 @@ import { API_BASEURL, API_TIMEOUT } from '@/constants/apiConstants.ts'
 import { useNavigate } from 'react-router-dom'
 import { SIGNIN } from '@/constants/routeContants'
 
-
-
 const axiosInstance = axios.create({
   baseURL: API_BASEURL,
   timeout: API_TIMEOUT,
@@ -13,8 +11,6 @@ const axiosInstance = axios.create({
     Accept: 'application/json',
   },
 })
-
-
 
 //Why we need bose middleware and local?
 axiosInstance.interceptors.request.use(

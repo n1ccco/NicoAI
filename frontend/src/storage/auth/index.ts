@@ -1,5 +1,4 @@
-import { TokenManagementEntity } from "./tokenEntity";
-import { UserManagementEntity } from "./userEntity";
+import { TokenManagementEntity } from './tokenEntity'
+import { UserManagementEntity } from './userEntity'
 
-
-export {TokenManagementEntity, UserManagementEntity};
+export { TokenManagementEntity, UserManagementEntity }

@@ -15,25 +15,22 @@ function Signup() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (
-        input.username !== '' &&
-        input.password !== '' &&
-        input.password === input.confirmPassword
-      ) {
-        const { confirmPassword, ...model } = input;
+      input.username !== '' &&
+      input.password !== '' &&
+      input.password === input.confirmPassword
+    ) {
+      const { confirmPassword, ...model } = input
 
-        registerEffect(model).then(res => {
-          if(res.type === "success"){
-            navigate(`/${SIGNIN}`);
-          }
-          else{
-            setError(res.state.error)
-          }
-        });
-
-      } else {
-        setError('Input correct data')
-      }
-   
+      registerEffect(model).then((res) => {
+        if (res.type === 'success') {
+          navigate(`/${SIGNIN}`)
+        } else {
+          setError(res.state.error)
+        }
+      })
+    } else {
+      setError('Input correct data')
+    }
   }
 
   const handleInput = (e: ChangeEvent<HTMLInputElement>) => {

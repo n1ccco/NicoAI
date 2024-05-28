@@ -4,7 +4,7 @@ import { IMAGES, USERS } from '@/constants/routeContants'
 import { User } from '@/types/api'
 
 type UserDropdownProps = {
-  user: User,
+  user: User
   logout: () => void
 }
 

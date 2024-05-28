@@ -6,7 +6,9 @@ import { SigninInput } from '@/types/formData'
 import { loginEffect } from '@/api/efects/auth/authEffects'
 
 const Signin = () => {
-  const {actions: {postSignin}} = useAuth()
+  const {
+    actions: { postSignin },
+  } = useAuth()
 
   const navigate = useNavigate()
   const [input, setInput] = useState<SigninInput>({
@@ -18,16 +20,15 @@ const Signin = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if(!!input.username && !!input.password){
-      loginEffect(input).then(res => {
-        if(res.type === "success"){
-         postSignin(res.state);
-         navigate(`/${GALLERY}`);
-        }
-        else{
+    if (!!input.username && !!input.password) {
+      loginEffect(input).then((res) => {
+        if (res.type === 'success') {
+          postSignin(res.state)
+          navigate(`/${GALLERY}`)
+        } else {
           setError(res.state.error)
         }
-      });
+      })
     }
   }
 

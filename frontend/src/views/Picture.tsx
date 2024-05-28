@@ -9,8 +9,7 @@ import { SIGNIN } from '@/constants/routeContants'
 const Picture = () => {
   const { id } = useParams<{ id: string }>()
   const [photo, setPhoto] = useState<Photo>()
-  const { state: authStateType} = useAuth()
-
+  const { state: authStateType } = useAuth()
 
   useEffect(() => {
     const fetchImage = async () => {
@@ -45,11 +44,11 @@ const Picture = () => {
     }
   }
 
-  if(authStateType.type === "not-authenticated"){
-    return <Navigate to={SIGNIN}/>
+  if (authStateType.type === 'not-authenticated') {
+    return <Navigate to={SIGNIN} />
   }
 
-  const userId = authStateType.state.user.id;
+  const userId = authStateType.state.user.id
   return (
     <div>
       {photo && (
