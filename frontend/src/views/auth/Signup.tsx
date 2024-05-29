@@ -1,7 +1,7 @@
 import { ChangeEvent, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { SIGNIN } from '@/constants/routeContants'
-import { registerEffect } from '@/api/efects/auth/authEffects'
+import { registerEffect } from '@/api/effects/auth/authEffects'
 
 function Signup() {
   const [input, setInput] = useState({

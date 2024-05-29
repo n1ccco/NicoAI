@@ -5,7 +5,7 @@ import AuthContext, {
 } from '@/context/AuthContext'
 import { useState } from 'react'
 import { UserManagementEntity, TokenManagementEntity } from '@/storage/auth'
-import { SigninResult } from '@/api/efects/auth/authEffects'
+import { SigninResult } from '@/api/effects/auth/authEffects'
 import { AUTH_TOKEN_NULL_VALUE } from '@/constants/authConstants'
 
 const selectAuthStateFromStorage: () => AuthState = () => {

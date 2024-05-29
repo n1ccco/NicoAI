@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { GALLERY, SIGNUP } from '@/constants/routeContants'
 import { SigninInput } from '@/types/formData'
-import { loginEffect } from '@/api/efects/auth/authEffects'
+import { loginEffect } from '@/api/effects/auth/authEffects'
 
 const Signin = () => {
   const {
