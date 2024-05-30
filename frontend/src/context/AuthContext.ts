@@ -1,6 +1,5 @@
 import { SigninResult } from '@/api/effects/auth/authEffects'
 import { User } from '@/types/api'
-import { SigninInput, SignupInput } from '@/types/formData'
 import { StateDescriptor } from '@/utils/types/state'
 import { createContext } from 'react'
 

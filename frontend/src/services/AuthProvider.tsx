@@ -1,12 +1,10 @@
-import AuthContext, {
-  AuthActions,
-  AuthContextType,
-  AuthState,
-} from '@/context/AuthContext'
+import AuthContext, { AuthState } from '@/context/AuthContext'
 import { useState } from 'react'
 import { UserManagementEntity, TokenManagementEntity } from '@/storage/auth'
 import { SigninResult } from '@/api/effects/auth/authEffects'
 import { AUTH_TOKEN_NULL_VALUE } from '@/constants/authConstants'
+import { AxiosInstance } from 'axios'
+import { axiosInstance } from '@/api/axios'
 
 const selectAuthStateFromStorage: () => AuthState = () => {
   const token = TokenManagementEntity.selector()
@@ -32,7 +30,15 @@ type AuthProviderProps = {
 }
 
 function AuthProvider({ children }: AuthProviderProps) {
-  const [authState, setAuthState] = useState(() => selectAuthStateFromStorage())
+  const [authState, setAuthState] = useState<AuthState>(() =>
+    selectAuthStateFromStorage()
+  )
+  if (authState.type === 'authenticated') {
+    applyAuthorizationToAxios(authState.state.token, axiosInstance)
+  } else {
+    applyAuthorizationToAxios(null, axiosInstance)
+  }
+
   const postSignin = (signinResult: SigninResult) => {
     //Storage patches
     TokenManagementEntity.patcher(signinResult.token)
@@ -48,6 +54,7 @@ function AuthProvider({ children }: AuthProviderProps) {
       },
     })
     //End of state patched
+    applyAuthorizationToAxios(signinResult.token, axiosInstance)
   }
 
   const postLogout = () => {
@@ -62,6 +69,7 @@ function AuthProvider({ children }: AuthProviderProps) {
       state: {},
     })
     //End of state patchhed
+    applyAuthorizationToAxios(null, axiosInstance)
   }
 
   const authContextValue = {
@@ -77,6 +85,17 @@ function AuthProvider({ children }: AuthProviderProps) {
       {children}
     </AuthContext.Provider>
   )
+}
+
+const applyAuthorizationToAxios = (
+  token: string | null,
+  axiosInstance: AxiosInstance
+): void => {
+  if (token === null) {
+    delete axiosInstance.defaults.headers.common['Authorization']
+  } else {
+    axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`
+  }
 }
 
 export default AuthProvider

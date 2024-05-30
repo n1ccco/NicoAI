@@ -39,6 +39,17 @@ export async function getImage(id: number): Promise<Photo | undefined> {
   }
 }
 
+export async function getAllImages(): Promise<Photo[]> {
+  try {
+    const response = await axiosInstance.get(`${IMAGES}`)
+    const photos: Photo[] = response.data
+    return photos
+  } catch (error) {
+    console.error('Error fetching data:', error)
+    return []
+  }
+}
+
 export async function changeImagePrivacy(
   id: number,
   privacyPayload: { isPublic: boolean }

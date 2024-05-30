@@ -1,23 +1,22 @@
 import { useState, useEffect } from 'react'
-import { axiosInstance } from '@/api/axios.ts'
-import { IMAGES } from '@/constants/apiConstants.ts'
 import Image from '@/components/Image.tsx'
 import { Photo } from '@/types/api.ts'
+import { getAllImages } from '@/services/ImageService'
 
 const Gallery = () => {
   const [photos, setPhotos] = useState<Photo[]>([])
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchImages = async () => {
       try {
-        const response = await axiosInstance.get(`${IMAGES}`)
-        setPhotos(response.data)
+        const photos = await getAllImages()
+        setPhotos(photos)
       } catch (error) {
-        console.error('Error fetching data:', error)
+        console.error('Error fetching images:', error)
       }
     }
 
-    fetchData()
+    fetchImages()
   }, [])
 
   return (

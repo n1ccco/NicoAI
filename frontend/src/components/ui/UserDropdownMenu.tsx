@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { IMAGES, USERS } from '@/constants/routeContants'
+import { Link, useNavigate } from 'react-router-dom'
+import { GALLERY, IMAGES, USERS } from '@/constants/routeContants'
 import { User } from '@/types/api'
 
 type UserDropdownProps = {
@@ -11,6 +11,7 @@ type UserDropdownProps = {
 function UserDropdownMenu({ user, logout }: UserDropdownProps) {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -35,6 +36,7 @@ function UserDropdownMenu({ user, logout }: UserDropdownProps) {
   const handleLogout = () => {
     logout()
     setIsOpen(false) // Close the dropdown after logout
+    navigate(`/${GALLERY}`)
   }
 
   return (
