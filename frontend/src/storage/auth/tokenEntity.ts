@@ -20,5 +20,5 @@ export const TokenManagementEntity: StorageManagementEntity<
   key: AUTH_TOKEN_FIELD,
   selector: selectTokenFromStorage,
   patcher: patchTokenToStorage,
-  clear: () => clearAuthToken,
+  clear: clearAuthToken,
 }
