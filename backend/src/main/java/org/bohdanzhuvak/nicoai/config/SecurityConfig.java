@@ -17,7 +17,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
@@ -39,6 +38,7 @@ public class SecurityConfig {
             .requestMatchers("/api/auth/signup").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/images/**").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/images").hasRole("USER")
+            .requestMatchers(HttpMethod.GET, "/api/images/*/comments").permitAll()
             .requestMatchers("/swagger-ui/**").permitAll()
             .requestMatchers("/v3/api-docs/**").permitAll()
             .anyRequest().authenticated())

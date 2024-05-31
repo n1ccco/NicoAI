@@ -6,7 +6,6 @@ import org.bohdanzhuvak.nicoai.dto.AuthenticationRequest;
 import org.bohdanzhuvak.nicoai.dto.AuthenticationResponse;
 import org.bohdanzhuvak.nicoai.dto.RegistrationRequest;
 import org.bohdanzhuvak.nicoai.dto.UserDto;
-import org.bohdanzhuvak.nicoai.model.User;
 import org.bohdanzhuvak.nicoai.security.CurrentUser;
 import org.bohdanzhuvak.nicoai.service.AuthenticationService;
 import org.springframework.security.core.userdetails.UserDetails;

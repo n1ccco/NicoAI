@@ -23,7 +23,9 @@ export type AuthResponse = {
   user: User
 }
 
-export type Comment = Entity<{
+export type CommentData = Entity<{
+  authorId: number
   body: string
-  author: User
+  authorName: string
+  createdAt: number
 }>

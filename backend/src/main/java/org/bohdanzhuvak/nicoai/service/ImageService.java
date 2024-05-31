@@ -47,7 +47,7 @@ public class ImageService {
 
   public GenerateResponse generateImage(PromptRequest promptRequest, UserDetails authorDetails) {
     RestTemplate restTemplate = new RestTemplate();
-    String uri = UriComponentsBuilder.fromHttpUrl("http://generator:5000")
+    String uri = UriComponentsBuilder.fromHttpUrl("https://ccd2-35-197-138-44.ngrok-free.app/")
         .pathSegment("generate")
         .queryParam("prompt", promptRequest.getPrompt())
         .queryParam("negativePrompt", promptRequest.getNegativePrompt())
