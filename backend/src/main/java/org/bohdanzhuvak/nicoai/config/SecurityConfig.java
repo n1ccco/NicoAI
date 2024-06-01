@@ -12,6 +12,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -30,6 +31,7 @@ public class SecurityConfig {
       JwtTokenProvider tokenProvider) throws Exception {
     return http
         .httpBasic(AbstractHttpConfigurer::disable)
+        .cors(Customizer.withDefaults())
         .csrf(AbstractHttpConfigurer::disable)
         .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .exceptionHandling(c -> c.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))

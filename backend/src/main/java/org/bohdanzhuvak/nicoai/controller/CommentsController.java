@@ -4,7 +4,6 @@ import org.bohdanzhuvak.nicoai.security.CurrentUser;
 import org.bohdanzhuvak.nicoai.service.CommentsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000/")
 @RequestMapping("/api/comments")
 public class CommentsController {
   private final CommentsService commentsService;

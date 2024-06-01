@@ -8,7 +8,6 @@ import org.bohdanzhuvak.nicoai.security.CurrentUser;
 import org.bohdanzhuvak.nicoai.service.ImageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000/")
 @RequestMapping("/api/users")
 public class UsersController {
   private final ImageService imageService;
