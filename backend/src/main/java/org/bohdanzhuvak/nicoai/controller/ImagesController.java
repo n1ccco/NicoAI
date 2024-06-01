@@ -2,11 +2,14 @@ package org.bohdanzhuvak.nicoai.controller;
 
 import lombok.RequiredArgsConstructor;
 
+import org.bohdanzhuvak.nicoai.dto.CommentRequest;
+import org.bohdanzhuvak.nicoai.dto.CommentResponse;
 import org.bohdanzhuvak.nicoai.dto.GenerateResponse;
 import org.bohdanzhuvak.nicoai.dto.ImageResponse;
 import org.bohdanzhuvak.nicoai.dto.InteractionImageRequest;
 import org.bohdanzhuvak.nicoai.dto.PromptRequest;
 import org.bohdanzhuvak.nicoai.security.CurrentUser;
+import org.bohdanzhuvak.nicoai.service.CommentsService;
 import org.bohdanzhuvak.nicoai.service.ImageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -21,6 +24,7 @@ import java.util.List;
 @RequestMapping("/api/images")
 public class ImagesController {
   private final ImageService imageService;
+  private final CommentsService commentsService;
 
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
@@ -59,5 +63,18 @@ public class ImagesController {
   public GenerateResponse generateImage(@ModelAttribute PromptRequest promptRequest,
       @CurrentUser UserDetails user) {
     return imageService.generateImage(promptRequest, user);
+  }
+
+  @GetMapping("{id}/comments")
+  @ResponseStatus(HttpStatus.OK)
+  public List<CommentResponse> getComments(@PathVariable("id") Long id) {
+    return commentsService.getComments(id);
+  }
+
+  @PostMapping(value = "{id}/comments")
+  @ResponseStatus(HttpStatus.OK)
+  public void postComment(@CurrentUser UserDetails userDetails,
+      @RequestBody CommentRequest commentRequest, @PathVariable("id") Long id) {
+    commentsService.postComment(commentRequest, userDetails, id);
   }
 }

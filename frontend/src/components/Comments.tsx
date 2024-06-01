@@ -1,15 +1,14 @@
-import { getCommentsEffect, postCommentEffect } from '@/api/effects/comments'
+import {
+  deleteCommentEffect,
+  getCommentsEffect,
+  postCommentEffect,
+} from '@/api/effects/comments'
 import { CommentData, User } from '@/types/api'
 import React, { useState, useEffect } from 'react'
 
 interface CommentsProps {
   photoId: number
   user: User
-}
-
-const deleteComment = async (commentId: number): Promise<void> => {
-  // Replace this with your actual API call
-  console.log(`Deleted comment with ID: ${commentId}`)
 }
 
 const Comments: React.FC<CommentsProps> = ({ photoId, user }) => {
@@ -47,8 +46,13 @@ const Comments: React.FC<CommentsProps> = ({ photoId, user }) => {
   }
 
   const handleDeleteComment = async (commentId: number) => {
-    await deleteComment(commentId)
-    setComments(comments.filter((comment) => comment.id !== commentId))
+    deleteCommentEffect(commentId).then((res) => {
+      if (res.type === 'success') {
+        setComments(comments.filter((comment) => comment.id !== commentId))
+      } else {
+        console.error(res.state.error)
+      }
+    })
   }
 
   const formatDate = (dateString: number) => {
