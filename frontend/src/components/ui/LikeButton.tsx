@@ -1,17 +1,23 @@
+import { likeImageEffect } from '@/api/effects/images'
 import { useState } from 'react'
 
-interface LikeButtonProps {
+type LikeButtonProps = {
   initialLiked: boolean
   photoId: number
-  likeImage: (id: number, likePayload: { like: boolean }) => Promise<void>
+  // likeImage: (id: number, likePayload: { like: boolean }) => Promise<void>
 }
 
-function LikeButton({ initialLiked, photoId, likeImage }: LikeButtonProps) {
+function LikeButton({ initialLiked, photoId }: LikeButtonProps) {
   const [liked, setLiked] = useState(initialLiked)
 
   const handleLike = async () => {
-    setLiked(!liked)
-    await likeImage(photoId, { like: !liked })
+    likeImageEffect(photoId, { like: !liked }).then((res) => {
+      if (res.type === 'success') {
+        setLiked(!liked)
+      } else {
+        console.error(res.state.error)
+      }
+    })
   }
 
   return (

@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react'
 import { Navigate, useParams } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth.ts'
 import Toggle from '@/components/ui/Toggle.tsx'
-import { changeImagePrivacy, getImage } from '@/services/ImageService'
 import { Photo } from '@/types/api.ts'
 import { SIGNIN } from '@/constants/routeContants'
 import Comments from '@/components/Comments'
+import { changeImagePrivacyEffect, getImageEffect } from '@/api/effects/images'
 
 const Picture = () => {
   const { id } = useParams<{ id: string }>()
@@ -13,35 +13,31 @@ const Picture = () => {
   const { state: authStateType } = useAuth()
 
   useEffect(() => {
-    const fetchImage = async () => {
-      try {
-        const photo = await getImage(Number(id))
+    getImageEffect(Number(id)).then((res) => {
+      if (res.type === 'success') {
+        const photo = res.state.photo
         setPhoto(photo)
-      } catch (error) {
-        console.error('Error generating image:', error)
+      } else {
+        console.error(res.state.error)
       }
-    }
-
-    fetchImage()
+    })
   }, [id])
 
   const handleToggle = async () => {
     if (photo) {
-      try {
-        // Toggle the isPublic state and update the server
-        await changeImagePrivacy(Number(id), {
-          isPublic: !photo.isPublic,
-        })
-
-        // Update the local state with the new isPublic value
-        setPhoto((prevPhoto) =>
-          prevPhoto
-            ? { ...prevPhoto, isPublic: !prevPhoto.isPublic }
-            : prevPhoto
-        )
-      } catch (error) {
-        console.error('Error updating photo privacy:', error)
-      }
+      changeImagePrivacyEffect(Number(id), { isPublic: !photo.isPublic }).then(
+        (res) => {
+          if (res.type === 'success') {
+            setPhoto((prevPhoto) =>
+              prevPhoto
+                ? { ...prevPhoto, isPublic: !prevPhoto.isPublic }
+                : prevPhoto
+            )
+          } else {
+            console.error(res.state.error)
+          }
+        }
+      )
     }
   }
 

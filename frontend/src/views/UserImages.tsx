@@ -1,26 +1,22 @@
 import { useState, useEffect } from 'react'
-import { axiosInstance } from '@/api/axios.ts'
-import { IMAGES, USERS } from '@/constants/apiConstants.ts'
 import Image from '@/components/Image.tsx'
 import { useParams } from 'react-router-dom'
 import { Photo } from '@/types/api.ts'
+import { getUserImagesEffect } from '@/api/effects/user'
 
 const UserImages = () => {
   const { id } = useParams<{ id: string }>()
   const [photos, setPhotos] = useState<Photo[]>([])
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axiosInstance.get(`${USERS}/${id}/${IMAGES}`)
-        setPhotos(response.data)
-      } catch (error) {
-        console.error('Error fetching data:', error)
+    getUserImagesEffect(Number(id)).then((res) => {
+      if (res.type === 'success') {
+        setPhotos(res.state.images)
+      } else {
+        console.error(res.state.error)
       }
-    }
-
-    fetchData()
-  }, [])
+    })
+  }, [id])
 
   return (
     <div className="container mx-auto">

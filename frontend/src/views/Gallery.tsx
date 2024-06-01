@@ -1,22 +1,19 @@
 import { useState, useEffect } from 'react'
 import Image from '@/components/Image.tsx'
 import { Photo } from '@/types/api.ts'
-import { getAllImages } from '@/services/ImageService'
+import { getAllImagesEffect } from '@/api/effects/images'
 
 const Gallery = () => {
   const [photos, setPhotos] = useState<Photo[]>([])
 
   useEffect(() => {
-    const fetchImages = async () => {
-      try {
-        const photos = await getAllImages()
-        setPhotos(photos)
-      } catch (error) {
-        console.error('Error fetching images:', error)
+    getAllImagesEffect().then((res) => {
+      if (res.type === 'success') {
+        setPhotos(res.state.photos)
+      } else {
+        console.error(res.state.error)
       }
-    }
-
-    fetchImages()
+    })
   }, [])
 
   return (

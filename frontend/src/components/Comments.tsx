@@ -1,32 +1,10 @@
-import { getComments, postComment } from '@/services/CommentService'
+import { getCommentsEffect, postCommentEffect } from '@/api/effects/comments'
 import { CommentData, User } from '@/types/api'
 import React, { useState, useEffect } from 'react'
 
 interface CommentsProps {
   photoId: number
   user: User
-}
-
-const fetchComments = async (photoId: number): Promise<CommentData[]> => {
-  // Replace this with your actual API call
-  return await getComments(photoId)
-}
-
-const postCommentHandler = async (
-  photoId: number,
-  userId: number,
-  text: string,
-  authorName: string
-): Promise<CommentData> => {
-  // Replace this with your actual API call
-  await postComment(photoId, text)
-  return {
-    id: new Date().getTime(),
-    authorId: userId,
-    authorName,
-    body: text,
-    createdAt: new Date().getTime(),
-  }
 }
 
 const deleteComment = async (commentId: number): Promise<void> => {
@@ -36,27 +14,36 @@ const deleteComment = async (commentId: number): Promise<void> => {
 
 const Comments: React.FC<CommentsProps> = ({ photoId, user }) => {
   const [comments, setComments] = useState<CommentData[]>([])
-  const [newComment, setNewComment] = useState('')
+  const [newComment, setNewComment] = useState<string>('')
 
   useEffect(() => {
-    const loadComments = async () => {
-      const loadedComments = await fetchComments(photoId)
-      setComments(loadedComments)
-    }
-
-    loadComments()
+    getCommentsEffect(photoId).then((res) => {
+      if (res.type === 'success') {
+        setComments(res.state.comments)
+      } else {
+        console.error(res.state.error)
+      }
+    })
   }, [photoId])
 
   const handleAddComment = async () => {
     if (!newComment.trim()) return
-    const comment = await postCommentHandler(
-      photoId,
-      user.id,
-      newComment,
-      user.username
-    )
-    setComments([...comments, comment])
-    setNewComment('')
+
+    postCommentEffect(photoId, newComment).then((res) => {
+      if (res.type === 'success') {
+        const comment: CommentData = {
+          id: new Date().getTime(),
+          authorId: user.id,
+          authorName: user.username,
+          body: newComment,
+          createdAt: new Date().getTime(),
+        }
+        setComments([...comments, comment])
+        setNewComment('')
+      } else {
+        console.error(res.state.error)
+      }
+    })
   }
 
   const handleDeleteComment = async (commentId: number) => {

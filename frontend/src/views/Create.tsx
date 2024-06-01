@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { IMAGES } from '@/constants/routeContants'
-import { postImageData } from '@/services/ImageService'
 import { PromptInput } from '@/types/formData'
+import { postImageDataEffect } from '@/api/effects/images'
 
 const InputField = ({
   label,
@@ -44,14 +44,19 @@ const Create = () => {
 
   const handleSubmit = async () => {
     setLoading(true)
-    try {
-      const imageId = await postImageData(promptData)
-      navigate(`/${IMAGES}/${imageId}`)
-    } catch (error) {
-      console.error('Error generating image:', error)
-    } finally {
-      setLoading(false)
-    }
+    postImageDataEffect(promptData)
+      .then((res) => {
+        if (res.type === 'success') {
+          const imageId = res.state.imageId
+          console.log(imageId)
+          navigate(`/${IMAGES}/${imageId}`)
+        } else {
+          console.error(res.state.error)
+        }
+      })
+      .finally(() => {
+        setLoading(false)
+      })
   }
 
   return (
