@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.bohdanzhuvak.nicoai.config.ImageGeneratorProperties;
 import org.bohdanzhuvak.nicoai.dto.ChangeImagePrivacyRequest;
 import org.bohdanzhuvak.nicoai.dto.CustomMultipartFile;
 import org.bohdanzhuvak.nicoai.dto.GenerateResponse;
@@ -33,6 +34,7 @@ import lombok.RequiredArgsConstructor;
 public class ImageService {
   private final ImageRepository imageRepository;
   private final UserRepository userRepository;
+  private final ImageGeneratorProperties imageGeneratorProperties;
   private final String FOLDER_PATH = "/images/";
 
   private GenerateResponse createImage(ImageRequest imageRequest) {
@@ -47,7 +49,7 @@ public class ImageService {
 
   public GenerateResponse generateImage(PromptRequest promptRequest, UserDetails authorDetails) {
     RestTemplate restTemplate = new RestTemplate();
-    String uri = UriComponentsBuilder.fromHttpUrl("https://ccd2-35-197-138-44.ngrok-free.app/")
+    String uri = UriComponentsBuilder.fromHttpUrl(imageGeneratorProperties.getUrl())
         .pathSegment("generate")
         .queryParam("prompt", promptRequest.getPrompt())
         .queryParam("negativePrompt", promptRequest.getNegativePrompt())
