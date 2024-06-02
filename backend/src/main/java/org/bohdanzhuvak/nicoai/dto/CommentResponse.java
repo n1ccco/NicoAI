@@ -1,6 +1,6 @@
 package org.bohdanzhuvak.nicoai.dto;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,5 +16,5 @@ public class CommentResponse {
   private Long authorId;
   private String authorName;
   private String body;
-  private LocalDateTime createdAt;
+  private Instant createdAt;
 }

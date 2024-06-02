@@ -27,5 +27,5 @@ export type CommentData = Entity<{
   authorId: number
   body: string
   authorName: string
-  createdAt: number
+  createdAt: Date
 }>

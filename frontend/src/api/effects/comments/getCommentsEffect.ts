@@ -3,6 +3,14 @@ import { IMAGES } from '@/constants/apiConstants'
 import type { EffectResult } from '../types'
 import { CommentData } from '@/types/api'
 
+type CommentResponse = {
+  id: number
+  authorId: number
+  body: string
+  authorName: string
+  createdAt: string
+}
+
 type CommentsState = {
   comments: CommentData[]
 }
@@ -17,7 +25,12 @@ const getCommentsEffect: GetCommentsEffectType = async (imageId) => {
   return await axiosInstance
     .get(`${IMAGES}/${imageId}/comments`)
     .then((response): GetCommentsResult => {
-      const comments = response.data as CommentData[]
+      const comments: CommentData[] = (response.data as CommentResponse[]).map(
+        (comment) => ({
+          ...comment,
+          createdAt: new Date(comment.createdAt), // Преобразование строки в Date
+        })
+      )
       return {
         type: 'success',
         state: {

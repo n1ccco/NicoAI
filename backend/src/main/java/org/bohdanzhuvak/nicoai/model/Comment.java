@@ -1,6 +1,6 @@
 package org.bohdanzhuvak.nicoai.model;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -40,7 +40,7 @@ public class Comment {
 
   @Column(nullable = false, updatable = false)
   @CreationTimestamp
-  private LocalDateTime createdAt;
+  private Instant createdAt;
 
   // public Comment(User author, Image image, String body) {
   // this.author = author;

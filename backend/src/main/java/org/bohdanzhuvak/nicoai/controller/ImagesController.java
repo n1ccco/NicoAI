@@ -72,8 +72,8 @@ public class ImagesController {
 
   @PostMapping(value = "{id}/comments")
   @ResponseStatus(HttpStatus.OK)
-  public void postComment(@CurrentUser UserDetails userDetails,
+  public CommentResponse postComment(@CurrentUser UserDetails userDetails,
       @RequestBody CommentRequest commentRequest, @PathVariable("id") Long id) {
-    commentsService.postComment(commentRequest, userDetails, id);
+    return commentsService.postComment(commentRequest, userDetails, id);
   }
 }

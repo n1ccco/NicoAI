@@ -40,11 +40,11 @@ public class CommentsService {
         .collect(Collectors.toList());
   }
 
-  public void postComment(CommentRequest commentRequest, UserDetails userDetails, Long imageId) {
+  public CommentResponse postComment(CommentRequest commentRequest, UserDetails userDetails, Long imageId) {
     User user = userRepository.findByUsername(userDetails.getUsername());
     Image image = imageRepository.findById(imageId).get();
     if (user == null || image == null) {
-      return;
+      return null;
     }
     Comment comment = Comment.builder()
         .author(user)
@@ -52,6 +52,13 @@ public class CommentsService {
         .body(commentRequest.getBody())
         .build();
     commentRepository.save(comment);
+    return CommentResponse.builder()
+        .id(comment.getId())
+        .authorId(comment.getAuthor().getId())
+        .authorName(comment.getAuthor().getUsername())
+        .body(comment.getBody())
+        .createdAt(comment.getCreatedAt())
+        .build();
   }
 
   public void deleteComment(UserDetails userDetails, Long id) {

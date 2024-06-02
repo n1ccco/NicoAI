@@ -4,7 +4,8 @@ import {
   postCommentEffect,
 } from '@/api/effects/comments'
 import { CommentData, User } from '@/types/api'
-import React, { useState, useEffect } from 'react'
+import { toTimeAgo } from '@/utils/toTimeAgo'
+import React, { useState, useEffect, useRef } from 'react'
 
 interface CommentsProps {
   photoId: number
@@ -14,6 +15,15 @@ interface CommentsProps {
 const Comments: React.FC<CommentsProps> = ({ photoId, user }) => {
   const [comments, setComments] = useState<CommentData[]>([])
   const [newComment, setNewComment] = useState<string>('')
+
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    // Scroll to the bottom of the comments div after rendering
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+    }
+  }, [comments])
 
   useEffect(() => {
     getCommentsEffect(photoId).then((res) => {
@@ -30,14 +40,7 @@ const Comments: React.FC<CommentsProps> = ({ photoId, user }) => {
 
     postCommentEffect(photoId, newComment).then((res) => {
       if (res.type === 'success') {
-        const comment: CommentData = {
-          id: new Date().getTime(),
-          authorId: user.id,
-          authorName: user.username,
-          body: newComment,
-          createdAt: new Date().getTime(),
-        }
-        setComments([...comments, comment])
+        setComments([...comments, res.state.comment])
         setNewComment('')
       } else {
         console.error(res.state.error)
@@ -55,15 +58,10 @@ const Comments: React.FC<CommentsProps> = ({ photoId, user }) => {
     })
   }
 
-  const formatDate = (dateString: number) => {
-    const date = new Date(dateString)
-    return `${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`
-  }
-
   return (
-    <div className="comments-section mt-6 rounded-lg bg-gray-800 p-4 shadow">
+    <div className="comments-section rounded-lg bg-gray-800 p-4 shadow">
       <h3 className="text-lg font-semibold text-gray-200">Comments</h3>
-      <div className="mt-4 space-y-4">
+      <div ref={scrollRef} className="mt-4 max-h-96 space-y-4 overflow-y-auto">
         {comments.map((comment) => (
           <div
             key={comment.id}
@@ -74,7 +72,7 @@ const Comments: React.FC<CommentsProps> = ({ photoId, user }) => {
                 {comment.authorName}
               </h5>
               <span className="text-xs text-gray-500">
-                {formatDate(comment.createdAt)}
+                {toTimeAgo(comment.createdAt)}
               </span>
             </div>
             <p className="text-gray-700">{comment.body}</p>

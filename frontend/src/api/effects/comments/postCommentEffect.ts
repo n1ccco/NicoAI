@@ -1,25 +1,43 @@
 import { axiosInstance } from '@/api/axios'
 import { IMAGES } from '@/constants/apiConstants'
 import type { EffectResult } from '../types'
+import { CommentData } from '@/types/api'
 
-const StateEmpty = {}
+type CommentResponse = {
+  id: number
+  authorId: number
+  body: string
+  authorName: string
+  createdAt: string
+}
+
+type PostCommentState = {
+  comment: CommentData
+}
+
+type PostCommentResult = EffectResult<PostCommentState>
 
 type PostCommentEffectType = (
   imageId: number,
   body: string
-) => Promise<EffectResult>
+) => Promise<PostCommentResult>
 
 const PostCommentErrorMessage = 'Can not post a comment'
 
 const postCommentEffect: PostCommentEffectType = async (imageId, body) => {
   return await axiosInstance
     .post(`${IMAGES}/${imageId}/comments`, { body })
-    .then(
-      (_res): EffectResult => ({
+    .then((response): PostCommentResult => {
+      const comment: CommentData = {
+        ...(response.data as CommentResponse),
+        createdAt: new Date((response.data as CommentResponse).createdAt),
+      }
+
+      return {
         type: 'success',
-        state: StateEmpty,
-      })
-    )
+        state: { comment },
+      }
+    })
     .catch((err) => {
       console.error(err)
       return {
