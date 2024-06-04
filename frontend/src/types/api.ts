@@ -6,8 +6,17 @@ export type Entity<T> = {
   [K in keyof T]: T[K]
 } & BaseEntity
 
+export type PromptData = Entity<{
+  prompt: string
+  negativePrompt: string
+  height: number
+  width: number
+  numInterferenceSteps: number
+  guidanceScale: number
+}>
+
 export type Photo = Entity<{
-  description: string
+  promptData: PromptData
   isPublic: boolean
   isLiked: boolean
   authorId: number

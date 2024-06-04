@@ -21,4 +21,4 @@ cors:
     - "http://localhost:3000"
 api:
   image-generator:
-    url: "https://b4fa-34-136-49-160.ngrok-free.app"
+    url: "https://coral-relevant-cub.ngrok-free.app"

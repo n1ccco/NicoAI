@@ -6,6 +6,7 @@ import { Photo } from '@/types/api.ts'
 import { SIGNIN } from '@/constants/routeContants'
 import Comments from '@/components/Comments'
 import { changeImagePrivacyEffect, getImageEffect } from '@/api/effects/images'
+import PictureDetails from '@/components/PictureDetails'
 
 const Picture = () => {
   const { id } = useParams<{ id: string }>()
@@ -50,6 +51,7 @@ const Picture = () => {
     <div>
       {photo && (
         <div className="flex justify-between">
+          <PictureDetails image={photo} />
           <div className="mx-auto max-w-md overflow-hidden rounded-lg bg-gray-800 shadow-md">
             <div className="p-6">
               <h2 className="mb-2 text-xl font-semibold">Picture Details</h2>

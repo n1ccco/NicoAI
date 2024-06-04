@@ -41,10 +41,4 @@ public class Comment {
   @Column(nullable = false, updatable = false)
   @CreationTimestamp
   private Instant createdAt;
-
-  // public Comment(User author, Image image, String body) {
-  // this.author = author;
-  // this.image = image;
-  // this.body = body;
-  // }
 }

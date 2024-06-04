@@ -12,12 +12,12 @@ import org.bohdanzhuvak.nicoai.config.ImageGeneratorProperties;
 import org.bohdanzhuvak.nicoai.dto.ChangeImagePrivacyRequest;
 import org.bohdanzhuvak.nicoai.dto.CustomMultipartFile;
 import org.bohdanzhuvak.nicoai.dto.GenerateResponse;
-import org.bohdanzhuvak.nicoai.dto.ImageRequest;
 import org.bohdanzhuvak.nicoai.dto.ImageResponse;
 import org.bohdanzhuvak.nicoai.dto.InteractionImageRequest;
 import org.bohdanzhuvak.nicoai.dto.PromptRequest;
 import org.bohdanzhuvak.nicoai.model.Image;
 import org.bohdanzhuvak.nicoai.model.ImageData;
+import org.bohdanzhuvak.nicoai.model.PromptData;
 import org.bohdanzhuvak.nicoai.model.User;
 import org.bohdanzhuvak.nicoai.repository.ImageRepository;
 import org.bohdanzhuvak.nicoai.repository.UserRepository;
@@ -37,16 +37,6 @@ public class ImageService {
   private final ImageGeneratorProperties imageGeneratorProperties;
   private final String FOLDER_PATH = "/images/";
 
-  private GenerateResponse createImage(ImageRequest imageRequest) {
-    Long imageId = imageRepository.save(toImage(imageRequest)).getId();
-    try {
-      imageRequest.getImageFile().transferTo(new File(FOLDER_PATH + imageRequest.getImageFile().getName()));
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-    return new GenerateResponse(imageId);
-  }
-
   public GenerateResponse generateImage(PromptRequest promptRequest, UserDetails authorDetails) {
     RestTemplate restTemplate = new RestTemplate();
     String uri = UriComponentsBuilder.fromHttpUrl(imageGeneratorProperties.getUrl())
@@ -61,9 +51,35 @@ public class ImageService {
         .toUriString();
     byte[] imageBytes = restTemplate.getForObject(uri, byte[].class, promptRequest);
     MultipartFile multipartFile = new CustomMultipartFile(UUID.randomUUID() + ".png", imageBytes);
-
+    String filePath = FOLDER_PATH + multipartFile.getName();
+    try {
+      multipartFile.transferTo(new File(filePath));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
     User author = userRepository.findByUsername(authorDetails.getUsername());
-    return createImage(new ImageRequest(promptRequest.getPrompt(), multipartFile, author));
+
+    ImageData imageData = ImageData.builder()
+        .name(multipartFile.getName())
+        .type(multipartFile.getContentType())
+        .path(filePath).build();
+
+    PromptData promptData = PromptData.builder()
+        .prompt(promptRequest.getPrompt())
+        .negativePrompt(promptRequest.getNegativePrompt())
+        .height(promptRequest.getHeight())
+        .width(promptRequest.getWidth())
+        .numInterferenceSteps(promptRequest.getNumInterferenceSteps())
+        .guidanceScale(promptRequest.getGuidanceScale())
+        .build();
+
+    Long imageId = imageRepository.save(Image.builder()
+        .author(author)
+        .imageData(imageData)
+        .promptData(promptData)
+        .build()).getId();
+
+    return new GenerateResponse(imageId);
   }
 
   public List<ImageResponse> getAllImages(UserDetails userDetails) {
@@ -91,7 +107,7 @@ public class ImageService {
     }
     return ImageResponse.builder()
         .id(image.getId())
-        .description(image.getPrompt())
+        .promptData(image.getPromptData())
         .authorId(image.getAuthor().getId())
         .isPublic(image.isPublic())
         .isLiked(isLiked)
@@ -123,7 +139,7 @@ public class ImageService {
     }
     return ImageResponse.builder()
         .id(image.getId())
-        .description(image.getPrompt())
+        .promptData(image.getPromptData())
         .authorId(image.getAuthor().getId())
         .isPublic(image.isPublic())
         .imageData(images)
@@ -141,7 +157,7 @@ public class ImageService {
     }
     return ImageResponse.builder()
         .id(image.getId())
-        .description(image.getPrompt())
+        .promptData(image.getPromptData())
         .authorId(image.getAuthor().getId())
         .isPublic(image.isPublic())
         .isLiked(isLiked)
@@ -164,18 +180,11 @@ public class ImageService {
     }
     return ImageResponse.builder()
         .id(image.getId())
-        .description(image.getPrompt())
+        .promptData(image.getPromptData())
         .authorId(image.getAuthor().getId())
         .isPublic(image.isPublic())
         .imageData(images)
         .build();
-  }
-
-  private Image toImage(ImageRequest imageRequest) {
-    String filePath = FOLDER_PATH + imageRequest.getImageFile().getName();
-    ImageData imageData = new ImageData(imageRequest.getImageFile().getName(),
-        imageRequest.getImageFile().getContentType(), filePath);
-    return new Image(imageRequest.getDescription(), imageData, imageRequest.getAuthor());
   }
 
   public List<ImageResponse> getAllUserImages(Long id) {
