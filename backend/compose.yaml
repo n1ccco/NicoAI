@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 services:
   api:
     container_name: app
@@ -21,7 +21,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=postgres
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
   db:
-    image: 'postgres:16.2-alpine'
+    image: "postgres:16.2-alpine"
     container_name: db
     environment:
       - POSTGRES_USER=postgres

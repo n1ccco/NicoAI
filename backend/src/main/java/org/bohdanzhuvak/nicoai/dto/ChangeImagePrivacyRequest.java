@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChangeImagePrivacyRequest {
-    @JsonProperty(value = "isPublic")
-    private boolean isPublic;
+  @JsonProperty(value = "isPublic")
+  private boolean isPublic;
 }

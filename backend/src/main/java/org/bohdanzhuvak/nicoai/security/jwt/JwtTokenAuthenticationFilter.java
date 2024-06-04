@@ -18,36 +18,36 @@ import java.io.IOException;
 
 @RequiredArgsConstructor
 public class JwtTokenAuthenticationFilter extends GenericFilterBean {
-    
-    public static final String HEADER_PREFIX = "Bearer ";
-    
-    private final JwtTokenProvider jwtTokenProvider;
-    
-    @Override
-    public void doFilter(ServletRequest req, ServletResponse res, FilterChain filterChain)
-            throws IOException, ServletException {
-        
-        String token = resolveToken((HttpServletRequest) req);
-        
-        if (token != null && jwtTokenProvider.validateToken(token)) {
-            Authentication auth = jwtTokenProvider.getAuthentication(token);
-            
-            if (auth != null && !(auth instanceof AnonymousAuthenticationToken)) {
-                SecurityContext context = SecurityContextHolder.createEmptyContext();
-                context.setAuthentication(auth);
-                SecurityContextHolder.setContext(context);
-            }
-        }
-        
-        filterChain.doFilter(req, res);
+
+  public static final String HEADER_PREFIX = "Bearer ";
+
+  private final JwtTokenProvider jwtTokenProvider;
+
+  @Override
+  public void doFilter(ServletRequest req, ServletResponse res, FilterChain filterChain)
+      throws IOException, ServletException {
+
+    String token = resolveToken((HttpServletRequest) req);
+
+    if (token != null && jwtTokenProvider.validateToken(token)) {
+      Authentication auth = jwtTokenProvider.getAuthentication(token);
+
+      if (auth != null && !(auth instanceof AnonymousAuthenticationToken)) {
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(auth);
+        SecurityContextHolder.setContext(context);
+      }
     }
-    
-    private String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(HEADER_PREFIX)) {
-            return bearerToken.substring(7);
-        }
-        return null;
+
+    filterChain.doFilter(req, res);
+  }
+
+  private String resolveToken(HttpServletRequest request) {
+    String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
+    if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(HEADER_PREFIX)) {
+      return bearerToken.substring(7);
     }
-    
+    return null;
+  }
+
 }

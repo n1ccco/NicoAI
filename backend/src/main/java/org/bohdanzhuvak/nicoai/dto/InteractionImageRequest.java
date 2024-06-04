@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class InteractionImageRequest {
-    private String action;
+  private String action;
 }

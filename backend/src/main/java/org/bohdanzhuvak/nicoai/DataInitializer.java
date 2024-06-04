@@ -13,22 +13,20 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
-    
-    private final UserRepository userRepository;
-    
-    private final PasswordEncoder passwordEncoder;
-    
-    @Override
-    public void run(String... args) {
-        if (!userRepository.existsByUsername("admin")){
-            userRepository.save(User.builder()
-                .username("admin")
-                .password(passwordEncoder.encode("password"))
-                .roles(Arrays.asList("ROLE_USER", "ROLE_ADMIN"))
-                .build()
-            );
-        }
-        
-        
+
+  private final UserRepository userRepository;
+
+  private final PasswordEncoder passwordEncoder;
+
+  @Override
+  public void run(String... args) {
+    if (!userRepository.existsByUsername("admin")) {
+      userRepository.save(User.builder()
+          .username("admin")
+          .password(passwordEncoder.encode("password"))
+          .roles(Arrays.asList("ROLE_USER", "ROLE_ADMIN"))
+          .build());
     }
+
+  }
 }

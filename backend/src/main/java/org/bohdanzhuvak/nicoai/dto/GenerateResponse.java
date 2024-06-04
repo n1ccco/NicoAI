@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class GenerateResponse {
-    private final Long imageId;
+  private final Long imageId;
 }

@@ -2,8 +2,8 @@
 FROM nvidia/cuda:12.4.1-runtime-ubuntu22.04
 
 RUN apt-get update && \
-    apt-get install -y python3.11 python3.11-distutils python3-pip python-is-python3 && \
-    rm -rf /var/lib/apt/lists/*
+  apt-get install -y python3.11 python3.11-distutils python3-pip python-is-python3 && \
+  rm -rf /var/lib/apt/lists/*
 
 # Set the working directory in the container
 WORKDIR /app/generator

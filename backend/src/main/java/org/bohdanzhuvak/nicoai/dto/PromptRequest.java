@@ -10,10 +10,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PromptRequest {
-    private String prompt;
-    private String negativePrompt;
-    private Integer height;
-    private Integer width;
-    private Integer numInterferenceSteps;
-    private Integer guidanceScale;
+  private String prompt;
+  private String negativePrompt;
+  private Integer height;
+  private Integer width;
+  private Integer numInterferenceSteps;
+  private Integer guidanceScale;
 }
