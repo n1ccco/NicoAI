@@ -59,7 +59,7 @@ const Comments: React.FC<CommentsProps> = ({ photoId, user }) => {
   }
 
   return (
-    <div className="comments-section rounded-lg bg-gray-800 p-4 shadow">
+    <div className="mx-auto max-w-md overflow-hidden rounded-lg bg-gray-800 p-6 shadow-md">
       <h3 className="text-lg font-semibold text-gray-200">Comments</h3>
       <div ref={scrollRef} className="mt-4 max-h-96 space-y-4 overflow-y-auto">
         {comments.map((comment) => (

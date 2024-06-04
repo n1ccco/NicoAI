@@ -7,6 +7,7 @@ import { SIGNIN } from '@/constants/routeContants'
 import Comments from '@/components/Comments'
 import { changeImagePrivacyEffect, getImageEffect } from '@/api/effects/images'
 import PictureDetails from '@/components/PictureDetails'
+import LikeButton from '@/components/ui/LikeButton'
 
 const Picture = () => {
   const { id } = useParams<{ id: string }>()
@@ -52,23 +53,20 @@ const Picture = () => {
       {photo && (
         <div className="flex justify-between">
           <PictureDetails image={photo} />
-          <div className="mx-auto max-w-md overflow-hidden rounded-lg bg-gray-800 shadow-md">
-            <div className="p-6">
-              <h2 className="mb-2 text-xl font-semibold">Picture Details</h2>
-              <p className="mb-2 text-gray-600">ID: {photo.id}</p>
-              <img
-                src={`data:image/jpeg;base64,${photo.imageData}`}
-                alt={`Photo ${photo.id}`}
-                className="mb-4 h-auto w-full rounded-lg shadow-md"
+          <div className="mx-auto max-w-md overflow-hidden rounded-lg bg-gray-800 p-6 shadow-md">
+            <img
+              src={`data:image/jpeg;base64,${photo.imageData}`}
+              alt={`Photo ${photo.id}`}
+              className="mb-4 h-auto w-full rounded-lg shadow-md"
+            />
+            <LikeButton initialLiked={photo.isLiked} photoId={photo.id} />
+            {photo.authorId === user.id && (
+              <Toggle
+                initialState={photo.isPublic}
+                onToggle={handleToggle}
+                toggleName="Make public"
               />
-              {photo.authorId === user.id && (
-                <Toggle
-                  initialState={photo.isPublic}
-                  onToggle={handleToggle}
-                  toggleName="Make public"
-                />
-              )}
-            </div>
+            )}
           </div>
           <Comments photoId={photo.id} user={user} />
         </div>
