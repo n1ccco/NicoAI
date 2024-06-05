@@ -44,7 +44,7 @@ function UserDropdownMenu({ user, logout }: UserDropdownProps) {
       <div>
         <button
           type="button"
-          className="inline-flex w-full items-center justify-center px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 focus:outline-none focus-visible:ring focus-visible:ring-gray-500 focus-visible:ring-opacity-50"
+          className="inline-flex w-full items-center justify-center rounded-lg px-4 py-2 text-sm font-medium text-gray-400 hover:bg-gray-600 hover:text-gray-200 focus:outline-none focus-visible:ring focus-visible:ring-gray-500 focus-visible:ring-opacity-50"
           onClick={toggleMenu}
         >
           {user.username}
@@ -66,7 +66,7 @@ function UserDropdownMenu({ user, logout }: UserDropdownProps) {
 
       {isOpen && (
         <div
-          className="absolute right-0 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+          className="absolute right-0 mt-2 w-56 origin-top-right rounded-md bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
           role="menu"
           aria-orientation="vertical"
           aria-labelledby="options-menu"
@@ -74,14 +74,14 @@ function UserDropdownMenu({ user, logout }: UserDropdownProps) {
           <div className="py-1" role="none">
             <Link
               to={`${USERS}/${user.id}/${IMAGES}`}
-              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+              className="block px-4 py-2 text-sm text-gray-400 hover:bg-gray-600 hover:text-gray-200"
               role="menuitem"
             >
               My Images
             </Link>
             <a
               href="#"
-              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+              className="block px-4 py-2 text-sm text-gray-400 hover:bg-gray-600 hover:text-gray-200"
               role="menuitem"
             >
               User Settings
@@ -89,7 +89,7 @@ function UserDropdownMenu({ user, logout }: UserDropdownProps) {
             <Link
               to="#"
               onClick={handleLogout}
-              className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+              className="block w-full px-4 py-2 text-left text-sm text-gray-400 hover:bg-gray-600 hover:text-gray-200"
               role="menuitem"
             >
               Logout
