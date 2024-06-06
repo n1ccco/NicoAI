@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react'
 import { Navigate, useParams } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth.ts'
 import Toggle from '@/components/ui/Toggle.tsx'
-import { Photo } from '@/types/api.ts'
+import { Photo, User } from '@/types/api.ts'
 import { SIGNIN } from '@/constants/routeContants'
 import Comments from '@/components/Comments'
 import { changeImagePrivacyEffect, getImageEffect } from '@/api/effects/images'
 import PictureDetails from '@/components/PictureDetails'
 import LikeButton from '@/components/ui/LikeButton'
+import { getCurrentUserEffect } from '@/api/effects/user'
 
 const Picture = () => {
   const { id } = useParams<{ id: string }>()
@@ -47,10 +48,25 @@ const Picture = () => {
     return <Navigate to={'/' + SIGNIN} />
   }
 
-  const user = authStateType.state.user
+  const { state: authState } = useAuth()
+
+  const [user, setUser] = useState<User | null>(null)
+
+  useEffect(() => {
+    if (authState.type === 'authenticated') {
+      getCurrentUserEffect().then((res) => {
+        if (res.type === 'success') {
+          setUser(res.state.user)
+        } else {
+          console.error(res.state.error)
+        }
+      })
+    }
+  }, [authState.type])
+
   return (
     <div>
-      {photo && (
+      {user && photo && (
         <div className="flex justify-between">
           <PictureDetails image={photo} />
           <div className="mx-auto max-w-md overflow-hidden rounded-lg bg-gray-800 p-6 shadow-md">
