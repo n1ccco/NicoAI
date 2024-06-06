@@ -3,6 +3,7 @@ package org.bohdanzhuvak.nicoai.controller;
 import java.util.List;
 
 import org.bohdanzhuvak.nicoai.dto.ImageResponse;
+import org.bohdanzhuvak.nicoai.dto.UsernameResponse;
 import org.bohdanzhuvak.nicoai.repository.UserRepository;
 import org.bohdanzhuvak.nicoai.security.CurrentUser;
 import org.bohdanzhuvak.nicoai.service.ImageService;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,9 +29,13 @@ public class UsersController {
   public List<ImageResponse> getImages(@PathVariable("id") Long id, @CurrentUser UserDetails userDetails) {
     String username = userDetails.getUsername();
     Long currentUserId = userRepository.findByUsername(username).getId();
-    if (!currentUserId.equals(id)) {
-      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access Denied");
-    }
-    return imageService.getAllUserImages(id);
+    return imageService.getAllUserImages(id, currentUserId);
+  }
+
+  @GetMapping(value = "{id}")
+  @ResponseStatus(HttpStatus.OK)
+  public UsernameResponse getUsername(@PathVariable("id") Long id) {
+    String username = userRepository.findById(id).get().getUsername();
+    return UsernameResponse.builder().username(username).build();
   }
 }

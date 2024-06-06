@@ -20,6 +20,7 @@ public class ImageResponse {
   @JsonProperty(value = "isLiked")
   private boolean isLiked;
   private Long authorId;
+  private String authorName;
   private byte[] imageData;
   private PromptData promptData;
 }

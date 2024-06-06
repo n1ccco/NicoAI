@@ -9,4 +9,6 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
   List<Image> findByAuthorId(Long authorId);
 
   List<Image> findByIsPublic(boolean isPublic);
+
+  List<Image> findByAuthorIdAndIsPublic(Long authorId, boolean isPublic);
 }

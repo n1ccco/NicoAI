@@ -20,6 +20,7 @@ export type Photo = Entity<{
   isPublic: boolean
   isLiked: boolean
   authorId: number
+  authorName: string
   imageData: string
 }>
 

@@ -109,6 +109,7 @@ public class ImageService {
         .id(image.getId())
         .promptData(image.getPromptData())
         .authorId(image.getAuthor().getId())
+        .authorName(image.getAuthor().getUsername())
         .isPublic(image.isPublic())
         .isLiked(isLiked)
         .imageData(images)
@@ -141,6 +142,7 @@ public class ImageService {
         .id(image.getId())
         .promptData(image.getPromptData())
         .authorId(image.getAuthor().getId())
+        .authorName(image.getAuthor().getUsername())
         .isPublic(image.isPublic())
         .imageData(images)
         .build();
@@ -159,6 +161,7 @@ public class ImageService {
         .id(image.getId())
         .promptData(image.getPromptData())
         .authorId(image.getAuthor().getId())
+        .authorName(image.getAuthor().getUsername())
         .isPublic(image.isPublic())
         .isLiked(isLiked)
         .imageData(images)
@@ -182,13 +185,20 @@ public class ImageService {
         .id(image.getId())
         .promptData(image.getPromptData())
         .authorId(image.getAuthor().getId())
+        .authorName(image.getAuthor().getUsername())
         .isPublic(image.isPublic())
         .imageData(images)
         .build();
   }
 
-  public List<ImageResponse> getAllUserImages(Long id) {
-    List<Image> images = imageRepository.findByAuthorId(id);
+  public List<ImageResponse> getAllUserImages(Long id, Long userId) {
+    List<Image> images;
+    if (userId == id) {
+      images = imageRepository.findByAuthorId(id);
+    } else {
+      images = imageRepository.findByAuthorIdAndIsPublic(id, true);
+    }
+
     return images.stream().map(this::toImageResponse).toList();
   }
 

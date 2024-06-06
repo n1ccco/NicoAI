@@ -1,4 +1,6 @@
+import { IMAGES, USERS } from '@/constants/routeContants'
 import { Photo } from '@/types/api'
+import { Link } from 'react-router-dom'
 
 type PictureDetailsProps = {
   image: Photo
@@ -11,6 +13,15 @@ function PictureDetails({ image }: PictureDetailsProps) {
       <div className="mb-2">
         <p className="text-sm font-medium text-gray-400">ID:</p>
         <p className="text-base text-gray-300">{image.id}</p>
+      </div>
+      <div className="mb-2">
+        <p className="text-sm font-medium text-gray-400">Author:</p>
+        <Link
+          to={`/${USERS}/${image.authorId}/${IMAGES}`}
+          className="text-base text-gray-300"
+        >
+          {image.authorName}
+        </Link>
       </div>
       <div className="mb-2">
         <p className="text-sm font-medium text-gray-400">Prompt:</p>
