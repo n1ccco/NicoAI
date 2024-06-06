@@ -32,14 +32,20 @@ function Header({ name }: HeaderProps) {
           >
             Home
           </Link>
-          <Link to={CREATE} className="px-3 text-gray-400 hover:text-white">
-            Generate
-          </Link>
+
           <Link to={GALLERY} className="px-3 text-gray-400 hover:text-white">
             Gallery
           </Link>
           {authState.type === 'authenticated' ? (
-            <UserDropdownMenu user={authState.state.user} logout={postLogout} />
+            <>
+              <Link to={CREATE} className="px-3 text-gray-400 hover:text-white">
+                Generate
+              </Link>
+              <UserDropdownMenu
+                user={authState.state.user}
+                logout={postLogout}
+              />
+            </>
           ) : (
             <Link to={SIGNIN} className="px-3 text-gray-400 hover:text-white">
               Login

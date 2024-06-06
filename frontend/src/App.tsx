@@ -1,10 +1,4 @@
-import {
-  BrowserRouter,
-  Navigate,
-  Outlet,
-  Route,
-  Routes,
-} from 'react-router-dom'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Layout from '@/views/core/Layout.tsx'
 import Home from '@/views/Home.tsx'
 import NoPage from '@/views/core/NoPage.tsx'
@@ -34,8 +28,8 @@ function App() {
           <Route index element={<Home />} />
           <Route path={CLIENT_BASEURL} element={<Layout />}>
             <Route path={GALLERY} element={<Gallery />} />
-            <Route path={`${IMAGES}/:id`} element={<Picture />} />
             <Route element={<PrivateRoute />}>
+              <Route path={`${IMAGES}/:id`} element={<Picture />} />
               <Route path={CREATE} element={<Create />} />
               <Route path={`${USERS}/:id/${IMAGES}`} element={<UserImages />} />
             </Route>

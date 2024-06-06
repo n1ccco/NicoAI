@@ -6,6 +6,7 @@ import {
 import { CommentData, User } from '@/types/api'
 import { toTimeAgo } from '@/utils/toTimeAgo'
 import React, { useState, useEffect, useRef } from 'react'
+import Loader from './ui/Loader'
 
 interface CommentsProps {
   photoId: number
@@ -15,7 +16,7 @@ interface CommentsProps {
 const Comments: React.FC<CommentsProps> = ({ photoId, user }) => {
   const [comments, setComments] = useState<CommentData[]>([])
   const [newComment, setNewComment] = useState<string>('')
-
+  const [loading, setLoading] = useState<boolean>(false)
   const scrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -26,13 +27,18 @@ const Comments: React.FC<CommentsProps> = ({ photoId, user }) => {
   }, [comments])
 
   useEffect(() => {
-    getCommentsEffect(photoId).then((res) => {
-      if (res.type === 'success') {
-        setComments(res.state.comments)
-      } else {
-        console.error(res.state.error)
-      }
-    })
+    setLoading(true)
+    getCommentsEffect(photoId)
+      .then((res) => {
+        if (res.type === 'success') {
+          setComments(res.state.comments)
+        } else {
+          console.error(res.state.error)
+        }
+      })
+      .finally(() => {
+        setLoading(false)
+      })
   }, [photoId])
 
   const handleAddComment = async () => {
@@ -61,33 +67,38 @@ const Comments: React.FC<CommentsProps> = ({ photoId, user }) => {
   return (
     <div className="mx-auto max-w-md overflow-hidden rounded-lg bg-gray-800 p-6 shadow-md">
       <h3 className="text-lg font-semibold text-gray-200">Comments</h3>
-      <div ref={scrollRef} className="mt-4 max-h-96 space-y-4 overflow-y-auto">
-        {comments.map((comment) => (
-          <div
-            key={comment.id}
-            className="comment rounded bg-gray-200 p-3 shadow"
-          >
-            <div className="flex items-center justify-between">
-              <h5 className="font-semibold text-gray-900">
-                {comment.authorName}
-              </h5>
-              <span className="text-xs text-gray-500">
-                {toTimeAgo(comment.createdAt)}
-              </span>
-            </div>
-            <p className="text-gray-700">{comment.body}</p>
+      <div ref={scrollRef} className="mt-4 h-96 space-y-4 overflow-y-auto">
+        {loading ? (
+          <Loader />
+        ) : (
+          comments.map((comment) => (
+            <div
+              key={comment.id}
+              className="comment rounded bg-gray-200 p-3 shadow"
+            >
+              <div className="flex items-center justify-between">
+                <h5 className="font-semibold text-gray-900">
+                  {comment.authorName}
+                </h5>
+                <span className="text-xs text-gray-500">
+                  {toTimeAgo(comment.createdAt)}
+                </span>
+              </div>
+              <p className="text-gray-700">{comment.body}</p>
 
-            {comment.authorId === user.id && (
-              <button
-                className="mt-2 text-xs text-red-600 hover:text-red-800"
-                onClick={() => handleDeleteComment(comment.id)}
-              >
-                Delete
-              </button>
-            )}
-          </div>
-        ))}
+              {comment.authorId === user.id && (
+                <button
+                  className="mt-2 text-xs text-red-600 hover:text-red-800"
+                  onClick={() => handleDeleteComment(comment.id)}
+                >
+                  Delete
+                </button>
+              )}
+            </div>
+          ))
+        )}
       </div>
+
       <div className="add-comment mt-6">
         <input
           type="text"
