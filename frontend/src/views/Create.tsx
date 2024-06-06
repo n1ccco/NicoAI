@@ -7,11 +7,13 @@ import { postImageDataEffect } from '@/api/effects/images'
 const InputField = ({
   label,
   value,
+  className,
   setValue,
   type = 'text',
 }: {
   label: string
   value: string
+  className?: string
   setValue: (value: string) => void
   type?: string
 }) => (
@@ -19,19 +21,26 @@ const InputField = ({
     <label className="mb-2 block text-sm font-bold text-gray-700">
       {label}:
     </label>
-    <input
-      className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
-      type={type}
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
-    />
+    <div className="flex flex-row px-4 py-2">
+      <input
+        className={`${className || ''} focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none`}
+        type={type}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />
+      {className === 'slider' ? (
+        <div className="value-display ml-5 text-center text-xl">{value}</div>
+      ) : (
+        ''
+      )}
+    </div>
   </div>
 )
 
 const Create = () => {
   const initialPrompt: PromptInput = {
-    prompt: 'cat',
-    negativePrompt: 'ugly',
+    prompt: '',
+    negativePrompt: '',
     height: 512,
     width: 512,
     numInterferenceSteps: 50,
@@ -101,7 +110,8 @@ const Create = () => {
             numInterferenceSteps: parseInt(value),
           })
         }
-        type="number"
+        className="slider"
+        type="range"
       />
       <InputField
         label="Guidance Scale"
@@ -109,7 +119,8 @@ const Create = () => {
         setValue={(value) =>
           setPromptData({ ...promptData, guidanceScale: parseInt(value) })
         }
-        type="number"
+        className="slider"
+        type="range"
       />
       <button
         className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
