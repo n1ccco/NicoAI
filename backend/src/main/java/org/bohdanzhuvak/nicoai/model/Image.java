@@ -1,6 +1,7 @@
 package org.bohdanzhuvak.nicoai.model;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -26,8 +27,9 @@ public class Image {
   @Builder.Default
   private boolean isPublic = false;
   @ManyToMany
+  @Builder.Default
   @JoinTable(name = "user_likes", joinColumns = @JoinColumn(name = "image_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
-  private List<User> likes;
+  private Set<User> likes = new HashSet<User>();
 
   @OneToOne(cascade = CascadeType.ALL)
   @JoinColumn

@@ -75,7 +75,11 @@ const Picture = () => {
                   alt={`Photo ${photo.id}`}
                   className="mb-4 h-auto w-full rounded-lg shadow-md"
                 />
-                <LikeButton initialLiked={photo.isLiked} photoId={photo.id} />
+                <LikeButton
+                  initialLiked={photo.isLiked}
+                  photoId={photo.id}
+                  countLikes={photo.countLikes}
+                />
                 {photo.authorId === user.id && (
                   <Toggle
                     initialState={photo.isPublic}

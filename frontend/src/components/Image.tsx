@@ -20,7 +20,11 @@ function Image({ photo }: ImageProps) {
           className="h-64 w-full rounded-lg object-cover"
         />
       </Link>
-      <LikeButton initialLiked={photo.isLiked} photoId={photo.id} />
+      <LikeButton
+        initialLiked={photo.isLiked}
+        photoId={photo.id}
+        countLikes={photo.countLikes}
+      />
     </div>
   )
 }

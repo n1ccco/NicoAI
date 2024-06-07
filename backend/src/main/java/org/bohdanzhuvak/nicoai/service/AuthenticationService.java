@@ -13,8 +13,9 @@ import org.bohdanzhuvak.nicoai.security.jwt.JwtTokenProvider;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -53,8 +54,19 @@ public class AuthenticationService {
         .roles(Arrays.asList("ROLE_USER")).build());
   }
 
-  public UserDto getCurrentUser(UserDetails userDetails) {
-    User user = userRepository.findByUsername(userDetails.getUsername());
-    return UserDto.builder().Id(user.getId()).username(user.getUsername()).roles(user.getRoles()).build();
+  public UserDto getCurrentUser() {
+    if (isUserAuthenticated()) {
+      User user = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+          .getPrincipal()).getUser();
+
+      return UserDto.builder().Id(user.getId()).username(user.getUsername()).roles(user.getRoles()).build();
+    }
+    return null;
+  }
+
+  public boolean isUserAuthenticated() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    return authentication != null && authentication.isAuthenticated() &&
+        !(authentication.getPrincipal() instanceof String);
   }
 }

@@ -20,6 +20,7 @@ import org.bohdanzhuvak.nicoai.model.ImageData;
 import org.bohdanzhuvak.nicoai.model.PromptData;
 import org.bohdanzhuvak.nicoai.model.User;
 import org.bohdanzhuvak.nicoai.repository.ImageRepository;
+import org.bohdanzhuvak.nicoai.repository.UserRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,7 @@ public class ImageService {
   private final ImageRepository imageRepository;
   private final ImageGeneratorProperties imageGeneratorProperties;
   private final String FOLDER_PATH = "/images/";
+  private final UserRepository userRepository;
 
   private MultiValueMap<String, String> buildPromptParams(PromptRequest promptRequest) {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
@@ -170,6 +172,8 @@ public class ImageService {
     } else {
       isLiked = false;
     }
+    int countLikes = image.getLikes().size();
+
     return ImageResponse.builder()
         .id(image.getId())
         .promptData(image.getPromptData())
@@ -177,6 +181,7 @@ public class ImageService {
         .authorName(image.getAuthor().getUsername())
         .isPublic(image.isPublic())
         .isLiked(isLiked)
+        .countLikes(countLikes)
         .imageData(images)
         .build();
   }
@@ -187,8 +192,10 @@ public class ImageService {
 
   public void changeImage(Long id, InteractionImageRequest interactionImageRequest) {
     if (isUserAuthenticated()) {
-      User user = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+      User userFromContext = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
           .getPrincipal()).getUser();
+      // TODO This shouldn't be here.
+      User user = userRepository.findByUsername(userFromContext.getUsername());
 
       if (interactionImageRequest.getAction() == null) {
         System.out.println("Action is null");
@@ -204,9 +211,7 @@ public class ImageService {
 
       switch (interactionImageRequest.getAction()) {
         case "like":
-          if (!image.getLikes().contains(user)) {
-            image.getLikes().add(user);
-          }
+          image.getLikes().add(user);
           break;
         case "dislike":
           image.getLikes().remove(user);
