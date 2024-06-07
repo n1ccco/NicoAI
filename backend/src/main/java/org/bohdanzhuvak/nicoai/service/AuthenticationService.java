@@ -6,6 +6,7 @@ import org.bohdanzhuvak.nicoai.dto.AuthenticationRequest;
 import org.bohdanzhuvak.nicoai.dto.AuthenticationResponse;
 import org.bohdanzhuvak.nicoai.dto.RegistrationRequest;
 import org.bohdanzhuvak.nicoai.dto.UserDto;
+import org.bohdanzhuvak.nicoai.model.CustomUserDetails;
 import org.bohdanzhuvak.nicoai.model.User;
 import org.bohdanzhuvak.nicoai.repository.UserRepository;
 import org.bohdanzhuvak.nicoai.security.jwt.JwtTokenProvider;
@@ -30,13 +31,13 @@ public class AuthenticationService {
   public AuthenticationResponse signin(AuthenticationRequest authenticationRequest) {
     try {
       String username = authenticationRequest.getUsername();
-      User user = userRepository.findByUsername(username);
       String password = authenticationRequest.getPassword();
       var authentication = authenticationManager
           .authenticate(new UsernamePasswordAuthenticationToken(username, password));
       String token = jwtTokenProvider.createToken(authentication);
+      User user = ((CustomUserDetails) jwtTokenProvider.getAuthentication(token).getPrincipal()).getUser();
       return AuthenticationResponse.builder().jwt(token)
-          .user(UserDto.builder().Id(user.getId()).username(user.getUsername()).build()).build();
+          .user(UserDto.builder().Id(user.getId()).username(user.getUsername()).roles(user.getRoles()).build()).build();
     } catch (AuthenticationException e) {
       throw new BadCredentialsException("Invalid username/password supplied");
     }

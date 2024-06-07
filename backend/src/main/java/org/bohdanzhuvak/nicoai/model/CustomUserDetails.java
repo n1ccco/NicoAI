@@ -6,22 +6,29 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import static java.util.stream.Collectors.toList;
 
-public class CustomUserDetails extends User implements UserDetails {
-
-  public CustomUserDetails(User user) {
-    super(user.getId(), user.getImages(), user.getUsername(), user.getPassword(), user.getLikes(), user.getRoles());
-  }
+@AllArgsConstructor
+@Getter
+public class CustomUserDetails implements UserDetails {
+  private User user;
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return getRoles().stream().map(SimpleGrantedAuthority::new).collect(toList());
+    return user.getRoles().stream().map(SimpleGrantedAuthority::new).collect(toList());
   }
 
   @Override
   public String getUsername() {
-    return getUsername();
+    return user.getUsername();
+  }
+
+  @Override
+  public String getPassword() {
+    return user.getPassword();
   }
 
   @Override

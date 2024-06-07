@@ -7,13 +7,15 @@ import java.util.stream.Collectors;
 import org.bohdanzhuvak.nicoai.dto.CommentRequest;
 import org.bohdanzhuvak.nicoai.dto.CommentResponse;
 import org.bohdanzhuvak.nicoai.model.Comment;
+import org.bohdanzhuvak.nicoai.model.CustomUserDetails;
 import org.bohdanzhuvak.nicoai.model.Image;
 import org.bohdanzhuvak.nicoai.model.User;
 import org.bohdanzhuvak.nicoai.repository.CommentRepository;
 import org.bohdanzhuvak.nicoai.repository.ImageRepository;
-import org.bohdanzhuvak.nicoai.repository.UserRepository;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -24,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CommentsService {
   private final CommentRepository commentRepository;
-  private final UserRepository userRepository;
   private final ImageRepository imageRepository;
 
   public List<CommentResponse> getComments(Long id) {
@@ -40,25 +41,30 @@ public class CommentsService {
         .collect(Collectors.toList());
   }
 
-  public CommentResponse postComment(CommentRequest commentRequest, UserDetails userDetails, Long imageId) {
-    User user = userRepository.findByUsername(userDetails.getUsername());
-    Image image = imageRepository.findById(imageId).get();
-    if (user == null || image == null) {
+  public CommentResponse postComment(CommentRequest commentRequest, Long imageId) {
+    if (isUserAuthenticated()) {
+      User user = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+          .getPrincipal()).getUser();
+      Image image = imageRepository.findById(imageId).get();
+      if (image == null) {
+        return null;
+      }
+      Comment comment = Comment.builder()
+          .author(user)
+          .image(image)
+          .body(commentRequest.getBody())
+          .build();
+      commentRepository.save(comment);
+      return CommentResponse.builder()
+          .id(comment.getId())
+          .authorId(comment.getAuthor().getId())
+          .authorName(comment.getAuthor().getUsername())
+          .body(comment.getBody())
+          .createdAt(comment.getCreatedAt())
+          .build();
+    } else {
       return null;
     }
-    Comment comment = Comment.builder()
-        .author(user)
-        .image(image)
-        .body(commentRequest.getBody())
-        .build();
-    commentRepository.save(comment);
-    return CommentResponse.builder()
-        .id(comment.getId())
-        .authorId(comment.getAuthor().getId())
-        .authorName(comment.getAuthor().getUsername())
-        .body(comment.getBody())
-        .createdAt(comment.getCreatedAt())
-        .build();
   }
 
   public void deleteComment(UserDetails userDetails, Long id) {
@@ -77,5 +83,11 @@ public class CommentsService {
     } catch (EmptyResultDataAccessException e) {
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error deleting comment");
     }
+  }
+
+  public boolean isUserAuthenticated() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    return authentication != null && authentication.isAuthenticated() &&
+        !(authentication.getPrincipal() instanceof String);
   }
 }

@@ -4,11 +4,13 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import jakarta.annotation.PostConstruct;
@@ -26,6 +28,8 @@ public class JwtTokenProvider {
   private static final String AUTHORITIES_KEY = "roles";
 
   private final JwtProperties jwtProperties;
+
+  private final UserDetailsService userDetailsService;
 
   private SecretKey secretKey;
 
@@ -66,9 +70,9 @@ public class JwtTokenProvider {
     Collection<? extends GrantedAuthority> authorities = authoritiesClaim == null ? AuthorityUtils.NO_AUTHORITIES
         : AuthorityUtils.commaSeparatedStringToAuthorityList(authoritiesClaim.toString());
 
-    User principal = new User(claims.getSubject(), "", authorities);
+    UserDetails userDetails = userDetailsService.loadUserByUsername(claims.getSubject());
 
-    return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+    return new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
   }
 
   public boolean validateToken(String token) {

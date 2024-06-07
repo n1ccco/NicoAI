@@ -5,10 +5,8 @@ import java.util.List;
 import org.bohdanzhuvak.nicoai.dto.ImageResponse;
 import org.bohdanzhuvak.nicoai.dto.UsernameResponse;
 import org.bohdanzhuvak.nicoai.repository.UserRepository;
-import org.bohdanzhuvak.nicoai.security.CurrentUser;
 import org.bohdanzhuvak.nicoai.service.ImageService;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,10 +24,8 @@ public class UsersController {
 
   @GetMapping(value = "{id}/images")
   @ResponseStatus(HttpStatus.OK)
-  public List<ImageResponse> getImages(@PathVariable("id") Long id, @CurrentUser UserDetails userDetails) {
-    String username = userDetails.getUsername();
-    Long currentUserId = userRepository.findByUsername(username).getId();
-    return imageService.getAllUserImages(id, currentUserId);
+  public List<ImageResponse> getImages(@PathVariable("id") Long id) {
+    return imageService.getAllUserImages(id);
   }
 
   @GetMapping(value = "{id}")

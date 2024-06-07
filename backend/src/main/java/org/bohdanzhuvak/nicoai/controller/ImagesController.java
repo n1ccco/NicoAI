@@ -8,14 +8,12 @@ import org.bohdanzhuvak.nicoai.dto.GenerateResponse;
 import org.bohdanzhuvak.nicoai.dto.ImageResponse;
 import org.bohdanzhuvak.nicoai.dto.InteractionImageRequest;
 import org.bohdanzhuvak.nicoai.dto.PromptRequest;
-import org.bohdanzhuvak.nicoai.security.CurrentUser;
 import org.bohdanzhuvak.nicoai.service.CommentsService;
 import org.bohdanzhuvak.nicoai.service.ImageService;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -27,41 +25,30 @@ public class ImagesController {
 
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
-  public List<ImageResponse> getImages(Authentication authentication) {
-    if (authentication == null || !authentication.isAuthenticated()) {
-      return imageService.getAllImages();
-    }
-    return imageService.getAllImages((UserDetails) authentication.getPrincipal());
+  public List<ImageResponse> getImages() {
+    return imageService.getAllImages();
   }
 
   @GetMapping(value = "{id}")
   @ResponseStatus(HttpStatus.OK)
-  public ImageResponse getImage(@PathVariable("id") Long id, Authentication authentication) {
-    if (authentication == null || !authentication.isAuthenticated()) {
-      return imageService.getImage(id);
-    }
-    return imageService.getImage(id, (UserDetails) authentication.getPrincipal());
+  public ImageResponse getImage(@PathVariable("id") Long id) {
+    return imageService.getImage(id);
   }
-
-  // @PutMapping(value = "{id}")
-  // @ResponseStatus(HttpStatus.OK)
-  // public void makePublic(@PathVariable("id") Long id, @RequestBody
-  // ChangeImagePrivacyRequest changePrivacyRequest) {
-  // imageService.changePrivacy(id, changePrivacyRequest);
-  // }
 
   @PutMapping(value = "{id}")
   @ResponseStatus(HttpStatus.OK)
-  public void upvoteImage(@PathVariable("id") Long id, @CurrentUser UserDetails user,
-      @RequestBody InteractionImageRequest interactionImageRequest) {
-    imageService.changeImage(id, user, interactionImageRequest);
+  public void upvoteImage(@PathVariable("id") Long id, @RequestBody InteractionImageRequest interactionImageRequest) {
+    imageService.changeImage(id, interactionImageRequest);
   }
 
   @PostMapping
   @ResponseStatus(HttpStatus.OK)
-  public GenerateResponse generateImage(@ModelAttribute PromptRequest promptRequest,
-      @CurrentUser UserDetails user) {
-    return imageService.generateImage(promptRequest, user);
+  public GenerateResponse generateImage(@ModelAttribute PromptRequest promptRequest) {
+    try {
+      return imageService.generateImage(promptRequest);
+    } catch (IOException e) {
+      return null;
+    }
   }
 
   @GetMapping("{id}/comments")
@@ -72,8 +59,7 @@ public class ImagesController {
 
   @PostMapping(value = "{id}/comments")
   @ResponseStatus(HttpStatus.OK)
-  public CommentResponse postComment(@CurrentUser UserDetails userDetails,
-      @RequestBody CommentRequest commentRequest, @PathVariable("id") Long id) {
-    return commentsService.postComment(commentRequest, userDetails, id);
+  public CommentResponse postComment(@RequestBody CommentRequest commentRequest, @PathVariable("id") Long id) {
+    return commentsService.postComment(commentRequest, id);
   }
 }

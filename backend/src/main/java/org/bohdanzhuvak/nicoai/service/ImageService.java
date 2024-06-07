@@ -9,20 +9,22 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.bohdanzhuvak.nicoai.config.ImageGeneratorProperties;
-import org.bohdanzhuvak.nicoai.dto.ChangeImagePrivacyRequest;
 import org.bohdanzhuvak.nicoai.dto.CustomMultipartFile;
 import org.bohdanzhuvak.nicoai.dto.GenerateResponse;
 import org.bohdanzhuvak.nicoai.dto.ImageResponse;
 import org.bohdanzhuvak.nicoai.dto.InteractionImageRequest;
 import org.bohdanzhuvak.nicoai.dto.PromptRequest;
+import org.bohdanzhuvak.nicoai.model.CustomUserDetails;
 import org.bohdanzhuvak.nicoai.model.Image;
 import org.bohdanzhuvak.nicoai.model.ImageData;
 import org.bohdanzhuvak.nicoai.model.PromptData;
 import org.bohdanzhuvak.nicoai.model.User;
 import org.bohdanzhuvak.nicoai.repository.ImageRepository;
-import org.bohdanzhuvak.nicoai.repository.UserRepository;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -33,36 +35,57 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ImageService {
   private final ImageRepository imageRepository;
-  private final UserRepository userRepository;
   private final ImageGeneratorProperties imageGeneratorProperties;
   private final String FOLDER_PATH = "/images/";
 
-  public GenerateResponse generateImage(PromptRequest promptRequest, UserDetails authorDetails) {
+  private MultiValueMap<String, String> buildPromptParams(PromptRequest promptRequest) {
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    params.add("prompt", promptRequest.getPrompt());
+    params.add("negativePrompt", promptRequest.getNegativePrompt());
+    params.add("height", String.valueOf(promptRequest.getHeight()));
+    params.add("width", String.valueOf(promptRequest.getWidth()));
+    params.add("numInterferenceSteps", String.valueOf(promptRequest.getNumInterferenceSteps()));
+    params.add("guidanceScale", String.valueOf(promptRequest.getGuidanceScale()));
+    return params;
+  }
+
+  public GenerateResponse generateImage(PromptRequest promptRequest) throws IOException {
+    if (isUserAuthenticated()) {
+      User author = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+          .getPrincipal()).getUser();
+      byte[] imageBytes = fetchImageFromGenerator(promptRequest);
+      MultipartFile multipartFile = saveImageToFileSystem(imageBytes, UUID.randomUUID() + ".png");
+      Image image = buildImageEntity(multipartFile, promptRequest, author);
+      Long imageId = imageRepository.save(image).getId();
+      return new GenerateResponse(imageId);
+    } else {
+      return new GenerateResponse();
+    }
+  }
+
+  private byte[] fetchImageFromGenerator(PromptRequest promptRequest) {
     RestTemplate restTemplate = new RestTemplate();
     String uri = UriComponentsBuilder.fromHttpUrl(imageGeneratorProperties.getUrl())
         .pathSegment("generate")
-        .queryParam("prompt", promptRequest.getPrompt())
-        .queryParam("negativePrompt", promptRequest.getNegativePrompt())
-        .queryParam("height", promptRequest.getHeight())
-        .queryParam("width", promptRequest.getWidth())
-        .queryParam("numInterferenceSteps", promptRequest.getNumInterferenceSteps())
-        .queryParam("guidanceScale", promptRequest.getGuidanceScale())
+        .queryParams(buildPromptParams(promptRequest))
         .build()
         .toUriString();
-    byte[] imageBytes = restTemplate.getForObject(uri, byte[].class, promptRequest);
-    MultipartFile multipartFile = new CustomMultipartFile(UUID.randomUUID() + ".png", imageBytes);
-    String filePath = FOLDER_PATH + multipartFile.getName();
-    try {
-      multipartFile.transferTo(new File(filePath));
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-    User author = userRepository.findByUsername(authorDetails.getUsername());
+    return restTemplate.getForObject(uri, byte[].class);
+  }
 
+  private MultipartFile saveImageToFileSystem(byte[] imageBytes, String filename) throws IOException {
+    MultipartFile multipartFile = new CustomMultipartFile(filename, imageBytes);
+    String filePath = FOLDER_PATH + multipartFile.getName();
+    multipartFile.transferTo(new File(filePath));
+    return multipartFile;
+  }
+
+  private Image buildImageEntity(MultipartFile file, PromptRequest promptRequest, User author) {
     ImageData imageData = ImageData.builder()
-        .name(multipartFile.getName())
-        .type(multipartFile.getContentType())
-        .path(filePath).build();
+        .name(file.getName())
+        .type(file.getContentType())
+        .path(FOLDER_PATH + file.getName())
+        .build();
 
     PromptData promptData = PromptData.builder()
         .prompt(promptRequest.getPrompt())
@@ -73,181 +96,134 @@ public class ImageService {
         .guidanceScale(promptRequest.getGuidanceScale())
         .build();
 
-    Long imageId = imageRepository.save(Image.builder()
+    return Image.builder()
         .author(author)
         .imageData(imageData)
         .promptData(promptData)
-        .build()).getId();
-
-    return new GenerateResponse(imageId);
-  }
-
-  public List<ImageResponse> getAllImages(UserDetails userDetails) {
-    List<Image> images = imageRepository.findByIsPublic(true);
-    return images.stream()
-        .map(image -> toImageResponse(image, userDetails))
-        .collect(Collectors.toList());
+        .build();
   }
 
   public List<ImageResponse> getAllImages() {
     List<Image> images = imageRepository.findByIsPublic(true);
-    return images.stream()
-        .map(image -> toImageResponse(image))
-        .collect(Collectors.toList());
-  }
-
-  private ImageResponse toImageResponse(Image image, UserDetails userDetails) {
-    String filePath = image.getImageData().getPath();
-    byte[] images;
-    boolean isLiked = checkIfUserLikedImage(image, userDetails);
-    try {
-      images = Files.readAllBytes(new File(filePath).toPath());
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+    if (isUserAuthenticated()) {
+      CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+          .getPrincipal();
+      return images.stream()
+          .map(image -> buildImageResponse(image, userDetails.getUser().getId()))
+          .collect(Collectors.toList());
+    } else {
+      return images.stream()
+          .map(image -> buildImageResponse(image, null))
+          .collect(Collectors.toList());
     }
-    return ImageResponse.builder()
-        .id(image.getId())
-        .promptData(image.getPromptData())
-        .authorId(image.getAuthor().getId())
-        .authorName(image.getAuthor().getUsername())
-        .isPublic(image.isPublic())
-        .isLiked(isLiked)
-        .imageData(images)
-        .build();
+
   }
 
-  public ImageResponse getImage(Long id, UserDetails userDetails) {
-    Optional<Image> optionalImage = imageRepository.findById(id);
-    if (!optionalImage.isPresent()) {
-      return ImageResponse.builder().build();
-    }
-    Image image = optionalImage.get();
-    return buildImageResponse(image, userDetails);
-  }
-
-  public ImageResponse getImage(Long id) {
-    Optional<Image> optionalImage = imageRepository.findById(id);
-    if (!optionalImage.isPresent()) {
-      return ImageResponse.builder().build();
-    }
-    Image image = optionalImage.get();
-    String filePath = image.getImageData().getPath();
-    byte[] images;
-    try {
-      images = Files.readAllBytes(new File(filePath).toPath());
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-    return ImageResponse.builder()
-        .id(image.getId())
-        .promptData(image.getPromptData())
-        .authorId(image.getAuthor().getId())
-        .authorName(image.getAuthor().getUsername())
-        .isPublic(image.isPublic())
-        .imageData(images)
-        .build();
-  }
-
-  private ImageResponse buildImageResponse(Image image, UserDetails userDetails) {
-    String filePath = image.getImageData().getPath();
-    byte[] images;
-    boolean isLiked = checkIfUserLikedImage(image, userDetails);
-    try {
-      images = Files.readAllBytes(new File(filePath).toPath());
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-    return ImageResponse.builder()
-        .id(image.getId())
-        .promptData(image.getPromptData())
-        .authorId(image.getAuthor().getId())
-        .authorName(image.getAuthor().getUsername())
-        .isPublic(image.isPublic())
-        .isLiked(isLiked)
-        .imageData(images)
-        .build();
-  }
-
-  private boolean checkIfUserLikedImage(Image image, UserDetails userDetails) {
-    return image.getLikes().stream()
-        .anyMatch(user -> user.getUsername().equals(userDetails.getUsername()));
-  }
-
-  private ImageResponse toImageResponse(Image image) {
-    String filePath = image.getImageData().getPath();
-    byte[] images;
-    try {
-      images = Files.readAllBytes(new File(filePath).toPath());
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-    return ImageResponse.builder()
-        .id(image.getId())
-        .promptData(image.getPromptData())
-        .authorId(image.getAuthor().getId())
-        .authorName(image.getAuthor().getUsername())
-        .isPublic(image.isPublic())
-        .imageData(images)
-        .build();
-  }
-
-  public List<ImageResponse> getAllUserImages(Long id, Long userId) {
+  public List<ImageResponse> getAllUserImages(Long id) {
+    CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+        .getPrincipal();
     List<Image> images;
-    if (userId == id) {
+    Long currentUserId = userDetails.getUser().getId();
+    if (currentUserId == id) {
       images = imageRepository.findByAuthorId(id);
     } else {
       images = imageRepository.findByAuthorIdAndIsPublic(id, true);
     }
 
-    return images.stream().map(this::toImageResponse).toList();
+    return images.stream().map(image -> buildImageResponse(image, currentUserId))
+        .collect(Collectors.toList());
   }
 
-  public void changePrivacy(Long id, ChangeImagePrivacyRequest changeImagePrivacyRequest) {
-    Image image = imageRepository.findById(id).get();
-    image.setPublic(changeImagePrivacyRequest.isPublic());
-    imageRepository.save(image);
-  }
-
-  public void changeImage(Long id, UserDetails userDetails, InteractionImageRequest interactionImageRequest) {
-    if (interactionImageRequest.getAction() == null) {
-      System.out.println("Action is null");
-      return;
-    }
-
+  public ImageResponse getImage(Long id) {
     Optional<Image> optionalImage = imageRepository.findById(id);
-    if (!optionalImage.isPresent()) {
-      System.out.println("Image not found");
-      return;
-    }
-    Image image = optionalImage.get();
+    if (optionalImage.isPresent()) {
+      Image image = optionalImage.get();
+      if (isUserAuthenticated()) {
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+            .getPrincipal();
+        return buildImageResponse(image, userDetails.getUser().getId());
 
-    User user = userRepository.findByUsername(userDetails.getUsername());
-    if (user == null) {
-      System.out.println("User not found");
-      return;
+      }
+      return buildImageResponse(image, null);
+    } else {
+      return new ImageResponse();
     }
+  }
 
-    switch (interactionImageRequest.getAction()) {
-      case "like":
-        if (!image.getLikes().contains(user)) {
-          image.getLikes().add(user);
-        }
-        break;
-      case "dislike":
-        image.getLikes().remove(user);
-        break;
-      case "makePublic":
-        image.setPublic(true);
-        break;
-      case "makePrivate":
-        image.setPublic(false);
-        break;
-      default:
-        System.out.println("Invalid action");
+  public boolean isUserAuthenticated() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    return authentication != null && authentication.isAuthenticated() &&
+        !(authentication.getPrincipal() instanceof String);
+  }
+
+  private ImageResponse buildImageResponse(Image image, Long userId) {
+    String filePath = image.getImageData().getPath();
+    byte[] images;
+    try {
+      images = Files.readAllBytes(new File(filePath).toPath());
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+    boolean isLiked;
+    if (userId != null) {
+      isLiked = checkIfUserLikedImage(image, userId);
+    } else {
+      isLiked = false;
+    }
+    return ImageResponse.builder()
+        .id(image.getId())
+        .promptData(image.getPromptData())
+        .authorId(image.getAuthor().getId())
+        .authorName(image.getAuthor().getUsername())
+        .isPublic(image.isPublic())
+        .isLiked(isLiked)
+        .imageData(images)
+        .build();
+  }
+
+  private boolean checkIfUserLikedImage(Image image, Long userId) {
+    return image.getLikes().stream().anyMatch(user -> user.getId().equals(userId));
+  }
+
+  public void changeImage(Long id, InteractionImageRequest interactionImageRequest) {
+    if (isUserAuthenticated()) {
+      User user = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+          .getPrincipal()).getUser();
+
+      if (interactionImageRequest.getAction() == null) {
+        System.out.println("Action is null");
         return;
-    }
+      }
 
-    imageRepository.save(image);
+      Optional<Image> optionalImage = imageRepository.findById(id);
+      if (!optionalImage.isPresent()) {
+        System.out.println("Image not found");
+        return;
+      }
+      Image image = optionalImage.get();
+
+      switch (interactionImageRequest.getAction()) {
+        case "like":
+          if (!image.getLikes().contains(user)) {
+            image.getLikes().add(user);
+          }
+          break;
+        case "dislike":
+          image.getLikes().remove(user);
+          break;
+        case "makePublic":
+          image.setPublic(true);
+          break;
+        case "makePrivate":
+          image.setPublic(false);
+          break;
+        default:
+          System.out.println("Invalid action");
+          return;
+      }
+
+      imageRepository.save(image);
+    }
   }
 
 }

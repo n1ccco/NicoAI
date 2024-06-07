@@ -1,8 +1,12 @@
 package org.bohdanzhuvak.nicoai.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class GenerateResponse {
-  private final Long imageId;
+  private Long imageId;
 }
