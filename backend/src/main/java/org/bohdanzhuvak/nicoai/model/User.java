@@ -2,6 +2,7 @@ package org.bohdanzhuvak.nicoai.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -37,4 +38,18 @@ public class User {
   @Builder.Default
   private List<String> roles = new ArrayList<>();
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    User user = (User) o;
+    return Id.equals(user.Id);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(Id);
+  }
 }

@@ -20,7 +20,6 @@ import org.bohdanzhuvak.nicoai.model.ImageData;
 import org.bohdanzhuvak.nicoai.model.PromptData;
 import org.bohdanzhuvak.nicoai.model.User;
 import org.bohdanzhuvak.nicoai.repository.ImageRepository;
-import org.bohdanzhuvak.nicoai.repository.UserRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -38,7 +37,6 @@ public class ImageService {
   private final ImageRepository imageRepository;
   private final ImageGeneratorProperties imageGeneratorProperties;
   private final String FOLDER_PATH = "/images/";
-  private final UserRepository userRepository;
 
   private MultiValueMap<String, String> buildPromptParams(PromptRequest promptRequest) {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
@@ -191,44 +189,35 @@ public class ImageService {
   }
 
   public void changeImage(Long id, InteractionImageRequest interactionImageRequest) {
-    if (isUserAuthenticated()) {
-      User userFromContext = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
-          .getPrincipal()).getUser();
-      // TODO This shouldn't be here.
-      User user = userRepository.findByUsername(userFromContext.getUsername());
-
-      if (interactionImageRequest.getAction() == null) {
-        System.out.println("Action is null");
-        return;
-      }
-
-      Optional<Image> optionalImage = imageRepository.findById(id);
-      if (!optionalImage.isPresent()) {
-        System.out.println("Image not found");
-        return;
-      }
-      Image image = optionalImage.get();
-
-      switch (interactionImageRequest.getAction()) {
-        case "like":
-          image.getLikes().add(user);
-          break;
-        case "dislike":
-          image.getLikes().remove(user);
-          break;
-        case "makePublic":
-          image.setPublic(true);
-          break;
-        case "makePrivate":
-          image.setPublic(false);
-          break;
-        default:
-          System.out.println("Invalid action");
-          return;
-      }
-
-      imageRepository.save(image);
+    if (!isUserAuthenticated() || interactionImageRequest.getAction() == null) {
+      System.out.println("User is not authenticated or Action is null");
+      return;
     }
+
+    User user = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+        .getPrincipal()).getUser();
+
+    Image image = imageRepository.findById(id).orElse(null);
+
+    switch (interactionImageRequest.getAction()) {
+      case "like":
+        image.getLikes().add(user);
+        break;
+      case "dislike":
+        image.getLikes().remove(user);
+        break;
+      case "makePublic":
+        image.setPublic(true);
+        break;
+      case "makePrivate":
+        image.setPublic(false);
+        break;
+      default:
+        System.out.println("Invalid action");
+        return;
+    }
+
+    imageRepository.save(image);
   }
 
 }
