@@ -15,7 +15,7 @@ const LikeImageEffect: LikeImageEffectType = async (id, likePayload) => {
   const action = likePayload.like ? 'like' : 'dislike'
 
   return await axiosInstance
-    .put(`${IMAGES}/${id}`, { action })
+    .patch(`${IMAGES}/${id}`, { action })
     .then((_res): EffectResult => {
       return {
         type: 'success',

@@ -35,9 +35,9 @@ public class ImagesController {
     return imageService.getImage(id);
   }
 
-  @PutMapping(value = "{id}")
+  @PatchMapping(value = "{id}")
   @ResponseStatus(HttpStatus.OK)
-  public void upvoteImage(@PathVariable("id") Long id, @RequestBody InteractionImageRequest interactionImageRequest) {
+  public void changeImage(@PathVariable("id") Long id, @RequestBody InteractionImageRequest interactionImageRequest) {
     imageService.changeImage(id, interactionImageRequest);
   }
 

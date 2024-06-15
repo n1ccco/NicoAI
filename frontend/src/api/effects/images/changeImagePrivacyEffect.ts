@@ -18,7 +18,7 @@ const ChangeImagePrivacyEffect: ChangeImagePrivacyEffectType = async (
   const action = privacyPayload.isPublic ? 'makePublic' : 'makePrivate'
 
   return await axiosInstance
-    .put(`${IMAGES}/${id}`, { action })
+    .patch(`${IMAGES}/${id}`, { action })
     .then((_res): EffectResult => {
       return {
         type: 'success',
