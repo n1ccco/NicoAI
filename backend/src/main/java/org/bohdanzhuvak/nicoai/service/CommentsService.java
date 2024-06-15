@@ -13,6 +13,7 @@ import org.bohdanzhuvak.nicoai.model.User;
 import org.bohdanzhuvak.nicoai.repository.CommentRepository;
 import org.bohdanzhuvak.nicoai.repository.ImageRepository;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,7 +30,7 @@ public class CommentsService {
   private final ImageRepository imageRepository;
 
   public List<CommentResponse> getComments(Long id) {
-    List<Comment> comments = commentRepository.findByImage_id(id);
+    List<Comment> comments = commentRepository.findByImage_id(id, Sort.by(Sort.Direction.ASC, "createdAt"));
     return comments.stream()
         .map(comment -> CommentResponse.builder()
             .id(comment.getId())
