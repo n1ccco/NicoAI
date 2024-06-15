@@ -69,7 +69,7 @@ public class SecurityConfig {
         throw new DisabledException("User account is not active");
       }
 
-      return new UsernamePasswordAuthenticationToken(username, null, user.getAuthorities());
+      return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
     };
   }
 

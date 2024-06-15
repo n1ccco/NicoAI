@@ -36,9 +36,17 @@ public class AuthenticationService {
       var authentication = authenticationManager
           .authenticate(new UsernamePasswordAuthenticationToken(username, password));
       String token = jwtTokenProvider.createToken(authentication);
-      User user = ((CustomUserDetails) jwtTokenProvider.getAuthentication(token).getPrincipal()).getUser();
-      return AuthenticationResponse.builder().jwt(token)
-          .user(UserDto.builder().Id(user.getId()).username(user.getUsername()).roles(user.getRoles()).build()).build();
+      User user = ((CustomUserDetails) authentication.getPrincipal()).getUser();
+      return AuthenticationResponse
+          .builder()
+          .jwt(token)
+          .user(UserDto
+              .builder()
+              .Id(user.getId())
+              .username(user.getUsername())
+              .roles(user.getRoles())
+              .build())
+          .build();
     } catch (AuthenticationException e) {
       throw new BadCredentialsException("Invalid username/password supplied");
     }
