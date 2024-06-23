@@ -220,4 +220,8 @@ public class ImageService {
     imageRepository.save(image);
   }
 
+  public void deleteImage(Long id) {
+    imageRepository.deleteById(id);
+  }
+
 }

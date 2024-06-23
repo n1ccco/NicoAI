@@ -1,14 +1,19 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth.ts'
 import Toggle from '@/components/ui/Toggle.tsx'
 import { Photo, User } from '@/types/api.ts'
 import Comments from '@/components/Comments'
-import { changeImagePrivacyEffect, getImageEffect } from '@/api/effects/images'
+import {
+  changeImagePrivacyEffect,
+  deleteImageEffect,
+  getImageEffect,
+} from '@/api/effects/images'
 import PictureDetails from '@/components/PictureDetails'
 import LikeButton from '@/components/ui/LikeButton'
 import { getCurrentUserEffect } from '@/api/effects/user'
 import Loader from '@/components/ui/Loader'
+import { GALLERY } from '@/constants/routeContants'
 
 const Picture = () => {
   const { id } = useParams<{ id: string }>()
@@ -16,6 +21,7 @@ const Picture = () => {
   const [loading, setLoading] = useState<boolean>(false)
   const { state: authState } = useAuth()
   const [user, setUser] = useState<User | null>(null)
+  const navigate = useNavigate()
 
   useEffect(() => {
     setLoading(true)
@@ -60,6 +66,18 @@ const Picture = () => {
     }
   }
 
+  const deleteImage = async () => {
+    if (photo) {
+      deleteImageEffect(Number(id)).then((res) => {
+        if (res.type === 'success') {
+          navigate(`/${GALLERY}`)
+        } else {
+          console.error(res.state.error)
+        }
+      })
+    }
+  }
+
   return (
     <div>
       {loading ? (
@@ -81,11 +99,19 @@ const Picture = () => {
                   countLikes={photo.countLikes}
                 />
                 {photo.authorId === user.id && (
-                  <Toggle
-                    initialState={photo.isPublic}
-                    onToggle={handleToggle}
-                    toggleName="Make public"
-                  />
+                  <div className="flex items-center justify-between">
+                    <Toggle
+                      initialState={photo.isPublic}
+                      onToggle={handleToggle}
+                      toggleName="Make public"
+                    />
+                    <a
+                      onClick={deleteImage}
+                      className="inline-block cursor-pointer rounded bg-red-600 px-4 py-2 text-white transition duration-150 ease-in-out hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-opacity-50"
+                    >
+                      Delete
+                    </a>
+                  </div>
                 )}
               </div>
               <Comments photoId={photo.id} user={user} />

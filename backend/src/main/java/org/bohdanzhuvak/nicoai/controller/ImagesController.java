@@ -62,4 +62,10 @@ public class ImagesController {
   public CommentResponse postComment(@RequestBody CommentRequest commentRequest, @PathVariable("id") Long id) {
     return commentsService.postComment(commentRequest, id);
   }
+
+  @DeleteMapping(value = "{id}")
+  @ResponseStatus(HttpStatus.OK)
+  public void deleteImage(@PathVariable("id") Long id) {
+    imageService.deleteImage(id);
+  }
 }
