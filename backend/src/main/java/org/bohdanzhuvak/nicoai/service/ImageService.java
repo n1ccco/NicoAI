@@ -20,6 +20,7 @@ import org.bohdanzhuvak.nicoai.model.ImageData;
 import org.bohdanzhuvak.nicoai.model.PromptData;
 import org.bohdanzhuvak.nicoai.model.User;
 import org.bohdanzhuvak.nicoai.repository.ImageRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -104,7 +105,7 @@ public class ImageService {
   }
 
   public List<ImageResponse> getAllImages() {
-    List<Image> images = imageRepository.findByIsPublic(true);
+    List<Image> images = imageRepository.findByIsPublic(true, Sort.by(Sort.Direction.DESC, "id"));
     if (isUserAuthenticated()) {
       CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
           .getPrincipal();
