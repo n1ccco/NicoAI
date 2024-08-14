@@ -25,8 +25,6 @@ const Gallery = () => {
       })
   }, [sortOption])
 
-  console.log('Selected sortOption:', sortOption)
-
   return (
     <div className="container mx-auto">
       <div className="mb-12 text-center">
