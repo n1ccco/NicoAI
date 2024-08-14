@@ -9,13 +9,13 @@ type GetAllImagesState = {
 
 type GetAllImagesResult = EffectResult<GetAllImagesState>
 
-type GetAllImagesEffectType = () => Promise<GetAllImagesResult>
+type GetAllImagesEffectType = ({ sortBy, order }: { sortBy: string, order: string }) => Promise<GetAllImagesResult>
 
 const GetAllImagesErrorMessage = 'Can not get images'
 
-const getAllImagesEffect: GetAllImagesEffectType = async () => {
+const getAllImagesEffect: GetAllImagesEffectType = async ({ sortBy, order }) => {
   return await axiosInstance
-    .get(IMAGES)
+    .get(IMAGES, {params: {sortBy, order}})
     .then((response): GetAllImagesResult => {
       const photos: Photo[] = response.data
       return {

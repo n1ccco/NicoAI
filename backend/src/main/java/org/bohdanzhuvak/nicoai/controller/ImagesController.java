@@ -25,8 +25,10 @@ public class ImagesController {
 
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
-  public List<ImageResponse> getImages() {
-    return imageService.getAllImages();
+  public List<ImageResponse> getImages(
+      @RequestParam(name = "sortBy", required = false, defaultValue = "date") String sortBy,
+      @RequestParam(name = "order", required = false, defaultValue = "asc") String sortOrder) {
+    return imageService.getAllImages(sortBy, sortOrder);
   }
 
   @GetMapping(value = "{id}")

@@ -104,8 +104,21 @@ public class ImageService {
         .build();
   }
 
-  public List<ImageResponse> getAllImages() {
-    List<Image> images = imageRepository.findByIsPublic(true, Sort.by(Sort.Direction.DESC, "id"));
+  public List<ImageResponse> getAllImages(String sortBy, String order) {
+    String sanitizedSortBy = mapSortBy(sortBy);
+    Sort.Direction direction = mapSortDirection(order);
+
+    List<Image> images;
+    if ("likes".equals(sanitizedSortBy)) {
+      if (direction == Sort.Direction.ASC) {
+        images = imageRepository.findByIsPublicOrderByLikesSizeAsc();
+      } else {
+        images = imageRepository.findByIsPublicOrderByLikesSizeDesc();
+      }
+    } else {
+      // Fallback to default sorting or other fields
+      images = imageRepository.findByIsPublic(true, Sort.by(direction, sanitizedSortBy));
+    }
     if (isUserAuthenticated()) {
       CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
           .getPrincipal();
@@ -118,6 +131,25 @@ public class ImageService {
           .collect(Collectors.toList());
     }
 
+  }
+
+  private String mapSortBy(String sortBy) {
+    switch (sortBy.toLowerCase()) {
+      case "date":
+        return "id";
+      case "rating":
+        return "likes";
+      default:
+        return null;
+    }
+  }
+
+  private Sort.Direction mapSortDirection(String order) {
+    if ("asc".equalsIgnoreCase(order)) {
+      return Sort.Direction.ASC;
+    } else {
+      return Sort.Direction.DESC;
+    }
   }
 
   public List<ImageResponse> getAllUserImages(Long id) {

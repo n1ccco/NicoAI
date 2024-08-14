@@ -7,10 +7,12 @@ import Loader from '@/components/ui/Loader'
 const Gallery = () => {
   const [photos, setPhotos] = useState<Photo[]>([])
   const [loading, setLoading] = useState<boolean>(false)
+  const [sortOption, setSortOption] = useState<string>('date-desc')
 
   useEffect(() => {
+    const [sortBy, order] = sortOption.split('-')
     setLoading(true)
-    getAllImagesEffect()
+    getAllImagesEffect({ sortBy, order })
       .then((res) => {
         if (res.type === 'success') {
           setPhotos(res.state.photos)
@@ -21,7 +23,9 @@ const Gallery = () => {
       .finally(() => {
         setLoading(false)
       })
-  }, [])
+  }, [sortOption])
+
+  console.log('Selected sortOption:', sortOption)
 
   return (
     <div className="container mx-auto">
@@ -33,6 +37,24 @@ const Gallery = () => {
           Explore the creativity of our users
         </p>
       </div>
+
+      <div className="mb-8 text-center">
+        <label htmlFor="sortOption" className="mr-4 text-lg font-medium">
+          Sort by:
+        </label>
+        <select
+          id="sortOption"
+          value={sortOption}
+          onChange={(e) => setSortOption(e.target.value)}
+          className="rounded border p-2 text-blue-600"
+        >
+          <option value="date-desc">Date (Newest first)</option>
+          <option value="date-asc">Date (Oldest first)</option>
+          <option value="rating-desc">Rating (Highest first)</option>
+          <option value="rating-asc">Rating (Lowest first)</option>
+        </select>
+      </div>
+
       <div className="flex flex-col items-center justify-center">
         {loading ? (
           <Loader />
