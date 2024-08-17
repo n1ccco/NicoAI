@@ -1,0 +1,18 @@
+version: "3.8"
+services:
+  backend:
+    build:
+      target: dev
+    volumes:
+      - ./backend/src:/app/backend/src
+      - ./backend/target:/app/backend/target
+    ports:
+      - 35729:35729
+
+  frontend:
+    build:
+      target: dev
+    volumes:
+      - ./frontend/src:/app/frontend/src
+    ports:
+      - 3000:3000

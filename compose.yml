@@ -10,7 +10,6 @@ services:
       - .env
     ports:
       - 8080:8080
-      - 35729:35729
     depends_on:
       - db
 
@@ -29,8 +28,6 @@ services:
     container_name: frontend
     build:
       context: ./frontend
-    ports:
-      - 3000:3000
 
   generator:
     container_name: generator

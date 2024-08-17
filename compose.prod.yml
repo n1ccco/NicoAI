@@ -1,0 +1,11 @@
+version: "3.8"
+services:
+  backend:
+    build:
+      target: prod
+
+  frontend:
+    build:
+      target: prod
+    ports:
+      - 3000:80
