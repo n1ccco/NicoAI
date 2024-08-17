@@ -17,8 +17,10 @@ spring:
     name: NicoAi
 
 cors:
-  origins:
-    - "http://localhost:3000"
+  origins: "${FRONTEND_URL}"
 api:
   image-generator:
-    url: "https://coral-relevant-cub.ngrok-free.app"
+    url: "${IMAGE_GENERATOR_URL}"
+
+jwt:
+  secret: ${JWT_SECRET}

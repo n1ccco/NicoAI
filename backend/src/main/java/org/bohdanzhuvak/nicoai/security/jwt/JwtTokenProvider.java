@@ -35,7 +35,7 @@ public class JwtTokenProvider {
 
   @PostConstruct
   public void init() {
-    var secret = Base64.getEncoder().encodeToString(this.jwtProperties.getSecretKey().getBytes());
+    var secret = Base64.getEncoder().encodeToString(this.jwtProperties.getSecret().getBytes());
     this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
   }
 
