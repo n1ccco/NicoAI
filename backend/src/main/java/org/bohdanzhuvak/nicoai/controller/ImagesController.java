@@ -8,12 +8,16 @@ import org.bohdanzhuvak.nicoai.dto.GenerateResponse;
 import org.bohdanzhuvak.nicoai.dto.ImageResponse;
 import org.bohdanzhuvak.nicoai.dto.InteractionImageRequest;
 import org.bohdanzhuvak.nicoai.dto.PromptRequest;
+import org.bohdanzhuvak.nicoai.model.CustomUserDetails;
+import org.bohdanzhuvak.nicoai.model.User;
 import org.bohdanzhuvak.nicoai.service.CommentsService;
 import org.bohdanzhuvak.nicoai.service.ImageService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -45,12 +49,11 @@ public class ImagesController {
 
   @PostMapping
   @ResponseStatus(HttpStatus.OK)
+  @PreAuthorize("isAuthenticated()")
   public GenerateResponse generateImage(@ModelAttribute PromptRequest promptRequest) {
-    try {
-      return imageService.generateImage(promptRequest);
-    } catch (IOException e) {
-      return null;
-    }
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    User author = ((CustomUserDetails) authentication.getPrincipal()).getUser();
+    return imageService.generateImage(promptRequest, author);
   }
 
   @GetMapping("{id}/comments")

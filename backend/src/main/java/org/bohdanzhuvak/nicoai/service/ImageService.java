@@ -9,6 +9,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.bohdanzhuvak.nicoai.config.ImageGeneratorProperties;
+import org.bohdanzhuvak.nicoai.config.ImageProperties;
 import org.bohdanzhuvak.nicoai.dto.CustomMultipartFile;
 import org.bohdanzhuvak.nicoai.dto.GenerateResponse;
 import org.bohdanzhuvak.nicoai.dto.ImageResponse;
@@ -37,7 +38,8 @@ import lombok.RequiredArgsConstructor;
 public class ImageService {
   private final ImageRepository imageRepository;
   private final ImageGeneratorProperties imageGeneratorProperties;
-  private final String FOLDER_PATH = "/images/";
+  private final ImageProperties imageProperties;
+  private final RestTemplate restTemplate;
 
   private MultiValueMap<String, String> buildPromptParams(PromptRequest promptRequest) {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
@@ -50,22 +52,21 @@ public class ImageService {
     return params;
   }
 
-  public GenerateResponse generateImage(PromptRequest promptRequest) throws IOException {
-    if (isUserAuthenticated()) {
-      User author = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
-          .getPrincipal()).getUser();
-      byte[] imageBytes = fetchImageFromGenerator(promptRequest);
-      MultipartFile multipartFile = saveImageToFileSystem(imageBytes, UUID.randomUUID() + ".png");
-      Image image = buildImageEntity(multipartFile, promptRequest, author);
-      Long imageId = imageRepository.save(image).getId();
-      return new GenerateResponse(imageId);
-    } else {
+  public GenerateResponse generateImage(PromptRequest promptRequest, User author) {
+    byte[] imageBytes = fetchImageFromGenerator(promptRequest);
+    MultipartFile multipartFile;
+    try {
+      multipartFile = saveImageToFileSystem(imageBytes, UUID.randomUUID() + ".png");
+    } catch (IOException e) {
+      e.printStackTrace();
       return new GenerateResponse();
     }
+    Image image = buildImageEntity(multipartFile, promptRequest, author);
+    Long imageId = imageRepository.save(image).getId();
+    return new GenerateResponse(imageId);
   }
 
   private byte[] fetchImageFromGenerator(PromptRequest promptRequest) {
-    RestTemplate restTemplate = new RestTemplate();
     String uri = UriComponentsBuilder.fromHttpUrl(imageGeneratorProperties.getUrl())
         .pathSegment("generate")
         .queryParams(buildPromptParams(promptRequest))
@@ -74,9 +75,9 @@ public class ImageService {
     return restTemplate.getForObject(uri, byte[].class);
   }
 
-  private MultipartFile saveImageToFileSystem(byte[] imageBytes, String filename) throws IOException {
+  protected MultipartFile saveImageToFileSystem(byte[] imageBytes, String filename) throws IOException {
     MultipartFile multipartFile = new CustomMultipartFile(filename, imageBytes);
-    String filePath = FOLDER_PATH + multipartFile.getName();
+    String filePath = imageProperties.getFOLDER_PATH() + multipartFile.getName();
     multipartFile.transferTo(new File(filePath));
     return multipartFile;
   }
@@ -85,7 +86,7 @@ public class ImageService {
     ImageData imageData = ImageData.builder()
         .name(file.getName())
         .type(file.getContentType())
-        .path(FOLDER_PATH + file.getName())
+        .path(imageProperties.getFOLDER_PATH() + file.getName())
         .build();
 
     PromptData promptData = PromptData.builder()
@@ -190,10 +191,10 @@ public class ImageService {
   }
 
   private ImageResponse buildImageResponse(Image image, Long userId) {
-    String filePath = image.getImageData().getPath();
+    String fileName = image.getImageData().getName();
     byte[] images;
     try {
-      images = Files.readAllBytes(new File(filePath).toPath());
+      images = Files.readAllBytes(new File(imageProperties.getFOLDER_PATH() + fileName).toPath());
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
