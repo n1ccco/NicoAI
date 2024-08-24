@@ -7,24 +7,24 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
-import org.springframework.web.filter.GenericFilterBean;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 
 @RequiredArgsConstructor
-public class JwtTokenAuthenticationFilter extends GenericFilterBean {
+public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
 
   public static final String HEADER_PREFIX = "Bearer ";
 
   private final JwtTokenProvider jwtTokenProvider;
 
   @Override
-  public void doFilter(ServletRequest req, ServletResponse res, FilterChain filterChain)
+  public void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain)
       throws IOException, ServletException {
 
     String token = resolveToken((HttpServletRequest) req);

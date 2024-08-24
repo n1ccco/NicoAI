@@ -2,4 +2,4 @@
 
 docker-compose down
 
-docker-compose up frontend backend --build
+docker-compose up --build

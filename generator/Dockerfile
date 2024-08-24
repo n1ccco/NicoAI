@@ -16,11 +16,12 @@ RUN pip install -r requirements.txt
 
 # Copy only the necessary files from the build stage
 COPY . .
+
+# Set the Python path environment variable to ensure the module can be found
+ENV PYTHONPATH=/app/generator/src
+
 # Expose the port Flask will run on
 EXPOSE 5000
 
-# Define environment variable
-ENV FLASK_APP=diffusion.py
-
 # Run app.py when the container launches
-CMD ["flask", "run", "--host=0.0.0.0"]
+CMD ["python3", "-m", "src.main"]
