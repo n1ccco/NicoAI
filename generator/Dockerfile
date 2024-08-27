@@ -1,8 +1,8 @@
 # Use an official Python runtime as a parent image
-FROM nvidia/cuda:12.4.1-runtime-ubuntu22.04
+FROM nvidia/cuda:12.6.0-runtime-ubuntu22.04
 
-RUN apt-get update && \
-  apt-get install -y python3.11 python3.11-distutils python3-pip python-is-python3 && \
+RUN apt update && \
+  apt install -y python3.11 python3.11-distutils python3-pip python-is-python3 && \
   rm -rf /var/lib/apt/lists/*
 
 # Set the working directory in the container
