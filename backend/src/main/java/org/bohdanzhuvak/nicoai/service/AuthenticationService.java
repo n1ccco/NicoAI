@@ -1,55 +1,53 @@
 package org.bohdanzhuvak.nicoai.service;
 
-import java.util.Arrays;
-
-import org.bohdanzhuvak.nicoai.dto.AuthenticationRequest;
-import org.bohdanzhuvak.nicoai.dto.AuthenticationResponse;
-import org.bohdanzhuvak.nicoai.dto.RegistrationRequest;
-import org.bohdanzhuvak.nicoai.dto.UserDto;
-import org.bohdanzhuvak.nicoai.model.CustomUserDetails;
+import lombok.RequiredArgsConstructor;
+import org.bohdanzhuvak.nicoai.dto.*;
 import org.bohdanzhuvak.nicoai.model.User;
 import org.bohdanzhuvak.nicoai.repository.UserRepository;
 import org.bohdanzhuvak.nicoai.security.jwt.JwtTokenProvider;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import lombok.RequiredArgsConstructor;
+import javax.naming.AuthenticationException;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
   private final UserRepository userRepository;
-  private final AuthenticationManager authenticationManager;
   private final JwtTokenProvider jwtTokenProvider;
   private final PasswordEncoder passwordEncoder;
 
-  public AuthenticationResponse signin(AuthenticationRequest authenticationRequest) {
-    try {
-      String username = authenticationRequest.getUsername();
-      String password = authenticationRequest.getPassword();
-      var authentication = authenticationManager
-          .authenticate(new UsernamePasswordAuthenticationToken(username, password));
-      String token = jwtTokenProvider.createToken(authentication);
-      User user = ((CustomUserDetails) authentication.getPrincipal()).getUser();
-      return AuthenticationResponse
-          .builder()
-          .jwt(token)
-          .user(UserDto
-              .builder()
-              .Id(user.getId())
-              .username(user.getUsername())
-              .roles(user.getRoles())
-              .build())
-          .build();
-    } catch (AuthenticationException e) {
-      throw new BadCredentialsException("Invalid username/password supplied");
+  public AuthenticationResponse signin(AuthenticationRequest authenticationRequest) throws AuthenticationException {
+    User user = findByCredentials(authenticationRequest);
+    UserDto userDto = UserDto
+        .builder()
+        .Id(user.getId())
+        .username(user.getUsername())
+        .roles(user.getRoles())
+        .build();
+    String token = jwtTokenProvider.generateJwtToken(userDto);
+    String refreshToken = jwtTokenProvider.generateRefreshToken(userDto);
+    return AuthenticationResponse
+        .builder()
+        .jwt(token)
+        .refreshToken(refreshToken)
+        .user(userDto)
+        .build();
+  }
+
+  private User findByCredentials(AuthenticationRequest authenticationRequest) throws AuthenticationException {
+    Optional<User> optionalUser = userRepository.findByUsername(authenticationRequest.getUsername());
+    if (optionalUser.isPresent()) {
+      User user = optionalUser.get();
+      if (passwordEncoder.matches(authenticationRequest.getPassword(), user.getPassword())) {
+        return user;
+      }
     }
+    throw new AuthenticationException("Email or password is not correct");
   }
 
   public void signup(RegistrationRequest registrationRequest) {
@@ -59,15 +57,20 @@ public class AuthenticationService {
 
     userRepository.save(User.builder().username(registrationRequest.getUsername())
         .password(passwordEncoder.encode(registrationRequest.getPassword()))
-        .roles(Arrays.asList("ROLE_USER")).build());
+        .roles(List.of("ROLE_USER")).build());
   }
 
-  public UserDto getCurrentUser() {
+  public UserDto getCurrentUser(String token) {
     if (isUserAuthenticated()) {
-      User user = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
-          .getPrincipal()).getUser();
-
-      return UserDto.builder().Id(user.getId()).username(user.getUsername()).roles(user.getRoles()).build();
+      Optional<User> optionalUser = userRepository.findByUsername(jwtTokenProvider.getUsernameFromToken(token));
+      if (optionalUser.isPresent()) {
+        User user = optionalUser.get();
+        return UserDto.builder()
+            .Id(user.getId())
+            .username(user.getUsername())
+            .roles(user.getRoles())
+            .build();
+      }
     }
     return null;
   }
@@ -76,5 +79,18 @@ public class AuthenticationService {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     return authentication != null && authentication.isAuthenticated() &&
         !(authentication.getPrincipal() instanceof String);
+  }
+
+  public JwtAuthenticationDto refreshToken(JwtRefreshDto jwtRefreshDto) throws AuthenticationException {
+    String refreshToken = jwtRefreshDto.getToken();
+    if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
+      User user = userRepository.findByUsername(jwtTokenProvider.getUsernameFromToken(refreshToken)).orElseThrow(() -> new AuthenticationException("Failed to refresh token"));
+      return jwtTokenProvider.refreshBaseToken(UserDto.builder().Id(user
+              .getId())
+          .roles(user.getRoles())
+          .username(user.getUsername())
+          .build(), refreshToken);
+    }
+    throw new AuthenticationException("Invalid refresh token");
   }
 }

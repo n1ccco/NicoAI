@@ -1,10 +1,13 @@
 package org.bohdanzhuvak.nicoai.security.jwt;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
-
+import org.bohdanzhuvak.nicoai.dto.JwtAuthenticationDto;
+import org.bohdanzhuvak.nicoai.dto.UserDto;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,13 +16,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.PostConstruct;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
+import javax.crypto.SecretKey;
 import java.util.Collection;
 import java.util.Date;
-
-import static java.util.stream.Collectors.joining;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -31,39 +31,57 @@ public class JwtTokenProvider {
 
   private final UserDetailsService userDetailsService;
 
-  private SecretKey secretKey;
-
-  @PostConstruct
-  public void init() {
-    var secret = Base64.getEncoder().encodeToString(this.jwtProperties.getSecret().getBytes());
-    this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+  public JwtAuthenticationDto refreshBaseToken(UserDto userDto, String refreshToken) {
+    JwtAuthenticationDto jwtDto = new JwtAuthenticationDto();
+    jwtDto.setToken(generateJwtToken(userDto));
+    jwtDto.setRefreshToken(refreshToken);
+    return jwtDto;
   }
 
-  public String createToken(Authentication authentication) {
+  public String generateJwtToken(UserDto userDto) {
+    return generateToken(userDto, jwtProperties.getValidityAccessInMs());
+  }
 
-    String username = authentication.getName();
-    Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+  public String generateRefreshToken(UserDto userDto) {
+    return generateToken(userDto, jwtProperties.getValidityRefreshInMs());
+  }
+
+  private String generateToken(UserDto userDto, Date expiration) {
+
+    String username = userDto.getUsername();
+    List<String> authorities = userDto.getRoles();
     var claimsBuilder = Jwts.claims().subject(username);
     if (!authorities.isEmpty()) {
-      claimsBuilder.add(AUTHORITIES_KEY,
-          authorities.stream().map(GrantedAuthority::getAuthority).collect(joining(",")));
+      claimsBuilder.add(AUTHORITIES_KEY, authorities);
     }
-
     var claims = claimsBuilder.build();
+
     Date now = new Date();
-    Date validity = new Date(now.getTime() + this.jwtProperties.getValidityInMs());
 
     return Jwts.builder()
         .claims(claims)
         .issuedAt(now)
-        .expiration(validity)
-        .signWith(this.secretKey, Jwts.SIG.HS256)
+        .expiration(expiration)
+        .signWith(getSingInKey())
         .compact();
+  }
 
+  public String getUsernameFromToken(String token) {
+    Claims claims = Jwts.parser()
+        .verifyWith(getSingInKey())
+        .build()
+        .parseSignedClaims(token)
+        .getPayload();
+    return claims.getSubject();
+  }
+
+  private SecretKey getSingInKey() {
+    byte[] keyBytes = Decoders.BASE64.decode(jwtProperties.getSecret());
+    return Keys.hmacShaKeyFor(keyBytes);
   }
 
   public Authentication getAuthentication(String token) {
-    Claims claims = Jwts.parser().verifyWith(this.secretKey).build().parseSignedClaims(token).getPayload();
+    Claims claims = Jwts.parser().verifyWith(getSingInKey()).build().parseSignedClaims(token).getPayload();
 
     Object authoritiesClaim = claims.get(AUTHORITIES_KEY);
 
@@ -77,12 +95,11 @@ public class JwtTokenProvider {
 
   public boolean validateToken(String token) {
     try {
-      Jwts.parser().verifyWith(this.secretKey).build().parseSignedClaims(token);
+      Jwts.parser().verifyWith(getSingInKey()).build().parseSignedClaims(token);
       // parseClaimsJws will check expiration date. No need do here.
       return true;
     } catch (JwtException | IllegalArgumentException e) {
       return false;
     }
   }
-
 }

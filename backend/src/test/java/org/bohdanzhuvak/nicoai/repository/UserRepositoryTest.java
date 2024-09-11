@@ -1,7 +1,5 @@
 package org.bohdanzhuvak.nicoai.repository;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.bohdanzhuvak.nicoai.NicoAiApplication;
 import org.bohdanzhuvak.nicoai.model.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,17 +8,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 @SpringBootTest(classes = NicoAiApplication.class)
 @ActiveProfiles("test")
 public class UserRepositoryTest {
   @Autowired
   private UserRepository userRepository;
 
-  private User user;
-
   @BeforeEach
   void setUp() {
-    user = new User();
+    User user = new User();
     user.setId(1L);
     user.setUsername("john_doe");
     user.setPassword("password123");
@@ -29,10 +29,10 @@ public class UserRepositoryTest {
 
   @Test
   void testFindByUsername() {
-    User foundUser = userRepository.findByUsername("john_doe");
+    Optional<User> foundUser = userRepository.findByUsername("john_doe");
 
-    assertThat(foundUser.getUsername()).isEqualTo("john_doe");
-    assertThat(foundUser.getPassword()).isEqualTo("password123");
+    assertThat(foundUser.get().getUsername()).isEqualTo("john_doe");
+    assertThat(foundUser.get().getPassword()).isEqualTo("password123");
   }
 
   @Test

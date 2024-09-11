@@ -1,17 +1,14 @@
 package org.bohdanzhuvak.nicoai.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-
-import org.bohdanzhuvak.nicoai.dto.AuthenticationRequest;
-import org.bohdanzhuvak.nicoai.dto.AuthenticationResponse;
-import org.bohdanzhuvak.nicoai.dto.RegistrationRequest;
-import org.bohdanzhuvak.nicoai.dto.UserDto;
+import org.bohdanzhuvak.nicoai.dto.*;
 import org.bohdanzhuvak.nicoai.service.AuthenticationService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.naming.AuthenticationException;
+
+import static org.bohdanzhuvak.nicoai.utils.TokenUtils.resolveToken;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -21,8 +18,7 @@ public class AuthenticationController {
   private final AuthenticationService authenticationService;
 
   @PostMapping("/signin")
-  public AuthenticationResponse signin(@RequestBody AuthenticationRequest authenticationRequest) {
-
+  public AuthenticationResponse signin(@RequestBody AuthenticationRequest authenticationRequest) throws AuthenticationException {
     return authenticationService.signin(authenticationRequest);
   }
 
@@ -31,8 +27,14 @@ public class AuthenticationController {
     authenticationService.signup(registrationRequest);
   }
 
+  @PostMapping("/refresh")
+  public JwtAuthenticationDto refreshToken(@RequestBody JwtRefreshDto jwtRefreshDto) throws AuthenticationException {
+    return authenticationService.refreshToken(jwtRefreshDto);
+  }
+
   @GetMapping("/me")
-  public UserDto getCurrentUser() {
-    return authenticationService.getCurrentUser();
+  public UserDto getCurrentUser(HttpServletRequest request) {
+    String token = resolveToken(request);
+    return authenticationService.getCurrentUser(token);
   }
 }

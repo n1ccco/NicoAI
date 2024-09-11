@@ -8,6 +8,7 @@ export function getConfiguration(): IAppConfiguration {
   return {
     apiBaseAddress:
       fromEnvVarsEnvironment.VITE_APP_API_BASE ?? 'http://localhost:8080/api',
-    applicationName: fromEnvVarsEnvironment.VITE_APP_TITLE ?? 'Nico AI App',
+    applicationName:
+      fromEnvVarsEnvironment.VITE_APP_TITLE ?? 'Nico AI App',
   }
 }

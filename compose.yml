@@ -6,7 +6,7 @@ services:
     volumes:
       - ${HOME}/images:/images
     env_file:
-      - .env
+      - .env.backend
     ports:
       - 8080:8080
     depends_on:
@@ -27,6 +27,8 @@ services:
     container_name: frontend
     build:
       context: ./frontend
+    env_file:
+      - .env.frontend
 
   generator:
     container_name: generator

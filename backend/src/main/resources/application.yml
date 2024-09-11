@@ -12,12 +12,12 @@ spring:
     name: NicoAi
 
 cors:
-  origins: "${FRONTEND_URL}"
+  origins: ${FRONTEND_URL}
 api:
   image-generator:
-    url: "${IMAGE_GENERATOR_URL}"
+    url: ${IMAGE_GENERATOR_URL}
 
 jwt:
   secret: ${JWT_SECRET}
 image:
-  FOLDER_PATH: "/images/"
+  FOLDER_PATH: ${FOLDER_PATH}

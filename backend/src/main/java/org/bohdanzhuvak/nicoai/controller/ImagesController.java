@@ -1,22 +1,14 @@
 package org.bohdanzhuvak.nicoai.controller;
 
 import lombok.RequiredArgsConstructor;
-
-import org.bohdanzhuvak.nicoai.dto.CommentRequest;
-import org.bohdanzhuvak.nicoai.dto.CommentResponse;
-import org.bohdanzhuvak.nicoai.dto.GenerateResponse;
-import org.bohdanzhuvak.nicoai.dto.ImageResponse;
-import org.bohdanzhuvak.nicoai.dto.InteractionImageRequest;
-import org.bohdanzhuvak.nicoai.dto.PromptRequest;
-import org.bohdanzhuvak.nicoai.model.CustomUserDetails;
+import org.bohdanzhuvak.nicoai.dto.*;
 import org.bohdanzhuvak.nicoai.model.User;
+import org.bohdanzhuvak.nicoai.security.CustomUserDetails;
 import org.bohdanzhuvak.nicoai.service.CommentsService;
 import org.bohdanzhuvak.nicoai.service.ImageService;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.core.Authentication;
 
 import java.util.List;
 
@@ -49,10 +41,9 @@ public class ImagesController {
 
   @PostMapping
   @ResponseStatus(HttpStatus.OK)
-  @PreAuthorize("isAuthenticated()")
   public GenerateResponse generateImage(@ModelAttribute PromptRequest promptRequest) {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    User author = ((CustomUserDetails) authentication.getPrincipal()).getUser();
+    User author = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+        .getPrincipal()).user();
     return imageService.generateImage(promptRequest, author);
   }
 

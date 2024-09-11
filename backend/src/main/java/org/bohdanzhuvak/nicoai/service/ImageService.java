@@ -1,26 +1,15 @@
 package org.bohdanzhuvak.nicoai.service;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
+import lombok.RequiredArgsConstructor;
 import org.bohdanzhuvak.nicoai.config.ImageGeneratorProperties;
 import org.bohdanzhuvak.nicoai.config.ImageProperties;
-import org.bohdanzhuvak.nicoai.dto.CustomMultipartFile;
-import org.bohdanzhuvak.nicoai.dto.GenerateResponse;
-import org.bohdanzhuvak.nicoai.dto.ImageResponse;
-import org.bohdanzhuvak.nicoai.dto.InteractionImageRequest;
-import org.bohdanzhuvak.nicoai.dto.PromptRequest;
-import org.bohdanzhuvak.nicoai.model.CustomUserDetails;
+import org.bohdanzhuvak.nicoai.dto.*;
 import org.bohdanzhuvak.nicoai.model.Image;
 import org.bohdanzhuvak.nicoai.model.ImageData;
 import org.bohdanzhuvak.nicoai.model.PromptData;
 import org.bohdanzhuvak.nicoai.model.User;
 import org.bohdanzhuvak.nicoai.repository.ImageRepository;
+import org.bohdanzhuvak.nicoai.security.CustomUserDetails;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,7 +20,13 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import lombok.RequiredArgsConstructor;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -121,10 +116,10 @@ public class ImageService {
       images = imageRepository.findByIsPublic(true, Sort.by(direction, sanitizedSortBy));
     }
     if (isUserAuthenticated()) {
-      CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
-          .getPrincipal();
+      User user = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+          .getPrincipal()).user();
       return images.stream()
-          .map(image -> buildImageResponse(image, userDetails.getUser().getId()))
+          .map(image -> buildImageResponse(image, user.getId()))
           .collect(Collectors.toList());
     } else {
       return images.stream()
@@ -154,10 +149,10 @@ public class ImageService {
   }
 
   public List<ImageResponse> getAllUserImages(Long id) {
-    CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
-        .getPrincipal();
+    User user = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+        .getPrincipal()).user();
     List<Image> images;
-    Long currentUserId = userDetails.getUser().getId();
+    Long currentUserId = user.getId();
     if (currentUserId == id) {
       images = imageRepository.findByAuthorId(id);
     } else {
@@ -173,9 +168,9 @@ public class ImageService {
     if (optionalImage.isPresent()) {
       Image image = optionalImage.get();
       if (isUserAuthenticated()) {
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
-            .getPrincipal();
-        return buildImageResponse(image, userDetails.getUser().getId());
+        User user = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+            .getPrincipal()).user();
+        return buildImageResponse(image, user.getId());
 
       }
       return buildImageResponse(image, null);
@@ -229,7 +224,7 @@ public class ImageService {
     }
 
     User user = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
-        .getPrincipal()).getUser();
+        .getPrincipal()).user();
 
     Image image = imageRepository.findById(id).orElse(null);
 

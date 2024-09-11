@@ -1,17 +1,14 @@
 package org.bohdanzhuvak.nicoai.service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
+import lombok.RequiredArgsConstructor;
 import org.bohdanzhuvak.nicoai.dto.CommentRequest;
 import org.bohdanzhuvak.nicoai.dto.CommentResponse;
 import org.bohdanzhuvak.nicoai.model.Comment;
-import org.bohdanzhuvak.nicoai.model.CustomUserDetails;
 import org.bohdanzhuvak.nicoai.model.Image;
 import org.bohdanzhuvak.nicoai.model.User;
 import org.bohdanzhuvak.nicoai.repository.CommentRepository;
 import org.bohdanzhuvak.nicoai.repository.ImageRepository;
+import org.bohdanzhuvak.nicoai.security.CustomUserDetails;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -21,7 +18,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -45,7 +44,7 @@ public class CommentsService {
   public CommentResponse postComment(CommentRequest commentRequest, Long imageId) {
     if (isUserAuthenticated()) {
       User user = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
-          .getPrincipal()).getUser();
+          .getPrincipal()).user();
       Image image = imageRepository.findById(imageId).get();
       if (image == null) {
         return null;

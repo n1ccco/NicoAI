@@ -1,7 +1,5 @@
-package org.bohdanzhuvak.nicoai.config;
+package org.bohdanzhuvak.nicoai.security;
 
-import org.bohdanzhuvak.nicoai.model.CustomUserDetails;
-import org.bohdanzhuvak.nicoai.repository.UserRepository;
 import org.bohdanzhuvak.nicoai.security.jwt.JwtTokenAuthenticationFilter;
 import org.bohdanzhuvak.nicoai.security.jwt.JwtTokenProvider;
 import org.springframework.context.annotation.Bean;
@@ -28,7 +26,7 @@ public class SecurityConfig {
 
   @Bean
   SecurityFilterChain springWebFilterChain(HttpSecurity http,
-      JwtTokenProvider tokenProvider) throws Exception {
+                                           JwtTokenProvider tokenProvider) throws Exception {
     return http
         .httpBasic(AbstractHttpConfigurer::disable)
         .cors(Customizer.withDefaults())
@@ -38,6 +36,7 @@ public class SecurityConfig {
         .authorizeHttpRequests(authorize -> authorize
             .requestMatchers("/api/auth/signin").permitAll()
             .requestMatchers("/api/auth/signup").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/auth/refresh").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/images/**").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/images").hasRole("USER")
             .requestMatchers(HttpMethod.GET, "/api/images/*/comments").permitAll()
@@ -46,11 +45,6 @@ public class SecurityConfig {
             .anyRequest().authenticated())
         .addFilterBefore(new JwtTokenAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
         .build();
-  }
-
-  @Bean
-  UserDetailsService customUserDetailsService(UserRepository users) {
-    return (username) -> new CustomUserDetails(users.findByUsername(username));
   }
 
   @Bean

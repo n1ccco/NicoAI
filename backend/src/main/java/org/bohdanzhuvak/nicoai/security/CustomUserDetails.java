@@ -1,20 +1,15 @@
-package org.bohdanzhuvak.nicoai.model;
+package org.bohdanzhuvak.nicoai.security;
 
-import java.util.Collection;
-
+import org.bohdanzhuvak.nicoai.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import java.util.Collection;
 
 import static java.util.stream.Collectors.toList;
 
-@AllArgsConstructor
-@Getter
-public class CustomUserDetails implements UserDetails {
-  private User user;
+public record CustomUserDetails(User user) implements UserDetails {
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -33,21 +28,21 @@ public class CustomUserDetails implements UserDetails {
 
   @Override
   public boolean isAccountNonExpired() {
-    return true;
+    return UserDetails.super.isAccountNonExpired();
   }
 
   @Override
   public boolean isAccountNonLocked() {
-    return true;
+    return UserDetails.super.isAccountNonLocked();
   }
 
   @Override
   public boolean isCredentialsNonExpired() {
-    return true;
+    return UserDetails.super.isCredentialsNonExpired();
   }
 
   @Override
   public boolean isEnabled() {
-    return true;
+    return UserDetails.super.isEnabled();
   }
 }
