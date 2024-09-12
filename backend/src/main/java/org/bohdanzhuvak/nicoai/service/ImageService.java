@@ -1,28 +1,21 @@
 package org.bohdanzhuvak.nicoai.service;
 
 import lombok.RequiredArgsConstructor;
-import org.bohdanzhuvak.nicoai.config.ImageGeneratorProperties;
 import org.bohdanzhuvak.nicoai.config.ImageProperties;
-import org.bohdanzhuvak.nicoai.dto.*;
+import org.bohdanzhuvak.nicoai.dto.GenerateResponse;
+import org.bohdanzhuvak.nicoai.dto.ImageResponse;
+import org.bohdanzhuvak.nicoai.dto.InteractionImageRequest;
+import org.bohdanzhuvak.nicoai.dto.PromptRequest;
 import org.bohdanzhuvak.nicoai.model.Image;
 import org.bohdanzhuvak.nicoai.model.ImageData;
 import org.bohdanzhuvak.nicoai.model.PromptData;
 import org.bohdanzhuvak.nicoai.model.User;
 import org.bohdanzhuvak.nicoai.repository.ImageRepository;
-import org.bohdanzhuvak.nicoai.security.CustomUserDetails;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -32,26 +25,17 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ImageService {
   private final ImageRepository imageRepository;
-  private final ImageGeneratorProperties imageGeneratorProperties;
+  private final FileService fileService;
+  private final ImageGeneratorService imageGeneratorService;
+  private final AuthenticationService authenticationService;
+  private final InteractionService interactionService;
   private final ImageProperties imageProperties;
-  private final RestTemplate restTemplate;
-
-  private MultiValueMap<String, String> buildPromptParams(PromptRequest promptRequest) {
-    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    params.add("prompt", promptRequest.getPrompt());
-    params.add("negativePrompt", promptRequest.getNegativePrompt());
-    params.add("height", String.valueOf(promptRequest.getHeight()));
-    params.add("width", String.valueOf(promptRequest.getWidth()));
-    params.add("numInterferenceSteps", String.valueOf(promptRequest.getNumInterferenceSteps()));
-    params.add("guidanceScale", String.valueOf(promptRequest.getGuidanceScale()));
-    return params;
-  }
 
   public GenerateResponse generateImage(PromptRequest promptRequest, User author) {
-    byte[] imageBytes = fetchImageFromGenerator(promptRequest);
+    byte[] imageBytes = imageGeneratorService.fetchImageFromGenerator(promptRequest);
     MultipartFile multipartFile;
     try {
-      multipartFile = saveImageToFileSystem(imageBytes, UUID.randomUUID() + ".png");
+      multipartFile = fileService.saveImageToFileSystem(imageBytes, UUID.randomUUID() + ".png");
     } catch (IOException e) {
       e.printStackTrace();
       return new GenerateResponse();
@@ -59,22 +43,6 @@ public class ImageService {
     Image image = buildImageEntity(multipartFile, promptRequest, author);
     Long imageId = imageRepository.save(image).getId();
     return new GenerateResponse(imageId);
-  }
-
-  private byte[] fetchImageFromGenerator(PromptRequest promptRequest) {
-    String uri = UriComponentsBuilder.fromHttpUrl(imageGeneratorProperties.getUrl())
-        .pathSegment("generate")
-        .queryParams(buildPromptParams(promptRequest))
-        .build()
-        .toUriString();
-    return restTemplate.getForObject(uri, byte[].class);
-  }
-
-  protected MultipartFile saveImageToFileSystem(byte[] imageBytes, String filename) throws IOException {
-    MultipartFile multipartFile = new CustomMultipartFile(filename, imageBytes);
-    String filePath = imageProperties.getFOLDER_PATH() + multipartFile.getName();
-    multipartFile.transferTo(new File(filePath));
-    return multipartFile;
   }
 
   private Image buildImageEntity(MultipartFile file, PromptRequest promptRequest, User author) {
@@ -104,20 +72,9 @@ public class ImageService {
     String sanitizedSortBy = mapSortBy(sortBy);
     Sort.Direction direction = mapSortDirection(order);
 
-    List<Image> images;
-    if ("likes".equals(sanitizedSortBy)) {
-      if (direction == Sort.Direction.ASC) {
-        images = imageRepository.findByIsPublicOrderByLikesSizeAsc();
-      } else {
-        images = imageRepository.findByIsPublicOrderByLikesSizeDesc();
-      }
-    } else {
-      // Fallback to default sorting or other fields
-      images = imageRepository.findByIsPublic(true, Sort.by(direction, sanitizedSortBy));
-    }
-    if (isUserAuthenticated()) {
-      User user = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
-          .getPrincipal()).user();
+    List<Image> images = getImagesSortedBy(sanitizedSortBy, direction);
+    if (authenticationService.isUserAuthenticated()) {
+      User user = authenticationService.getCurrentAuthenticatedUser();
       return images.stream()
           .map(image -> buildImageResponse(image, user.getId()))
           .collect(Collectors.toList());
@@ -127,6 +84,18 @@ public class ImageService {
           .collect(Collectors.toList());
     }
 
+  }
+
+  private List<Image> getImagesSortedBy(String sanitizedSortBy, Sort.Direction direction) {
+    if ("likes".equals(sanitizedSortBy)) {
+      if (direction == Sort.Direction.ASC) {
+        return imageRepository.findByIsPublicOrderByLikesSizeAsc();
+      } else {
+        return imageRepository.findByIsPublicOrderByLikesSizeDesc();
+      }
+    } else {
+      return imageRepository.findByIsPublic(true, Sort.by(direction, sanitizedSortBy));
+    }
   }
 
   private String mapSortBy(String sortBy) {
@@ -148,18 +117,18 @@ public class ImageService {
     }
   }
 
-  public List<ImageResponse> getAllUserImages(Long id) {
-    User user = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
-        .getPrincipal()).user();
+  public List<ImageResponse> getAllUserImages(Long userId) {
+    User currentUser = authenticationService.getCurrentAuthenticatedUser();
+    Long currentUserId = currentUser != null ? currentUser.getId() : null;
     List<Image> images;
-    Long currentUserId = user.getId();
-    if (currentUserId == id) {
-      images = imageRepository.findByAuthorId(id);
+    if (currentUserId != null && currentUserId.equals(userId)) {
+      images = imageRepository.findByAuthorId(userId);
     } else {
-      images = imageRepository.findByAuthorIdAndIsPublic(id, true);
+      images = imageRepository.findByAuthorIdAndIsPublic(userId, true);
     }
 
-    return images.stream().map(image -> buildImageResponse(image, currentUserId))
+    return images.stream()
+        .map(image -> buildImageResponse(image, currentUserId))
         .collect(Collectors.toList());
   }
 
@@ -167,38 +136,21 @@ public class ImageService {
     Optional<Image> optionalImage = imageRepository.findById(id);
     if (optionalImage.isPresent()) {
       Image image = optionalImage.get();
-      if (isUserAuthenticated()) {
-        User user = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
-            .getPrincipal()).user();
-        return buildImageResponse(image, user.getId());
-
-      }
-      return buildImageResponse(image, null);
+      User currentUser = authenticationService.getCurrentAuthenticatedUser();
+      return buildImageResponse(image, currentUser != null ? currentUser.getId() : null);
     } else {
       return new ImageResponse();
     }
   }
 
-  public boolean isUserAuthenticated() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return authentication != null && authentication.isAuthenticated() &&
-        !(authentication.getPrincipal() instanceof String);
-  }
-
   private ImageResponse buildImageResponse(Image image, Long userId) {
-    String fileName = image.getImageData().getName();
     byte[] images;
     try {
-      images = Files.readAllBytes(new File(imageProperties.getFOLDER_PATH() + fileName).toPath());
+      images = fileService.readFileBytes(image.getImageData().getName());
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    boolean isLiked;
-    if (userId != null) {
-      isLiked = checkIfUserLikedImage(image, userId);
-    } else {
-      isLiked = false;
-    }
+    boolean isLiked = userId != null && interactionService.checkIfUserLikedImage(image, userId);
     int countLikes = image.getLikes().size();
 
     return ImageResponse.builder()
@@ -213,40 +165,13 @@ public class ImageService {
         .build();
   }
 
-  private boolean checkIfUserLikedImage(Image image, Long userId) {
-    return image.getLikes().stream().anyMatch(user -> user.getId().equals(userId));
-  }
-
   public void changeImage(Long id, InteractionImageRequest interactionImageRequest) {
-    if (!isUserAuthenticated() || interactionImageRequest.getAction() == null) {
-      System.out.println("User is not authenticated or Action is null");
-      return;
+    if (authenticationService.isUserAuthenticated()) {
+      User user = authenticationService.getCurrentAuthenticatedUser();
+      interactionService.changeImage(id, interactionImageRequest, user);
+    } else {
+      System.out.println("User is not authenticated");
     }
-
-    User user = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
-        .getPrincipal()).user();
-
-    Image image = imageRepository.findById(id).orElse(null);
-
-    switch (interactionImageRequest.getAction()) {
-      case "like":
-        image.getLikes().add(user);
-        break;
-      case "dislike":
-        image.getLikes().remove(user);
-        break;
-      case "makePublic":
-        image.setPublic(true);
-        break;
-      case "makePrivate":
-        image.setPublic(false);
-        break;
-      default:
-        System.out.println("Invalid action");
-        return;
-    }
-
-    imageRepository.save(image);
   }
 
   public void deleteImage(Long id) {

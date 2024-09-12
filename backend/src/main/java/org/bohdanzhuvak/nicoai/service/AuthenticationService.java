@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.bohdanzhuvak.nicoai.dto.*;
 import org.bohdanzhuvak.nicoai.model.User;
 import org.bohdanzhuvak.nicoai.repository.UserRepository;
+import org.bohdanzhuvak.nicoai.security.CustomUserDetails;
 import org.bohdanzhuvak.nicoai.security.jwt.JwtTokenProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -79,6 +80,15 @@ public class AuthenticationService {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     return authentication != null && authentication.isAuthenticated() &&
         !(authentication.getPrincipal() instanceof String);
+  }
+
+  public User getCurrentAuthenticatedUser() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null && authentication.isAuthenticated() &&
+        authentication.getPrincipal() instanceof CustomUserDetails) {
+      return ((CustomUserDetails) authentication.getPrincipal()).user();
+    }
+    return null;
   }
 
   public JwtAuthenticationDto refreshToken(JwtRefreshDto jwtRefreshDto) throws AuthenticationException {
