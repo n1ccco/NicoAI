@@ -2,7 +2,7 @@ package org.bohdanzhuvak.nicoai.service;
 
 import lombok.RequiredArgsConstructor;
 import org.bohdanzhuvak.nicoai.config.ImageGeneratorProperties;
-import org.bohdanzhuvak.nicoai.dto.PromptRequest;
+import org.bohdanzhuvak.nicoai.dto.image.PromptRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;

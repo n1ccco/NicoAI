@@ -1,8 +1,8 @@
 package org.bohdanzhuvak.nicoai.service;
 
 import lombok.RequiredArgsConstructor;
-import org.bohdanzhuvak.nicoai.dto.CommentRequest;
-import org.bohdanzhuvak.nicoai.dto.CommentResponse;
+import org.bohdanzhuvak.nicoai.dto.comment.CommentRequest;
+import org.bohdanzhuvak.nicoai.dto.comment.CommentResponse;
 import org.bohdanzhuvak.nicoai.model.Comment;
 import org.bohdanzhuvak.nicoai.model.Image;
 import org.bohdanzhuvak.nicoai.model.User;

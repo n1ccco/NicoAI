@@ -1,8 +1,8 @@
 import { axiosInstance } from '@/api/axios'
-import { AUTHSIGNIN, AUTHSIGNUP } from '@/constants/apiConstants'
+import { AUTHSIGNIN, AUTHSIGNUP, REFRESHTOKEN } from '@/constants/apiConstants'
 import type { SigninInput, SignupInput } from '@/types/formData'
 import type { EffectResult } from '../types'
-import { AuthResponse, User } from '@/types/api'
+import { AuthResponse, RefreshTokenData, User } from '@/types/api'
 
 const StateEmpty = {}
 
@@ -65,4 +65,30 @@ export const loginEffect: LoginEffectType = (signInResult) => {
         },
       }
     })
+}
+
+export type RefreshTokenResult = EffectResult<RefreshTokenData>
+
+const RefreshTokenErrorMessage = 'Couldn\'t refresh your token. Try to login'
+
+export const refreshTokenEffect = async (): Promise<RefreshTokenResult> => {
+  try {
+    const response = await axiosInstance
+      .post(REFRESHTOKEN)
+    const castedResponse = response.data as RefreshTokenData
+    return {
+      type: 'success',
+      state: {
+        token: castedResponse.token,
+      },
+    }
+  } catch (error) {
+    console.error(error)
+    return {
+      type: 'failed',
+      state: {
+        error: RefreshTokenErrorMessage,
+      },
+    }
+  }
 }

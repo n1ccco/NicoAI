@@ -2,10 +2,10 @@ package org.bohdanzhuvak.nicoai.service;
 
 import lombok.RequiredArgsConstructor;
 import org.bohdanzhuvak.nicoai.config.ImageProperties;
-import org.bohdanzhuvak.nicoai.dto.GenerateResponse;
-import org.bohdanzhuvak.nicoai.dto.ImageResponse;
-import org.bohdanzhuvak.nicoai.dto.InteractionImageRequest;
-import org.bohdanzhuvak.nicoai.dto.PromptRequest;
+import org.bohdanzhuvak.nicoai.dto.image.GenerateResponse;
+import org.bohdanzhuvak.nicoai.dto.image.ImageResponse;
+import org.bohdanzhuvak.nicoai.dto.image.InteractionImageRequest;
+import org.bohdanzhuvak.nicoai.dto.image.PromptRequest;
 import org.bohdanzhuvak.nicoai.model.Image;
 import org.bohdanzhuvak.nicoai.model.ImageData;
 import org.bohdanzhuvak.nicoai.model.PromptData;

@@ -1,4 +1,4 @@
-package org.bohdanzhuvak.nicoai.dto;
+package org.bohdanzhuvak.nicoai.dto.image;
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;

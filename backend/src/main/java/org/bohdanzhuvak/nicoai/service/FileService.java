@@ -2,7 +2,7 @@ package org.bohdanzhuvak.nicoai.service;
 
 import lombok.RequiredArgsConstructor;
 import org.bohdanzhuvak.nicoai.config.ImageProperties;
-import org.bohdanzhuvak.nicoai.dto.CustomMultipartFile;
+import org.bohdanzhuvak.nicoai.dto.image.CustomMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 

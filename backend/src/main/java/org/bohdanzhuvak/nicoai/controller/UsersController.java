@@ -1,8 +1,8 @@
 package org.bohdanzhuvak.nicoai.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.bohdanzhuvak.nicoai.dto.ImageResponse;
-import org.bohdanzhuvak.nicoai.dto.UsernameResponse;
+import org.bohdanzhuvak.nicoai.dto.image.ImageResponse;
+import org.bohdanzhuvak.nicoai.dto.user.UsernameResponse;
 import org.bohdanzhuvak.nicoai.repository.UserRepository;
 import org.bohdanzhuvak.nicoai.service.ImageService;
 import org.springframework.http.HttpStatus;

@@ -1,7 +1,7 @@
 package org.bohdanzhuvak.nicoai.service;
 
 import lombok.RequiredArgsConstructor;
-import org.bohdanzhuvak.nicoai.dto.InteractionImageRequest;
+import org.bohdanzhuvak.nicoai.dto.image.InteractionImageRequest;
 import org.bohdanzhuvak.nicoai.model.Image;
 import org.bohdanzhuvak.nicoai.model.User;
 import org.bohdanzhuvak.nicoai.repository.ImageRepository;

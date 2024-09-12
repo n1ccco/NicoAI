@@ -1,7 +1,12 @@
 package org.bohdanzhuvak.nicoai.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.bohdanzhuvak.nicoai.dto.*;
+import org.bohdanzhuvak.nicoai.dto.comment.CommentRequest;
+import org.bohdanzhuvak.nicoai.dto.comment.CommentResponse;
+import org.bohdanzhuvak.nicoai.dto.image.GenerateResponse;
+import org.bohdanzhuvak.nicoai.dto.image.ImageResponse;
+import org.bohdanzhuvak.nicoai.dto.image.InteractionImageRequest;
+import org.bohdanzhuvak.nicoai.dto.image.PromptRequest;
 import org.bohdanzhuvak.nicoai.model.User;
 import org.bohdanzhuvak.nicoai.security.CustomUserDetails;
 import org.bohdanzhuvak.nicoai.service.CommentsService;

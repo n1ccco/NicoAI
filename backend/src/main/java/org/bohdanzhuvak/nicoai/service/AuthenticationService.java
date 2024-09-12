@@ -1,7 +1,11 @@
 package org.bohdanzhuvak.nicoai.service;
 
 import lombok.RequiredArgsConstructor;
-import org.bohdanzhuvak.nicoai.dto.*;
+import org.bohdanzhuvak.nicoai.dto.authentication.AuthenticationRequest;
+import org.bohdanzhuvak.nicoai.dto.authentication.JwtAuthenticationDto;
+import org.bohdanzhuvak.nicoai.dto.authentication.JwtRefreshResponse;
+import org.bohdanzhuvak.nicoai.dto.authentication.RegistrationRequest;
+import org.bohdanzhuvak.nicoai.dto.user.UserDto;
 import org.bohdanzhuvak.nicoai.model.User;
 import org.bohdanzhuvak.nicoai.repository.UserRepository;
 import org.bohdanzhuvak.nicoai.security.CustomUserDetails;
@@ -22,7 +26,7 @@ public class AuthenticationService {
   private final JwtTokenProvider jwtTokenProvider;
   private final PasswordEncoder passwordEncoder;
 
-  public AuthenticationResponse signin(AuthenticationRequest authenticationRequest) throws AuthenticationException {
+  public JwtAuthenticationDto signin(AuthenticationRequest authenticationRequest) throws AuthenticationException {
     User user = findByCredentials(authenticationRequest);
     UserDto userDto = UserDto
         .builder()
@@ -30,11 +34,11 @@ public class AuthenticationService {
         .username(user.getUsername())
         .roles(user.getRoles())
         .build();
-    String token = jwtTokenProvider.generateJwtToken(userDto);
+    String token = jwtTokenProvider.generateAccessToken(userDto);
     String refreshToken = jwtTokenProvider.generateRefreshToken(userDto);
-    return AuthenticationResponse
+    return JwtAuthenticationDto
         .builder()
-        .jwt(token)
+        .token(token)
         .refreshToken(refreshToken)
         .user(userDto)
         .build();
@@ -91,16 +95,26 @@ public class AuthenticationService {
     return null;
   }
 
-  public JwtAuthenticationDto refreshToken(JwtRefreshDto jwtRefreshDto) throws AuthenticationException {
-    String refreshToken = jwtRefreshDto.getToken();
+  public JwtRefreshResponse refreshAccessToken(String refreshToken) throws AuthenticationException {
+    // Validate the refresh token
     if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
-      User user = userRepository.findByUsername(jwtTokenProvider.getUsernameFromToken(refreshToken)).orElseThrow(() -> new AuthenticationException("Failed to refresh token"));
-      return jwtTokenProvider.refreshBaseToken(UserDto.builder().Id(user
-              .getId())
+      // Find the user based on the refresh token
+      User user = userRepository.findByUsername(jwtTokenProvider.getUsernameFromToken(refreshToken))
+          .orElseThrow(() -> new AuthenticationException("Failed to refresh token"));
+
+      // Generate a new access token
+      String newAccessToken = jwtTokenProvider.generateAccessToken(UserDto.builder()
+          .Id(user.getId())
           .roles(user.getRoles())
           .username(user.getUsername())
-          .build(), refreshToken);
+          .build());
+
+      // Return only the new access token (no refresh token)
+      return JwtRefreshResponse.builder()
+          .token(newAccessToken)
+          .build();
     }
+
     throw new AuthenticationException("Invalid refresh token");
   }
 }

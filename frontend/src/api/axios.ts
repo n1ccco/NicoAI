@@ -8,6 +8,8 @@ const axiosInstance = axios.create({
   headers: {
     Accept: 'application/json',
   },
+  //TODO Shouldn't be here
+  withCredentials: true,
 })
 
 export { axiosInstance }

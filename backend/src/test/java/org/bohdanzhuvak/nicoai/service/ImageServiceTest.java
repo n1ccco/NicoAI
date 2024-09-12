@@ -2,8 +2,8 @@ package org.bohdanzhuvak.nicoai.service;
 
 import org.bohdanzhuvak.nicoai.NicoAiApplication;
 import org.bohdanzhuvak.nicoai.config.ImageProperties;
-import org.bohdanzhuvak.nicoai.dto.GenerateResponse;
-import org.bohdanzhuvak.nicoai.dto.PromptRequest;
+import org.bohdanzhuvak.nicoai.dto.image.GenerateResponse;
+import org.bohdanzhuvak.nicoai.dto.image.PromptRequest;
 import org.bohdanzhuvak.nicoai.model.Image;
 import org.bohdanzhuvak.nicoai.model.User;
 import org.bohdanzhuvak.nicoai.repository.ImageRepository;

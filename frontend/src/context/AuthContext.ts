@@ -1,5 +1,5 @@
 import { SigninResult } from '@/api/effects/auth/authEffects'
-import { User } from '@/types/api'
+import { RefreshTokenData, User } from '@/types/api'
 import { StateDescriptor } from '@/utils/types/state'
 import { createContext } from 'react'
 
@@ -24,6 +24,7 @@ export type AuthState =
 export type AuthActions = {
   postSignin: (result: SigninResult) => void
   postLogout: () => void
+  postRefresh: (result: RefreshTokenData) => void
 }
 
 export type AuthContextType = {

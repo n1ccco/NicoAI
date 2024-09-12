@@ -40,3 +40,7 @@ export type CommentData = Entity<{
   authorName: string
   createdAt: Date
 }>
+
+export type RefreshTokenData = {
+  token: string
+}

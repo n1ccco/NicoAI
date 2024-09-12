@@ -1,4 +1,4 @@
-package org.bohdanzhuvak.nicoai.dto;
+package org.bohdanzhuvak.nicoai.dto.image;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
