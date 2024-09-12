@@ -1,13 +1,11 @@
 package org.bohdanzhuvak.nicoai.dto;
 
-import org.bohdanzhuvak.nicoai.model.PromptData;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.bohdanzhuvak.nicoai.model.PromptData;
 
 @Data
 @Builder

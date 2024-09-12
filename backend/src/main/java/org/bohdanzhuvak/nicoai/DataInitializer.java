@@ -1,14 +1,13 @@
 package org.bohdanzhuvak.nicoai;
 
-import java.util.Arrays;
-
+import lombok.RequiredArgsConstructor;
 import org.bohdanzhuvak.nicoai.model.User;
 import org.bohdanzhuvak.nicoai.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import lombok.RequiredArgsConstructor;
+import java.util.Arrays;
 
 @Component
 @RequiredArgsConstructor

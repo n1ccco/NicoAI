@@ -32,26 +32,20 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("test")
 public class ImageServiceTest {
 
-  @MockBean
-  private FileService fileService;  // Still mock external service
-
-  @MockBean
-  private RestTemplate restTemplate;  // Still mock external service
-
-  @MockBean
-  private ImageGeneratorService imageGeneratorService;  // Still mock external service
-
-  @Autowired
-  private ImageRepository imageRepository;  // Use actual repository
-
-  @Autowired
-  private ImageService imageService;  // Use actual service
-
-  @Autowired
-  private ImageProperties imageProperties;
-
   @TempDir
   Path tempDir;
+  @MockBean
+  private FileService fileService;  // Still mock external service
+  @MockBean
+  private RestTemplate restTemplate;  // Still mock external service
+  @MockBean
+  private ImageGeneratorService imageGeneratorService;  // Still mock external service
+  @Autowired
+  private ImageRepository imageRepository;  // Use actual repository
+  @Autowired
+  private ImageService imageService;  // Use actual service
+  @Autowired
+  private ImageProperties imageProperties;
 
   @BeforeEach
   void setUp() {
@@ -66,7 +60,7 @@ public class ImageServiceTest {
     user.setId(1L);
     user.setUsername("username");
 
-    byte[] imageBytes = { /* image data */ };
+    byte[] imageBytes = { /* image data */};
 
     // Mock the image generator to return image bytes
     when(imageGeneratorService.fetchImageFromGenerator(any(PromptRequest.class)))
@@ -98,7 +92,7 @@ public class ImageServiceTest {
     user.setId(1L);
     user.setUsername("username");
 
-    byte[] imageBytes = { /* image data */ };
+    byte[] imageBytes = { /* image data */};
 
     // Mock the image generator to return image bytes
     when(imageGeneratorService.fetchImageFromGenerator(any(PromptRequest.class)))

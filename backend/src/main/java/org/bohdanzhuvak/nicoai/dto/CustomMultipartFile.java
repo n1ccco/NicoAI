@@ -1,14 +1,9 @@
 package org.bohdanzhuvak.nicoai.dto;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
+import lombok.AllArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
-import lombok.AllArgsConstructor;
+import java.io.*;
 
 @AllArgsConstructor
 public class CustomMultipartFile implements MultipartFile {
