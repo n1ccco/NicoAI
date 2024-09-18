@@ -1,15 +1,21 @@
 import axios from 'axios'
 import { API_BASEURL, API_TIMEOUT } from '@/constants/apiConstants.ts'
 
-const axiosInstance = axios.create({
+const initialConfig = {
   baseURL: API_BASEURL,
   timeout: API_TIMEOUT,
-  //Controversional
   headers: {
     Accept: 'application/json',
   },
-  //TODO Shouldn't be here
+}
+
+const axiosInstance = axios.create({
+  ...initialConfig,
+})
+
+const axiosInstanceWithCredentials = axios.create({
+  ...axiosInstance.defaults,
   withCredentials: true,
 })
 
-export { axiosInstance }
+export { axiosInstance, axiosInstanceWithCredentials }

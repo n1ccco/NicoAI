@@ -120,32 +120,45 @@ const applyAuthorizationToAxios = (
   }
 }
 
-const setupInterceptors = (axiosInstance: AxiosInstance, postRefresh: (result: RefreshTokenData) => void, postLogout: () => void): () => void => {
-  const refreshInterceptor = axiosInstance.interceptors.response.use((response) => response, async (error) => {
-    const originalRequest = error.config
+const setupInterceptors = (
+  axiosInstance: AxiosInstance,
+  postRefresh: (result: RefreshTokenData) => void,
+  postLogout: () => void,
+): () => void => {
+  const refreshInterceptor = axiosInstance.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      const originalRequest = error.config
 
-    // Check if the request has already been retried
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true // Mark the request as retried
-      try {
-        const res = await refreshTokenEffect()
-        if (res.type === 'success') {
-          postRefresh(res.state) // Refresh tokens and update state
-          // Retry the original request with the new token
-          originalRequest.headers['Authorization'] = `Bearer ${res.state.token}`
-          return axiosInstance(originalRequest)
-        } else {
-          console.log(res.state.error)
-          postLogout() // Logout if refresh fails
-        }
-      } catch {
-        postLogout() // Logout if refresh fails
+      // Check if the request has already been retried
+      if (error.response?.status === 401 && !originalRequest._retry) {
+        originalRequest._retry = true // Mark the request as retried
+
+        // Call refreshTokenEffect and handle with then/catch
+        return refreshTokenEffect()
+          .then((res) => {
+            if (res.type === 'success') {
+              postRefresh(res.state) // Refresh tokens and update state
+              // Retry the original request with the new token
+              originalRequest.headers['Authorization'] = `Bearer ${res.state.token}`
+              return axiosInstance(originalRequest)
+            } else {
+              console.log(res.state.error)
+              postLogout() // Logout if refresh fails
+              return Promise.reject(error)
+            }
+          })
+          .catch((err) => {
+            console.error(err)
+            postLogout() // Logout if refresh fails
+            return Promise.reject(error)
+          })
       }
-    }
 
-    // If the request has already been retried or another error, reject it
-    return Promise.reject(error)
-  })
+      // If the request has already been retried or another error, reject it
+      return Promise.reject(error)
+    }
+  )
 
   return () => {
     axiosInstance.interceptors.response.eject(refreshInterceptor)
