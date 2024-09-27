@@ -20,7 +20,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -43,19 +44,17 @@ public class JwtTokenProvider {
 
   private String generateToken(UserDto userDto, Date expiration) {
 
-    String username = userDto.getUsername();
-    List<String> authorities = userDto.getRoles();
-    var claimsBuilder = Jwts.claims().subject(username);
-    if (!authorities.isEmpty()) {
-      claimsBuilder.add(AUTHORITIES_KEY, authorities);
-    }
-    var claims = claimsBuilder.build();
+    Map<String, Object> claims = new HashMap<>();
+    claims.put(Claims.SUBJECT, userDto.getUsername());
 
-    Date now = new Date();
+    if (!userDto.getRoles().isEmpty()) {
+      String authorities = String.join(",", userDto.getRoles());
+      claims.put(AUTHORITIES_KEY, authorities);
+    }
 
     return Jwts.builder()
         .claims(claims)
-        .issuedAt(now)
+        .issuedAt(new Date())
         .expiration(expiration)
         .signWith(getSingInKey())
         .compact();
