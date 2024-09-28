@@ -12,11 +12,14 @@ import org.springframework.stereotype.Service;
 public class InteractionService {
   private final ImageRepository imageRepository;
 
-  public boolean checkIfUserLikedImage(Image image, Long userId) {
+  public boolean checkIfUserLikedImage(Image image,
+                                       Long userId) {
     return image.getLikes().stream().anyMatch(user -> user.getId().equals(userId));
   }
 
-  public void changeImage(Long id, InteractionImageRequest interactionImageRequest, User user) {
+  public void changeImage(Long id,
+                          InteractionImageRequest interactionImageRequest,
+                          User user) {
 
     Image image = imageRepository.findById(id).orElse(null);
 

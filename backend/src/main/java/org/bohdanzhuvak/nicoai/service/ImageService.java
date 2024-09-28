@@ -12,6 +12,7 @@ import org.bohdanzhuvak.nicoai.model.PromptData;
 import org.bohdanzhuvak.nicoai.model.User;
 import org.bohdanzhuvak.nicoai.repository.ImageRepository;
 import org.springframework.data.domain.Sort;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,11 +28,11 @@ public class ImageService {
   private final ImageRepository imageRepository;
   private final FileService fileService;
   private final ImageGeneratorService imageGeneratorService;
-  private final AuthenticationService authenticationService;
   private final InteractionService interactionService;
   private final ImageProperties imageProperties;
 
-  public GenerateResponse generateImage(PromptRequest promptRequest, User author) {
+  public GenerateResponse generateImage(PromptRequest promptRequest,
+                                        User author) {
     byte[] imageBytes = imageGeneratorService.fetchImageFromGenerator(promptRequest);
     MultipartFile multipartFile;
     try {
@@ -45,7 +46,9 @@ public class ImageService {
     return new GenerateResponse(imageId);
   }
 
-  private Image buildImageEntity(MultipartFile file, PromptRequest promptRequest, User author) {
+  private Image buildImageEntity(MultipartFile file,
+                                 PromptRequest promptRequest,
+                                 User author) {
     ImageData imageData = ImageData.builder()
         .name(file.getName())
         .type(file.getContentType())
@@ -68,25 +71,33 @@ public class ImageService {
         .build();
   }
 
-  public List<ImageResponse> getAllImages(String sortBy, String order) {
+  public List<ImageResponse> getAllImages(String sortBy,
+                                          String order) {
     String sanitizedSortBy = mapSortBy(sortBy);
     Sort.Direction direction = mapSortDirection(order);
 
     List<Image> images = getImagesSortedBy(sanitizedSortBy, direction);
-    if (authenticationService.isUserAuthenticated()) {
-      User user = authenticationService.getCurrentAuthenticatedUser();
-      return images.stream()
-          .map(image -> buildImageResponse(image, user.getId()))
-          .collect(Collectors.toList());
-    } else {
-      return images.stream()
-          .map(image -> buildImageResponse(image, null))
-          .collect(Collectors.toList());
-    }
+    return images.stream()
+        .map(image -> buildImageResponse(image, null))
+        .collect(Collectors.toList());
 
   }
 
-  private List<Image> getImagesSortedBy(String sanitizedSortBy, Sort.Direction direction) {
+  public List<ImageResponse> getAllImages_Authenticated(String sortBy,
+                                                        String order,
+                                                        User user) {
+    String sanitizedSortBy = mapSortBy(sortBy);
+    Sort.Direction direction = mapSortDirection(order);
+
+    List<Image> images = getImagesSortedBy(sanitizedSortBy, direction);
+    return images.stream()
+        .map(image -> buildImageResponse(image, user.getId()))
+        .collect(Collectors.toList());
+
+  }
+
+  private List<Image> getImagesSortedBy(String sanitizedSortBy,
+                                        Sort.Direction direction) {
     if ("likes".equals(sanitizedSortBy)) {
       if (direction == Sort.Direction.ASC) {
         return imageRepository.findByIsPublicOrderByLikesSizeAsc();
@@ -117,8 +128,8 @@ public class ImageService {
     }
   }
 
-  public List<ImageResponse> getAllUserImages(Long userId) {
-    User currentUser = authenticationService.getCurrentAuthenticatedUser();
+  public List<ImageResponse> getAllUserImages(Long userId,
+                                              User currentUser) {
     Long currentUserId = currentUser != null ? currentUser.getId() : null;
     List<Image> images;
     if (currentUserId != null && currentUserId.equals(userId)) {
@@ -132,11 +143,11 @@ public class ImageService {
         .collect(Collectors.toList());
   }
 
-  public ImageResponse getImage(Long id) {
+  public ImageResponse getImage(Long id,
+                                @Nullable User currentUser) {
     Optional<Image> optionalImage = imageRepository.findById(id);
     if (optionalImage.isPresent()) {
       Image image = optionalImage.get();
-      User currentUser = authenticationService.getCurrentAuthenticatedUser();
       return buildImageResponse(image, currentUser != null ? currentUser.getId() : null);
     } else {
       return new ImageResponse();
@@ -165,13 +176,10 @@ public class ImageService {
         .build();
   }
 
-  public void changeImage(Long id, InteractionImageRequest interactionImageRequest) {
-    if (authenticationService.isUserAuthenticated()) {
-      User user = authenticationService.getCurrentAuthenticatedUser();
-      interactionService.changeImage(id, interactionImageRequest, user);
-    } else {
-      System.out.println("User is not authenticated");
-    }
+  public void changeImage(Long id,
+                          InteractionImageRequest interactionImageRequest,
+                          User currentUser) {
+      interactionService.changeImage(id, interactionImageRequest, currentUser);
   }
 
   public void deleteImage(Long id) {

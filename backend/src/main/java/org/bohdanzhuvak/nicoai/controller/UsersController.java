@@ -3,9 +3,13 @@ package org.bohdanzhuvak.nicoai.controller;
 import lombok.RequiredArgsConstructor;
 import org.bohdanzhuvak.nicoai.dto.image.ImageResponse;
 import org.bohdanzhuvak.nicoai.dto.user.UsernameResponse;
+import org.bohdanzhuvak.nicoai.model.User;
 import org.bohdanzhuvak.nicoai.repository.UserRepository;
+import org.bohdanzhuvak.nicoai.security.CustomUserDetails;
 import org.bohdanzhuvak.nicoai.service.ImageService;
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.Nullable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,8 +23,10 @@ public class UsersController {
 
   @GetMapping(value = "{id}/images")
   @ResponseStatus(HttpStatus.OK)
-  public List<ImageResponse> getImages(@PathVariable("id") Long id) {
-    return imageService.getAllUserImages(id);
+  public List<ImageResponse> getImages(@PathVariable("id") Long id,
+                                       @AuthenticationPrincipal @Nullable CustomUserDetails userDetails) {
+    User user = (userDetails != null) ? userDetails.user() : null;
+    return imageService.getAllUserImages(id, user);
   }
 
   @GetMapping(value = "{id}")

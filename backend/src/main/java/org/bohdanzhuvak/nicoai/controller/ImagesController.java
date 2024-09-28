@@ -12,7 +12,8 @@ import org.bohdanzhuvak.nicoai.security.CustomUserDetails;
 import org.bohdanzhuvak.nicoai.service.CommentsService;
 import org.bohdanzhuvak.nicoai.service.ImageService;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.lang.Nullable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,30 +27,37 @@ public class ImagesController {
 
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
-  public List<ImageResponse> getImages(
-      @RequestParam(name = "sortBy", required = false, defaultValue = "date") String sortBy,
-      @RequestParam(name = "order", required = false, defaultValue = "asc") String sortOrder) {
-    return imageService.getAllImages(sortBy, sortOrder);
+  public List<ImageResponse> getImages(@RequestParam(name = "sortBy", required = false, defaultValue = "date") String sortBy,
+                                       @RequestParam(name = "order", required = false, defaultValue = "asc") String sortOrder,
+                                       @AuthenticationPrincipal @Nullable CustomUserDetails userDetails) {
+    if (userDetails == null) {
+      return imageService.getAllImages(sortBy, sortOrder);
+    } else {
+      return imageService.getAllImages_Authenticated(sortBy, sortOrder, userDetails.user());
+    }
   }
 
   @GetMapping(value = "{id}")
   @ResponseStatus(HttpStatus.OK)
-  public ImageResponse getImage(@PathVariable("id") Long id) {
-    return imageService.getImage(id);
+  public ImageResponse getImage(@PathVariable("id") Long id,
+                                @AuthenticationPrincipal @Nullable CustomUserDetails userDetails) {
+    User user = (userDetails != null) ? userDetails.user() : null;
+    return imageService.getImage(id, user);
   }
 
   @PatchMapping(value = "{id}")
   @ResponseStatus(HttpStatus.OK)
-  public void changeImage(@PathVariable("id") Long id, @RequestBody InteractionImageRequest interactionImageRequest) {
-    imageService.changeImage(id, interactionImageRequest);
+  public void changeImage(@PathVariable("id") Long id,
+                          @RequestBody InteractionImageRequest interactionImageRequest,
+                          @AuthenticationPrincipal CustomUserDetails userDetails) {
+    imageService.changeImage(id, interactionImageRequest, userDetails.user());
   }
 
   @PostMapping
   @ResponseStatus(HttpStatus.OK)
-  public GenerateResponse generateImage(@ModelAttribute PromptRequest promptRequest) {
-    User author = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
-        .getPrincipal()).user();
-    return imageService.generateImage(promptRequest, author);
+  public GenerateResponse generateImage(@ModelAttribute PromptRequest promptRequest,
+                                        @AuthenticationPrincipal CustomUserDetails userDetails) {
+    return imageService.generateImage(promptRequest, userDetails.user());
   }
 
   @GetMapping("{id}/comments")
@@ -60,8 +68,10 @@ public class ImagesController {
 
   @PostMapping(value = "{id}/comments")
   @ResponseStatus(HttpStatus.OK)
-  public CommentResponse postComment(@RequestBody CommentRequest commentRequest, @PathVariable("id") Long id) {
-    return commentsService.postComment(commentRequest, id);
+  public CommentResponse postComment(@RequestBody CommentRequest commentRequest,
+                                     @PathVariable("id") Long id,
+                                     @AuthenticationPrincipal CustomUserDetails userDetails) {
+    return commentsService.postComment(commentRequest, id, userDetails.user());
   }
 
   @DeleteMapping(value = "{id}")
