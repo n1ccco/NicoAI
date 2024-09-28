@@ -6,6 +6,7 @@ import { AUTH_TOKEN_NULL_VALUE } from '@/constants/authConstants'
 import { AxiosInstance } from 'axios'
 import { axiosInstance } from '@/api/axios'
 import { RefreshTokenData } from '@/types/api.ts'
+import { deleteCookie } from '@/utils/deleteCookie.ts'
 
 const selectAuthStateFromStorage: () => AuthState = () => {
   const token = TokenManagementEntity.selector()
@@ -68,6 +69,7 @@ function AuthProvider({ children }: AuthProviderProps) {
     //Storage patches
     TokenManagementEntity.clear()
     UserManagementEntity.clear()
+    deleteCookie('refreshToken')
     //Enf of storage patches
 
     //State patches
