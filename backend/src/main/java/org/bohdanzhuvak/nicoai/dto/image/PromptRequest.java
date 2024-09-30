@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 @Data
 @Builder
@@ -16,4 +18,15 @@ public class PromptRequest {
   private Integer width;
   private Integer numInterferenceSteps;
   private Integer guidanceScale;
+
+  public MultiValueMap<String, String> toMultiValueMap() {
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    params.add("prompt", prompt);
+    params.add("negativePrompt", negativePrompt);
+    params.add("height", String.valueOf(height));
+    params.add("width", String.valueOf(width));
+    params.add("numInterferenceSteps", String.valueOf(numInterferenceSteps));
+    params.add("guidanceScale", String.valueOf(guidanceScale));
+    return params;
+  }
 }

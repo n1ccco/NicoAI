@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -36,8 +35,6 @@ public class ImageServiceTest {
   Path tempDir;
   @MockBean
   private FileService fileService;  // Still mock external service
-  @MockBean
-  private RestTemplate restTemplate;  // Still mock external service
   @MockBean
   private ImageGeneratorService imageGeneratorService;  // Still mock external service
   @Autowired
@@ -69,8 +66,6 @@ public class ImageServiceTest {
     // Mock MultipartFile and simulate file saving
     MultipartFile mockMultipartFile = Mockito.mock(MultipartFile.class);
     when(mockMultipartFile.getName()).thenReturn("mockImage.png");
-    when(fileService.saveImageToFileSystem(any(byte[].class), anyString()))
-        .thenReturn(mockMultipartFile);
 
     // Act
     PromptRequest promptRequest = new PromptRequest("image prompt", null, 512, 512, 25, 5);
@@ -98,9 +93,6 @@ public class ImageServiceTest {
     when(imageGeneratorService.fetchImageFromGenerator(any(PromptRequest.class)))
         .thenReturn(imageBytes);
 
-    // Simulate failure in saving the image to the file system
-    doThrow(new IOException("Mocked IOException"))
-        .when(fileService).saveImageToFileSystem(any(byte[].class), anyString());
 
     // Act
     PromptRequest promptRequest = new PromptRequest("image prompt", null, 512, 512, 25, 5);

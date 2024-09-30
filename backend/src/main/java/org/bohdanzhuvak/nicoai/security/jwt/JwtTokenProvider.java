@@ -1,12 +1,15 @@
 package org.bohdanzhuvak.nicoai.security.jwt;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.bohdanzhuvak.nicoai.dto.user.UserDto;
+import org.bohdanzhuvak.nicoai.exception.InvalidTokenException;
+import org.bohdanzhuvak.nicoai.exception.TokenExpiredException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -89,11 +92,15 @@ public class JwtTokenProvider {
 
   public boolean validateToken(String token) {
     try {
-      Jwts.parser().verifyWith(getSingInKey()).build().parseSignedClaims(token);
-      // parseClaimsJws will check expiration date. No need do here.
+      Jwts.parser()
+          .verifyWith(getSingInKey())
+          .build()
+          .parseSignedClaims(token);
       return true;
+    } catch (ExpiredJwtException e) {
+      throw new TokenExpiredException("The access token has expired");
     } catch (JwtException | IllegalArgumentException e) {
-      return false;
+      throw new InvalidTokenException("The access token is invalid");
     }
   }
 }

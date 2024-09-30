@@ -2,27 +2,35 @@ package org.bohdanzhuvak.nicoai.service;
 
 import lombok.RequiredArgsConstructor;
 import org.bohdanzhuvak.nicoai.config.ImageProperties;
-import org.bohdanzhuvak.nicoai.dto.image.CustomMultipartFile;
+import org.bohdanzhuvak.nicoai.exception.FileStorageException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Service
 @RequiredArgsConstructor
 public class FileService {
   private final ImageProperties imageProperties;
 
-  protected MultipartFile saveImageToFileSystem(byte[] imageBytes, String filename) throws IOException {
-    MultipartFile multipartFile = new CustomMultipartFile(filename, imageBytes);
-    String filePath = imageProperties.getFOLDER_PATH() + multipartFile.getName();
-    multipartFile.transferTo(new File(filePath));
-    return multipartFile;
+  public void saveImageToFileSystem(byte[] imageBytes, String filename) {
+    try {
+      Path folderPath = Paths.get(imageProperties.getFOLDER_PATH());
+      Path filePath = folderPath.resolve(filename);
+      Files.write(filePath, imageBytes);
+    } catch (IOException e) {
+      throw new FileStorageException("Failed to save image file: " + filename, e);
+    }
   }
 
-  public byte[] readFileBytes(String fileName) throws IOException {
-    return Files.readAllBytes(new File(imageProperties.getFOLDER_PATH() + fileName).toPath());
+  public byte[] readFileBytes(String filename) {
+    try {
+      Path filePath = Paths.get(imageProperties.getFOLDER_PATH()).resolve(filename);
+      return Files.readAllBytes(filePath);
+    } catch (IOException e) {
+      throw new FileStorageException("Failed to read image file: " + filename, e);
+    }
   }
 }

@@ -8,20 +8,20 @@ models = {}
 models_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../models'))
 for filename in os.listdir(models_dir):
     if filename.endswith('.safetensors'):
-        model_name = filename.split('.')[0]
+        model_filename = filename.split('.')[0]
         model_path = os.path.join(models_dir, filename)
-        models[model_name] = StableDiffusionPipeline.from_single_file(model_path).to("cuda")
+        models[model_filename] = StableDiffusionPipeline.from_single_file(model_path).to("cuda")
 
 @app.route('/generate', methods=['GET'])
 def generate_image():
     # Extract parameters from the request query string
     model_name = request.args.get('model', default='picxReal_10', type=str)
     prompt = request.args.get('prompt', default='man', type=str)
-    neg_p = request.args.get('negative_prompt', default='ugly', type=str)
+    neg_p = request.args.get('negativePrompt', default='ugly', type=str)
     height = request.args.get('height', default=512, type=int)
     width = request.args.get('width', default=512, type=int)
-    steps = request.args.get('num_inference_steps', default=20, type=int)
-    guidance = request.args.get('guidance_scale', default=7.5, type=float)
+    steps = request.args.get('numInterferenceSteps', default=20, type=int)
+    guidance = request.args.get('guidanceScale', default=7.5, type=float)
 
     # Check if the requested model exists
     if model_name not in models:

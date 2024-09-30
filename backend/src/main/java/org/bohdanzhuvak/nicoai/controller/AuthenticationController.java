@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.naming.AuthenticationException;
 
-import static org.bohdanzhuvak.nicoai.utils.TokenUtils.resolveToken;
+import static org.bohdanzhuvak.nicoai.security.jwt.TokenUtils.resolveToken;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -23,7 +23,7 @@ public class AuthenticationController {
 
   @PostMapping("/signin")
   public AuthenticationResponse signin(@RequestBody AuthenticationRequest authenticationRequest, HttpServletResponse response) throws AuthenticationException {
-    JwtAuthenticationDto jwtAuthenticationDto = authenticationService.signin(authenticationRequest);
+    JwtAuthenticationDto jwtAuthenticationDto = authenticationService.signIn(authenticationRequest);
 
     Cookie refreshTokenCookie = new Cookie("refreshToken", jwtAuthenticationDto.getRefreshToken());
     refreshTokenCookie.setHttpOnly(false);
@@ -40,7 +40,7 @@ public class AuthenticationController {
 
   @PostMapping("/signup")
   public void signup(@RequestBody RegistrationRequest registrationRequest) {
-    authenticationService.signup(registrationRequest);
+    authenticationService.signUp(registrationRequest);
   }
 
   @PostMapping("/refresh")
@@ -56,7 +56,6 @@ public class AuthenticationController {
         }
       }
     }
-    System.out.println(refreshToken);
     if (refreshToken == null) {
       throw new AuthenticationException("Refresh token not found in cookies");
     }

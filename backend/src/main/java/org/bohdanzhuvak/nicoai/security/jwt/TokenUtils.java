@@ -1,4 +1,4 @@
-package org.bohdanzhuvak.nicoai.utils;
+package org.bohdanzhuvak.nicoai.security.jwt;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpHeaders;

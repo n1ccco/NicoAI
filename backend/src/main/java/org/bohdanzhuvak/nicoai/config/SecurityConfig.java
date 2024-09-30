@@ -1,4 +1,4 @@
-package org.bohdanzhuvak.nicoai.security;
+package org.bohdanzhuvak.nicoai.config;
 
 import org.bohdanzhuvak.nicoai.security.jwt.JwtTokenAuthenticationFilter;
 import org.bohdanzhuvak.nicoai.security.jwt.JwtTokenProvider;
@@ -6,17 +6,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -45,26 +38,6 @@ public class SecurityConfig {
             .anyRequest().authenticated())
         .addFilterBefore(new JwtTokenAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
         .build();
-  }
-
-  @Bean
-  AuthenticationManager customAuthenticationManager(UserDetailsService userDetailsService, PasswordEncoder encoder) {
-    return authentication -> {
-      String username = authentication.getPrincipal() + "";
-      String password = authentication.getCredentials() + "";
-
-      UserDetails user = userDetailsService.loadUserByUsername(username);
-
-      if (!encoder.matches(password, user.getPassword())) {
-        throw new BadCredentialsException("Bad credentials");
-      }
-
-      if (!user.isEnabled()) {
-        throw new DisabledException("User account is not active");
-      }
-
-      return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-    };
   }
 
 }

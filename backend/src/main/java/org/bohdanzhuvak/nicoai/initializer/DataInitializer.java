@@ -1,4 +1,4 @@
-package org.bohdanzhuvak.nicoai;
+package org.bohdanzhuvak.nicoai.initializer;
 
 import lombok.RequiredArgsConstructor;
 import org.bohdanzhuvak.nicoai.model.User;

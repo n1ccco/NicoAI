@@ -5,16 +5,19 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.bohdanzhuvak.nicoai.exception.InvalidTokenException;
+import org.bohdanzhuvak.nicoai.exception.TokenExpiredException;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-import static org.bohdanzhuvak.nicoai.utils.TokenUtils.resolveToken;
+import static org.bohdanzhuvak.nicoai.security.jwt.TokenUtils.resolveToken;
 
 @RequiredArgsConstructor
 public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
@@ -29,13 +32,24 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
 
     String token = resolveToken(req);
 
-    if (token != null && jwtTokenProvider.validateToken(token)) {
-      Authentication auth = jwtTokenProvider.getAuthentication(token);
+    if (token != null) {
+      try {
+        jwtTokenProvider.validateToken(token);
+        Authentication auth = jwtTokenProvider.getAuthentication(token);
+        if (auth != null && !(auth instanceof AnonymousAuthenticationToken)) {
+          SecurityContextHolder.getContext().setAuthentication(auth);
+        }
+      } catch (TokenExpiredException | InvalidTokenException e) {
+        res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        res.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        res.setHeader(HttpHeaders.WWW_AUTHENTICATE, "Bearer");
 
-      if (auth != null && !(auth instanceof AnonymousAuthenticationToken)) {
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(auth);
-        SecurityContextHolder.setContext(context);
+        String responseBody = e.getMessage();
+        res.getWriter().write(responseBody);
+        res.getWriter().flush();
+        return;
+      } catch (Exception e) {
+        throw new InvalidTokenException("Failed to process the access token");
       }
     }
 

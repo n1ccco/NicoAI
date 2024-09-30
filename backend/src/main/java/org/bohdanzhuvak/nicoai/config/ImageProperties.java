@@ -1,12 +1,10 @@
 package org.bohdanzhuvak.nicoai.config;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "image")
-@Getter
-@Setter
+@Data
 public class ImageProperties {
   private String FOLDER_PATH;
 }
