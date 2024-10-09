@@ -18,26 +18,24 @@ public class UserRepositoryTest {
   @Autowired
   private UserRepository userRepository;
 
+  User user;
+
   @BeforeEach
   void setUp() {
-    User user = new User();
-    user.setId(1L);
-    user.setUsername("john_doe");
-    user.setPassword("password123");
-    userRepository.save(user);
+    user = userRepository.findByUsername("user").orElseThrow(() -> new RuntimeException("User not found"));
   }
 
   @Test
   void testFindByUsername() {
-    Optional<User> foundUser = userRepository.findByUsername("john_doe");
-
-    assertThat(foundUser.get().getUsername()).isEqualTo("john_doe");
-    assertThat(foundUser.get().getPassword()).isEqualTo("password123");
+    Optional<User> foundUser = userRepository.findByUsername("user");
+    assertThat(foundUser.isPresent()).isTrue();
+    assertThat(foundUser.get().getUsername()).isEqualTo("user");
+    assertThat(foundUser.get().getPassword()).isEqualTo("password1");
   }
 
   @Test
   void testExistsByUsername() {
-    boolean isExist = userRepository.existsByUsername("john_doe");
+    boolean isExist = userRepository.existsByUsername("user");
 
     assertThat(isExist).isEqualTo(true);
   }

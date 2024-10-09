@@ -3,11 +3,11 @@ package org.bohdanzhuvak.nicoai.exception.handler;
 import org.bohdanzhuvak.nicoai.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
   @ExceptionHandler(AuthenticationFailedException.class)
@@ -37,7 +37,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(ImageGenerationException.class)
   public ResponseEntity<String> handleImageGenerationException(ImageGenerationException ex) {
-    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to generate image: " + ex.getMessage());
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Image generation failed: " + ex.getMessage());
   }
 
   @ExceptionHandler(UnauthorizedActionException.class)

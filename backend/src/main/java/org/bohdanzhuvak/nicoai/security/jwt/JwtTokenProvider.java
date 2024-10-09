@@ -10,12 +10,12 @@ import lombok.RequiredArgsConstructor;
 import org.bohdanzhuvak.nicoai.dto.user.UserDto;
 import org.bohdanzhuvak.nicoai.exception.InvalidTokenException;
 import org.bohdanzhuvak.nicoai.exception.TokenExpiredException;
+import org.bohdanzhuvak.nicoai.security.CustomUserDetails;
+import org.bohdanzhuvak.nicoai.security.CustomUserServiceImpl;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -34,7 +34,7 @@ public class JwtTokenProvider {
 
   private final JwtProperties jwtProperties;
 
-  private final UserDetailsService userDetailsService;
+  private final CustomUserServiceImpl userDetailsService;
 
   public String generateAccessToken(UserDto userDto) {
 
@@ -85,7 +85,7 @@ public class JwtTokenProvider {
     Collection<? extends GrantedAuthority> authorities = authoritiesClaim == null ? AuthorityUtils.NO_AUTHORITIES
         : AuthorityUtils.commaSeparatedStringToAuthorityList(authoritiesClaim.toString());
 
-    UserDetails userDetails = userDetailsService.loadUserByUsername(claims.getSubject());
+    CustomUserDetails userDetails = userDetailsService.loadUserByUsername(claims.getSubject());
 
     return new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
   }
