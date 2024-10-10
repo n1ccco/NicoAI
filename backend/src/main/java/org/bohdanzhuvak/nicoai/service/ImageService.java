@@ -41,11 +41,15 @@ public class ImageService {
     return new GenerateResponse(imageId);
   }
 
-  public List<ImageResponse> getAllImages(String sortBy, String order, User currentUser) {
+  public List<ImageResponse> getAllImages(String sortBy, String order, User currentUser, Long userId) {
     Sort.Direction direction = SortMapper.mapSortDirection(order);
     String sanitizedSortBy = SortMapper.mapSortBy(sortBy);
-
-    List<Image> images = getImagesSortedBy(sanitizedSortBy, direction);
+    List<Image> images;
+    if (userId != null) {
+      images = getImagesByUserId(userId, currentUser);
+    } else {
+      images = getImagesSortedBy(sanitizedSortBy, direction);
+    }
 
     Long currentUserId = currentUser != null ? currentUser.getId() : null;
 
@@ -64,14 +68,11 @@ public class ImageService {
     }
   }
 
-  public List<ImageResponse> getAllUserImages(Long userId, User currentUser) {
-    Long currentUserId = currentUser != null ? currentUser.getId() : null;
-    List<Image> images = (currentUserId != null && currentUserId.equals(userId))
+  private List<Image> getImagesByUserId(Long userId, User currentUser) {
+    boolean isOwnerOrAdmin = currentUser != null && (currentUser.isAdmin() || currentUser.getId().equals(userId));
+    return isOwnerOrAdmin
         ? imageRepository.findByAuthorId(userId)
         : imageRepository.findByAuthorIdAndIsPublic(userId, true);
-    return images.stream()
-        .map(image -> imageResponseMapper.toImageResponse(image, currentUserId))
-        .collect(Collectors.toList());
   }
 
   public ImageResponse getImage(Long id, @Nullable User currentUser) {

@@ -43,7 +43,6 @@ public class CommentServiceTest {
   private User user1;
   private User otherUser;
   private Image image1;
-  private Image image2;
 
   @BeforeEach
   public void setUp() {
@@ -51,7 +50,6 @@ public class CommentServiceTest {
     otherUser = userRepository.findByUsername("otherUser").orElseThrow(() -> new RuntimeException("OtherUser not found"));
 
     image1 = imageRepository.findById(1L).orElseThrow(() -> new RuntimeException("Image1 not found"));
-    image2 = imageRepository.findById(2L).orElseThrow(() -> new RuntimeException("Image2 not found"));
   }
 
   @Test
@@ -69,8 +67,9 @@ public class CommentServiceTest {
   public void testPostComment_Success() {
     CommentRequest commentRequest = new CommentRequest();
     commentRequest.setBody("New Test Comment");
+    commentRequest.setImageId(image1.getId());
 
-    CommentResponse response = commentService.postComment(commentRequest, image2.getId(), user1);
+    CommentResponse response = commentService.postComment(commentRequest, user1);
 
     assertNotNull(response);
     assertNotNull(response.getId());
@@ -87,9 +86,10 @@ public class CommentServiceTest {
     Long nonExistentImageId = 999L;
     CommentRequest commentRequest = new CommentRequest();
     commentRequest.setBody("Comment for non-existent image");
+    commentRequest.setImageId(nonExistentImageId);
 
     ImageNotFoundException exception = assertThrows(ImageNotFoundException.class,
-        () -> commentService.postComment(commentRequest, nonExistentImageId, user1));
+        () -> commentService.postComment(commentRequest, user1));
 
     assertEquals("Image with ID " + nonExistentImageId + " not found", exception.getMessage());
   }

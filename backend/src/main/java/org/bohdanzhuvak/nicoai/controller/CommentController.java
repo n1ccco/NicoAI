@@ -12,26 +12,26 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/comments")
 @RequiredArgsConstructor
 public class CommentController {
 
   private final CommentService commentService;
 
-  @GetMapping("/api/images/{imageId}/comments")
-  public List<CommentResponse> getComments(@PathVariable Long imageId) {
+  @GetMapping
+  public List<CommentResponse> getComments(@RequestParam(name = "imageId", required = false) Long imageId) {
     return commentService.getComments(imageId);
   }
 
-  @PostMapping("/api/images/{imageId}/comments")
+  @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public CommentResponse postComment(
-      @PathVariable Long imageId,
       @RequestBody CommentRequest commentRequest,
       @CurrentUser User currentUser) {
-    return commentService.postComment(commentRequest, imageId, currentUser);
+    return commentService.postComment(commentRequest, currentUser);
   }
 
-  @DeleteMapping("/api/comments/{commentId}")
+  @DeleteMapping("{commentId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteComment(
       @PathVariable Long commentId,

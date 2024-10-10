@@ -33,6 +33,10 @@ public class User {
   @Builder.Default
   private List<String> roles = new ArrayList<>();
 
+  public boolean isAdmin() {
+    return roles.contains("ROLE_ADMIN");
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o)

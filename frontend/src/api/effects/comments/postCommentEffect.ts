@@ -1,5 +1,5 @@
 import { axiosInstance } from '@/api/axios'
-import { IMAGES } from '@/constants/apiConstants'
+import { COMMENTS } from '@/constants/apiConstants'
 import type { EffectResult } from '../types'
 import { CommentData } from '@/types/api'
 
@@ -25,8 +25,12 @@ type PostCommentEffectType = (
 const PostCommentErrorMessage = 'Can not post a comment'
 
 const postCommentEffect: PostCommentEffectType = async (imageId, body) => {
+  const commentPayload = {
+    imageId: imageId,
+    body: body
+  }
   return await axiosInstance
-    .post(`${IMAGES}/${imageId}/comments`, { body })
+    .post(COMMENTS, commentPayload)
     .then((response): PostCommentResult => {
       const comment: CommentData = {
         ...(response.data as CommentResponse),

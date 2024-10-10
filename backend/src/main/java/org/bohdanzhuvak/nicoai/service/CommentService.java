@@ -34,7 +34,8 @@ public class CommentService {
         .collect(Collectors.toList());
   }
 
-  public CommentResponse postComment(CommentRequest commentRequest, Long imageId, User currentUser) {
+  public CommentResponse postComment(CommentRequest commentRequest, User currentUser) {
+    Long imageId = commentRequest.getImageId();
     Image image = imageRepository.findById(imageId)
         .orElseThrow(() -> new ImageNotFoundException("Image with ID " + imageId + " not found"));
     Comment comment = commentFactory.createComment(commentRequest, image, currentUser);

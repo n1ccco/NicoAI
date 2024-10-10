@@ -25,16 +25,15 @@ public class ImageController {
   public List<ImageResponse> getImages(
       @RequestParam(name = "sortBy", required = false, defaultValue = "date") String sortBy,
       @RequestParam(name = "order", required = false, defaultValue = "asc") String sortOrder,
+      @RequestParam(name = "userId", required = false) Long userId,
       @CurrentUser @Nullable User currentUser) {
-
-    return imageService.getAllImages(sortBy, sortOrder, currentUser);
+    return imageService.getAllImages(sortBy, sortOrder, currentUser, userId);
   }
 
   @GetMapping("/{id}")
   public ImageResponse getImage(
       @PathVariable Long id,
       @CurrentUser @Nullable User currentUser) {
-
     return imageService.getImage(id, currentUser);
   }
 
@@ -44,7 +43,6 @@ public class ImageController {
       @PathVariable Long id,
       @RequestBody InteractionImageRequest interactionImageRequest,
       @CurrentUser User currentUser) {
-
     imageService.changeImage(id, interactionImageRequest, currentUser);
   }
 
@@ -52,7 +50,6 @@ public class ImageController {
   public GenerateResponse generateImage(
       @ModelAttribute PromptRequest promptRequest,
       @CurrentUser User currentUser) {
-
     return imageService.generateImage(promptRequest, currentUser);
   }
 

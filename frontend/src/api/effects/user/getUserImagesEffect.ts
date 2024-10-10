@@ -1,7 +1,7 @@
 import { axiosInstance } from '@/api/axios'
 import type { EffectResult } from '../types'
 import { Photo } from '@/types/api'
-import { IMAGES, USERS } from '@/constants/apiConstants'
+import { IMAGES } from '@/constants/apiConstants'
 
 type GetUserImagesState = {
   images: Photo[]
@@ -15,7 +15,7 @@ const GetUserImagesErrorMessage = 'Can not get user images'
 
 const getUserImagesEffect: GetUserImagesEffectType = async (userId) => {
   return await axiosInstance
-    .get(`${USERS}/${userId}/${IMAGES}`)
+    .get(IMAGES,{params: {userId}})
     .then((response): GetUserImagesResult => {
       const images: Photo[] = response.data
       return {

@@ -1,5 +1,5 @@
 import { axiosInstance } from '@/api/axios'
-import { IMAGES } from '@/constants/apiConstants'
+import { COMMENTS } from '@/constants/apiConstants'
 import type { EffectResult } from '../types'
 import { CommentData } from '@/types/api'
 
@@ -23,7 +23,7 @@ const GetCommentsErrorMessage = 'Can not fetch comments'
 
 const getCommentsEffect: GetCommentsEffectType = async (imageId) => {
   return await axiosInstance
-    .get(`${IMAGES}/${imageId}/comments`)
+    .get(COMMENTS, {params: {imageId}})
     .then((response): GetCommentsResult => {
       const comments: CommentData[] = (response.data as CommentResponse[]).map(
         (comment) => ({
