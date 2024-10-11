@@ -1,10 +1,7 @@
 package org.bohdanzhuvak.nicoai.service;
 
 import lombok.RequiredArgsConstructor;
-import org.bohdanzhuvak.nicoai.dto.image.GenerateResponse;
-import org.bohdanzhuvak.nicoai.dto.image.ImageResponse;
-import org.bohdanzhuvak.nicoai.dto.image.InteractionImageRequest;
-import org.bohdanzhuvak.nicoai.dto.image.PromptRequest;
+import org.bohdanzhuvak.nicoai.dto.image.*;
 import org.bohdanzhuvak.nicoai.exception.ImageNotFoundException;
 import org.bohdanzhuvak.nicoai.exception.UnauthorizedActionException;
 import org.bohdanzhuvak.nicoai.model.Image;
@@ -41,7 +38,7 @@ public class ImageService {
     return new GenerateResponse(imageId);
   }
 
-  public List<ImageResponse> getAllImages(String sortBy, String order, User currentUser, Long userId) {
+  public List<ImageResponseSimplified> getAllImages(String sortBy, String order, User currentUser, Long userId) {
     Sort.Direction direction = SortMapper.mapSortDirection(order);
     String sanitizedSortBy = SortMapper.mapSortBy(sortBy);
     List<Image> images;
@@ -54,7 +51,7 @@ public class ImageService {
     Long currentUserId = currentUser != null ? currentUser.getId() : null;
 
     return images.stream()
-        .map(image -> imageResponseMapper.toImageResponse(image, currentUserId))
+        .map(image -> imageResponseMapper.toImageResponseSimplified(image, currentUserId))
         .collect(Collectors.toList());
   }
 

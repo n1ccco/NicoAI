@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 import Image from '@/components/Image.tsx'
-import { Photo } from '@/types/api.ts'
+import { PhotoSimplified } from '@/types/api.ts'
 import { getAllImagesEffect } from '@/api/effects/images'
 import Loader from '@/components/ui/Loader'
 
 const Gallery = () => {
-  const [photos, setPhotos] = useState<Photo[]>([])
+  const [photos, setPhotos] = useState<PhotoSimplified[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   const [sortOption, setSortOption] = useState<string>('date-desc')
 

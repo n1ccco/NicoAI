@@ -1,10 +1,10 @@
 import { axiosInstance } from '@/api/axios'
 import type { EffectResult } from '../types'
-import { Photo } from '@/types/api'
+import { PhotoSimplified } from '@/types/api'
 import { IMAGES } from '@/constants/apiConstants'
 
 type GetUserImagesState = {
-  images: Photo[]
+  images: PhotoSimplified[]
 }
 
 type GetUserImagesResult = EffectResult<GetUserImagesState>
@@ -17,7 +17,7 @@ const getUserImagesEffect: GetUserImagesEffectType = async (userId) => {
   return await axiosInstance
     .get(IMAGES,{params: {userId}})
     .then((response): GetUserImagesResult => {
-      const images: Photo[] = response.data
+      const images: PhotoSimplified[] = response.data
       return {
         type: 'success',
         state: { images },

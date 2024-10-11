@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react'
 import Image from '@/components/Image.tsx'
 import { useParams } from 'react-router-dom'
-import { Photo } from '@/types/api.ts'
+import { PhotoSimplified } from '@/types/api.ts'
 import { getUserImagesEffect, getUsernameEffect } from '@/api/effects/user'
 import { useAuth } from '@/hooks/useAuth'
 import Loader from '@/components/ui/Loader'
 
 const UserImages = () => {
   const { id } = useParams<{ id: string }>()
-  const [photos, setPhotos] = useState<Photo[]>([])
-  const [username, setUsername] = useState<String>('')
+  const [photos, setPhotos] = useState<PhotoSimplified[]>([])
+  const [username, setUsername] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
 
   const { state: authState } = useAuth()

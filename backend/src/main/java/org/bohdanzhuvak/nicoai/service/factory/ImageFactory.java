@@ -1,5 +1,6 @@
 package org.bohdanzhuvak.nicoai.service.factory;
 
+import lombok.RequiredArgsConstructor;
 import org.bohdanzhuvak.nicoai.config.ImageProperties;
 import org.bohdanzhuvak.nicoai.dto.image.PromptRequest;
 import org.bohdanzhuvak.nicoai.model.Image;
@@ -9,13 +10,10 @@ import org.bohdanzhuvak.nicoai.model.User;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class ImageFactory {
 
   private final ImageProperties imageProperties;
-
-  public ImageFactory(ImageProperties imageProperties) {
-    this.imageProperties = imageProperties;
-  }
 
   public Image createImage(String fileName, PromptRequest promptRequest, User author) {
     ImageData imageData = ImageData.builder()

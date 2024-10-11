@@ -1,10 +1,10 @@
 import { axiosInstance } from '@/api/axios'
 import { IMAGES } from '@/constants/apiConstants'
 import type { EffectResult } from '../types'
-import { Photo } from '@/types/api'
+import { PhotoSimplified } from '@/types/api'
 
 type GetAllImagesState = {
-  photos: Photo[]
+  photos: PhotoSimplified[]
 }
 
 type GetAllImagesResult = EffectResult<GetAllImagesState>
@@ -17,7 +17,7 @@ const getAllImagesEffect: GetAllImagesEffectType = async ({ sortBy, order }) => 
   return await axiosInstance
     .get(IMAGES, {params: {sortBy, order}})
     .then((response): GetAllImagesResult => {
-      const photos: Photo[] = response.data
+      const photos: PhotoSimplified[] = response.data
       return {
         type: 'success',
         state: { photos },

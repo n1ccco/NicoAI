@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom'
 import { IMAGES } from '../constants/routeContants.ts'
-import { Photo } from '@/types/api.ts'
+import { PhotoSimplified } from '@/types/api.ts'
 import LikeButton from '@/components/ui/LikeButton.tsx'
 
 interface ImageProps {
-  photo: Photo
+  photo: PhotoSimplified
 }
 
 function Image({ photo }: ImageProps) {
