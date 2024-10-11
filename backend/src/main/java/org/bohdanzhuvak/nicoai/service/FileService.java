@@ -3,6 +3,7 @@ package org.bohdanzhuvak.nicoai.service;
 import lombok.RequiredArgsConstructor;
 import org.bohdanzhuvak.nicoai.config.ImageProperties;
 import org.bohdanzhuvak.nicoai.exception.FileStorageException;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -24,7 +25,7 @@ public class FileService {
       throw new FileStorageException("Failed to save image file: " + filename, e);
     }
   }
-
+  @Cacheable(value = "image_data", key = "#filename" )
   public byte[] readFileBytes(String filename) {
     try {
       Path filePath = Paths.get(imageProperties.getFOLDER_PATH()).resolve(filename);

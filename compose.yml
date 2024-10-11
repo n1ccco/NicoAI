@@ -8,9 +8,10 @@ services:
     env_file:
       - .env.backend
     ports:
-      - 8080:8080
+      - "8080:8080"
     depends_on:
       - db
+      - redis
 
   db:
     image: "postgres:16.2-alpine"
@@ -21,7 +22,15 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - 5432:5432
+      - "5432:5432"
+
+  redis:
+    image: "redis:7.4.1-alpine"
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
 
   frontend:
     container_name: frontend
@@ -35,7 +44,7 @@ services:
     build:
       context: ./generator
     ports:
-      - 5000:5000
+      - "5000:5000"
     deploy:
       resources:
         reservations:
@@ -48,3 +57,4 @@ networks:
 
 volumes:
   postgres_data:
+  redis_data:
