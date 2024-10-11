@@ -1,6 +1,7 @@
 package org.bohdanzhuvak.nicoai.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.bohdanzhuvak.nicoai.dto.ImageBlobResponse;
 import org.bohdanzhuvak.nicoai.dto.image.*;
 import org.bohdanzhuvak.nicoai.model.User;
 import org.bohdanzhuvak.nicoai.security.CurrentUser;
@@ -20,8 +21,8 @@ public class ImageController {
 
   @GetMapping
   public List<ImageResponseSimplified> getImages(
-      @RequestParam(name = "sortBy", required = false, defaultValue = "date") String sortBy,
-      @RequestParam(name = "order", required = false, defaultValue = "asc") String sortOrder,
+      @RequestParam(name = "sortBy", defaultValue = "date") String sortBy,
+      @RequestParam(name = "order", defaultValue = "asc") String sortOrder,
       @RequestParam(name = "userId", required = false) Long userId,
       @CurrentUser @Nullable User currentUser) {
     return imageService.getAllImages(sortBy, sortOrder, currentUser, userId);
@@ -32,6 +33,13 @@ public class ImageController {
       @PathVariable Long id,
       @CurrentUser @Nullable User currentUser) {
     return imageService.getImage(id, currentUser);
+  }
+
+  @GetMapping(value = "/{id}/blob")
+  public ImageBlobResponse getImageBlob(
+      @PathVariable Long id,
+      @CurrentUser @Nullable User currentUser) {
+    return imageService.getImageBlob(id, currentUser);
   }
 
   @PatchMapping("/{id}")

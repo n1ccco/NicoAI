@@ -13,5 +13,4 @@ public class ImageResponseSimplified implements Serializable {
   @JsonProperty(value = "isLiked")
   private boolean isLiked;
   private Integer countLikes;
-  private byte[] imageData;
 }

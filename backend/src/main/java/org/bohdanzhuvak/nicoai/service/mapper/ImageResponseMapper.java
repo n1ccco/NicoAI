@@ -33,7 +33,6 @@ public class ImageResponseMapper {
   }
 
   public ImageResponseSimplified toImageResponseSimplified(Image image, Long userId) {
-    byte[] images = fileService.readFileBytes(image.getImageData().getName());
     boolean isLiked = userId != null && interactionService.checkIfUserLikedImage(image, userId);
     int countLikes = image.getLikes().size();
 
@@ -41,7 +40,6 @@ public class ImageResponseMapper {
         .id(image.getId())
         .isLiked(isLiked)
         .countLikes(countLikes)
-        .imageData(images)
         .build();
   }
 }

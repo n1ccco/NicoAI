@@ -24,10 +24,14 @@ export type Photo = Entity<{
   authorName: string
   imageData: string
 }>
+
 export type PhotoSimplified = Entity<{
   isLiked: boolean
   countLikes: number
-  imageData: string
+}>
+
+export type PhotoBlob = Entity<{
+  imageBlob: string
 }>
 
 export type User = Entity<{

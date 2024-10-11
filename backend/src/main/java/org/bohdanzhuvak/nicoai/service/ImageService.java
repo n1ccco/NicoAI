@@ -1,6 +1,7 @@
 package org.bohdanzhuvak.nicoai.service;
 
 import lombok.RequiredArgsConstructor;
+import org.bohdanzhuvak.nicoai.dto.ImageBlobResponse;
 import org.bohdanzhuvak.nicoai.dto.image.*;
 import org.bohdanzhuvak.nicoai.exception.ImageNotFoundException;
 import org.bohdanzhuvak.nicoai.exception.UnauthorizedActionException;
@@ -15,6 +16,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -76,6 +78,20 @@ public class ImageService {
     return imageRepository.findById(id)
         .map(image -> imageResponseMapper.toImageResponse(image, currentUser != null ? currentUser.getId() : null))
         .orElseThrow(() -> new ImageNotFoundException("Image not found"));
+  }
+
+  public ImageBlobResponse getImageBlob(Long id, @Nullable User currentUser) {
+    Image foundImage = imageRepository.findById(id)
+        .orElseThrow(() -> new ImageNotFoundException("Image not found"));
+
+    boolean isAuthorized = foundImage.isPublic() ||
+        (currentUser != null && (currentUser.getId().equals(foundImage.getAuthor().getId()) || currentUser.isAdmin()));
+
+    return Optional.of(isAuthorized)
+        .filter(auth -> auth)
+        .map(auth -> fileService.readFileBytes(foundImage.getImageData().getName()))
+        .map(blobImage -> ImageBlobResponse.builder().imageBlob(blobImage).build())
+        .orElseThrow(() -> new UnauthorizedActionException("Unauthorized action"));
   }
 
   public void changeImage(Long id,

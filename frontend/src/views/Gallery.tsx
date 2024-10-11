@@ -57,7 +57,7 @@ const Gallery = () => {
         {loading ? (
           <Loader />
         ) : (
-          <div className="grid w-full grid-cols-1 gap-8 md:grid-cols-3">
+          <div className="grid w-full grid-cols-1 gap-8 md:grid-cols-5">
             {photos.map((photo) => (
               <Image key={photo.id} photo={photo} />
             ))}
