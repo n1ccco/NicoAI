@@ -6,13 +6,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.bohdanzhuvak.nicoai.dto.authentication.*;
 import org.bohdanzhuvak.nicoai.dto.user.UserDto;
+import org.bohdanzhuvak.nicoai.model.User;
+import org.bohdanzhuvak.nicoai.security.CurrentUser;
 import org.bohdanzhuvak.nicoai.security.jwt.JwtProperties;
 import org.bohdanzhuvak.nicoai.service.AuthenticationService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.naming.AuthenticationException;
-
-import static org.bohdanzhuvak.nicoai.security.jwt.TokenUtils.resolveToken;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -45,7 +45,6 @@ public class AuthenticationController {
 
   @PostMapping("/refresh")
   public JwtRefreshResponse refreshToken(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-    // Extract the refresh token from the cookie
     Cookie[] cookies = request.getCookies();
     String refreshToken = null;
     if (cookies != null) {
@@ -60,13 +59,11 @@ public class AuthenticationController {
       throw new AuthenticationException("Refresh token not found in cookies");
     }
 
-    // Call the service to refresh only the access token
     return authenticationService.refreshAccessToken(refreshToken);
   }
 
   @GetMapping("/me")
-  public UserDto getCurrentUser(HttpServletRequest request) {
-    String token = resolveToken(request);
-    return authenticationService.getCurrentUser(token);
+  public UserDto getCurrentUser(@CurrentUser User user) {
+    return authenticationService.getCurrentUser(user);
   }
 }

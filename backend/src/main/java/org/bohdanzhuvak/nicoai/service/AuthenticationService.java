@@ -66,12 +66,9 @@ public class AuthenticationService {
     userRepository.save(user);
   }
 
-  public UserDto getCurrentUser(String token) {
+  public UserDto getCurrentUser(User currentUser) {
     if (isUserAuthenticated()) {
-      String username = jwtTokenProvider.getUsernameFromToken(token);
-      User user = userRepository.findByUsername(username)
-          .orElseThrow(() -> new AuthenticationFailedException("User not found"));
-      return userMapper.toUserDto(user);
+      return userMapper.toUserDto(currentUser);
     }
     return null;
   }
