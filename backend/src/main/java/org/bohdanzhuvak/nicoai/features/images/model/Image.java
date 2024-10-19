@@ -22,11 +22,15 @@ public class Image {
   @JoinColumn
   private User author;
   @Builder.Default
-  private boolean isPublic = false;
+  @Enumerated(EnumType.STRING)
+  private Visibility visibility = Visibility.PRIVATE;
   @ManyToMany
   @Builder.Default
   @JoinTable(name = "user_likes", joinColumns = @JoinColumn(name = "image_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
   private Set<User> likes = new HashSet<User>();
+  @Column(name = "like_count")
+  @Builder.Default
+  private Long likeCount = 0L;
 
   @OneToOne(cascade = CascadeType.ALL)
   @JoinColumn

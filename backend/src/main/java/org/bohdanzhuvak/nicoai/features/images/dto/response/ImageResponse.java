@@ -17,7 +17,7 @@ public class ImageResponse {
   private boolean isPublic;
   @JsonProperty(value = "isLiked")
   private boolean isLiked;
-  private Integer countLikes;
+  private Long countLikes;
   private Long authorId;
   private String authorName;
   private byte[] imageData;

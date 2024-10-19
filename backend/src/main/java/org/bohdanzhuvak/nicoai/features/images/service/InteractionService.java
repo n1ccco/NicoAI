@@ -3,8 +3,10 @@ package org.bohdanzhuvak.nicoai.features.images.service;
 import lombok.RequiredArgsConstructor;
 import org.bohdanzhuvak.nicoai.features.images.dto.request.InteractionImageRequest;
 import org.bohdanzhuvak.nicoai.features.images.model.Image;
+import org.bohdanzhuvak.nicoai.features.images.model.Visibility;
 import org.bohdanzhuvak.nicoai.features.images.repository.ImageRepository;
 import org.bohdanzhuvak.nicoai.features.users.model.User;
+import org.bohdanzhuvak.nicoai.shared.exception.ImageNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,20 +23,24 @@ public class InteractionService {
                           InteractionImageRequest interactionImageRequest,
                           User user) {
 
-    Image image = imageRepository.findById(id).orElse(null);
+    Image image = imageRepository.findById(id).orElseThrow(() -> new ImageNotFoundException("Image not found"));
 
     switch (interactionImageRequest.getAction()) {
       case "like":
-        image.getLikes().add(user);
+        if (image.getLikes().add(user)) {
+          image.setLikeCount(image.getLikeCount() + 1);
+        }
         break;
       case "dislike":
-        image.getLikes().remove(user);
+        if (image.getLikes().remove(user)) {
+          image.setLikeCount(image.getLikeCount() - 1);
+        }
         break;
       case "makePublic":
-        image.setPublic(true);
+        image.setVisibility(Visibility.PUBLIC);
         break;
       case "makePrivate":
-        image.setPublic(false);
+        image.setVisibility(Visibility.PRIVATE);
         break;
       default:
         System.out.println("Invalid action");

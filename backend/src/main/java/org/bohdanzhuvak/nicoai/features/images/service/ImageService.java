@@ -11,6 +11,7 @@ import org.bohdanzhuvak.nicoai.features.images.dto.response.ImageBlobResponse;
 import org.bohdanzhuvak.nicoai.features.images.dto.response.ImageResponse;
 import org.bohdanzhuvak.nicoai.features.images.dto.response.ImageResponseSimplified;
 import org.bohdanzhuvak.nicoai.features.images.model.Image;
+import org.bohdanzhuvak.nicoai.features.images.model.Visibility;
 import org.bohdanzhuvak.nicoai.features.images.repository.ImageRepository;
 import org.bohdanzhuvak.nicoai.features.users.model.User;
 import org.bohdanzhuvak.nicoai.shared.exception.ImageNotFoundException;
@@ -67,7 +68,7 @@ public class ImageService {
           ? imageRepository.findByIsPublicOrderByLikesSizeAsc()
           : imageRepository.findByIsPublicOrderByLikesSizeDesc();
     } else {
-      return imageRepository.findByIsPublic(true, Sort.by(direction, sortBy));
+      return imageRepository.findByVisibility(Visibility.PUBLIC, Sort.by(direction, sortBy));
     }
   }
 
@@ -75,7 +76,7 @@ public class ImageService {
     boolean isOwnerOrAdmin = currentUser != null && (currentUser.isAdmin() || currentUser.getId().equals(userId));
     return isOwnerOrAdmin
         ? imageRepository.findByAuthorId(userId)
-        : imageRepository.findByAuthorIdAndIsPublic(userId, true);
+        : imageRepository.findByAuthorIdAndVisibility(userId, Visibility.PUBLIC);
   }
 
   public ImageResponse getImage(Long id, @Nullable User currentUser) {
@@ -88,7 +89,7 @@ public class ImageService {
     Image foundImage = imageRepository.findById(id)
         .orElseThrow(() -> new ImageNotFoundException("Image not found"));
 
-    boolean isAuthorized = foundImage.isPublic() ||
+    boolean isAuthorized = foundImage.getVisibility() == Visibility.PUBLIC ||
         (currentUser != null && (currentUser.getId().equals(foundImage.getAuthor().getId()) || currentUser.isAdmin()));
 
     return Optional.of(isAuthorized)
