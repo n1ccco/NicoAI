@@ -58,7 +58,13 @@ public class ImageService {
     Long currentUserId = currentUser != null ? currentUser.getId() : null;
 
     return images.stream()
-        .map(image -> imageResponseMapper.toImageResponseSimplified(image, currentUserId))
+        .map(image -> {
+          boolean isLiked = false;
+          if (currentUserId != null) {
+            isLiked = interactionService.checkIfUserLikedImage(image.getId(), currentUserId);
+          }
+          return imageResponseMapper.toImageResponseSimplified(image, isLiked);
+        })
         .collect(Collectors.toList());
   }
 
@@ -80,9 +86,20 @@ public class ImageService {
   }
 
   public ImageResponse getImage(Long id, @Nullable User currentUser) {
-    return imageRepository.findById(id)
-        .map(image -> imageResponseMapper.toImageResponse(image, currentUser != null ? currentUser.getId() : null))
+    Image foundImage = imageRepository.findById(id)
         .orElseThrow(() -> new ImageNotFoundException("Image not found"));
+    boolean isAuthorized = foundImage.getVisibility() == Visibility.PUBLIC ||
+        (currentUser != null && (currentUser.getId().equals(foundImage.getAuthor().getId()) || currentUser.isAdmin()));
+    return Optional.of(isAuthorized)
+        .filter(auth -> auth)
+        .map(auth -> {
+          boolean isLiked = false;
+          if (currentUser != null) {
+            isLiked = interactionService.checkIfUserLikedImage(foundImage.getId(), currentUser.getId());
+          }
+          return imageResponseMapper.toImageResponse(foundImage, isLiked);
+        })
+        .orElseThrow(() -> new UnauthorizedActionException("Unauthorized action"));
   }
 
   public ImageBlobResponse getImageBlob(Long id, @Nullable User currentUser) {

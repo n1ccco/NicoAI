@@ -15,9 +15,9 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
 
   List<Image> findByAuthorIdAndVisibility(Long authorId, Visibility visibility);
 
-  @Query("SELECT i FROM Image i WHERE i.visibility = 'PUBLIC' ORDER BY SIZE(i.likes) ASC, i.id DESC")
+  @Query("SELECT i FROM Image i WHERE i.visibility = 'PUBLIC' ORDER BY i.likeCount ASC, i.id DESC")
   List<Image> findByIsPublicOrderByLikesSizeAsc();
 
-  @Query("SELECT i FROM Image i WHERE i.visibility = 'PUBLIC' ORDER BY SIZE(i.likes) DESC, i.id DESC")
+  @Query("SELECT i FROM Image i WHERE i.visibility = 'PUBLIC' ORDER BY i.likeCount DESC, i.id DESC")
   List<Image> findByIsPublicOrderByLikesSizeDesc();
 }
