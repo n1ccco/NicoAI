@@ -15,8 +15,8 @@ INSERT INTO prompts_data (id, guidance_scale, height, negative_prompt, num_inter
 VALUES (2, 8, 256, 'No negative', 60, 'A majestic mountain', 256);
 
 
-INSERT INTO images (id, is_public, author_id, image_data_id, prompt_data_id) VALUES (1, TRUE, 1, 1, 1);
-INSERT INTO images (id, is_public, author_id, image_data_id, prompt_data_id) VALUES (2, FALSE, 2, 2, 2);
+INSERT INTO images (id, visibility, author_id, image_data_id, prompt_data_id) VALUES (1, 'PUBLIC', 1, 1, 1);
+INSERT INTO images (id, visibility, author_id, image_data_id, prompt_data_id) VALUES (2, 'PRIVATE', 2, 2, 2);
 
 
 INSERT INTO comment (body, created_at, author_id, image_id) VALUES ('First comment', '2024-09-30 10:00:00', 1, 1);

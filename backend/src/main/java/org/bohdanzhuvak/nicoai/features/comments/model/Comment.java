@@ -19,11 +19,11 @@ public class Comment {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "authorId", referencedColumnName = "id")
+  @JoinColumn(name = "author_id", referencedColumnName = "id")
   private User author;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "imageId", referencedColumnName = "id")
+  @JoinColumn(name = "image_id", referencedColumnName = "id")
   private Image image;
 
   private String body;
