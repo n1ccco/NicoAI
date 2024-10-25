@@ -18,7 +18,7 @@ import java.util.Objects;
 @NoArgsConstructor
 public class User {
   @Id
-  @GeneratedValue
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long Id;
   @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "author")
   private List<Image> images;

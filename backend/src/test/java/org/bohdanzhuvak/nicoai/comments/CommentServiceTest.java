@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -27,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Transactional
 @ActiveProfiles("test")
+@Sql(scripts = "/db/test-data/CommentServiceTest-data.sql")
 public class CommentServiceTest {
 
   @Autowired
@@ -41,21 +43,21 @@ public class CommentServiceTest {
   @Autowired
   private CommentService commentService;
 
-  private User user1;
+  private User user;
   private User otherUser;
-  private Image image1;
+  private Image image;
 
   @BeforeEach
   public void setUp() {
-    user1 = userRepository.findByUsername("user").orElseThrow(() -> new RuntimeException("User not found"));
+    user = userRepository.findByUsername("user").orElseThrow(() -> new RuntimeException("User not found"));
     otherUser = userRepository.findByUsername("otherUser").orElseThrow(() -> new RuntimeException("OtherUser not found"));
 
-    image1 = imageRepository.findById(1L).orElseThrow(() -> new RuntimeException("Image1 not found"));
+    image = imageRepository.findById(1L).orElseThrow(() -> new RuntimeException("Image1 not found"));
   }
 
   @Test
   public void testGetComments_Success() {
-    List<CommentResponse> comments = commentService.getComments(image1.getId());
+    List<CommentResponse> comments = commentService.getComments(image.getId());
 
     assertEquals(3, comments.size());
 
@@ -68,9 +70,9 @@ public class CommentServiceTest {
   public void testPostComment_Success() {
     CommentRequest commentRequest = new CommentRequest();
     commentRequest.setBody("New Test Comment");
-    commentRequest.setImageId(image1.getId());
+    commentRequest.setImageId(image.getId());
 
-    CommentResponse response = commentService.postComment(commentRequest, user1);
+    CommentResponse response = commentService.postComment(commentRequest, user);
 
     assertNotNull(response);
     assertNotNull(response.getId());
@@ -90,7 +92,7 @@ public class CommentServiceTest {
     commentRequest.setImageId(nonExistentImageId);
 
     ImageNotFoundException exception = assertThrows(ImageNotFoundException.class,
-        () -> commentService.postComment(commentRequest, user1));
+        () -> commentService.postComment(commentRequest, user));
 
     assertEquals("Image with ID " + nonExistentImageId + " not found", exception.getMessage());
   }
@@ -99,7 +101,7 @@ public class CommentServiceTest {
   public void testDeleteComment_Success() {
     Long commentId = 1L;
 
-    commentService.deleteComment(commentId, user1);
+    commentService.deleteComment(commentId, user);
 
     Optional<Comment> deletedComment = commentRepository.findById(commentId);
     assertFalse(deletedComment.isPresent());
@@ -110,7 +112,7 @@ public class CommentServiceTest {
     Long nonExistentCommentId = 999L;
 
     CommentNotFoundException exception = assertThrows(CommentNotFoundException.class,
-        () -> commentService.deleteComment(nonExistentCommentId, user1));
+        () -> commentService.deleteComment(nonExistentCommentId, user));
 
     assertEquals("Comment with ID " + nonExistentCommentId + " not found", exception.getMessage());
   }

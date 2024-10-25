@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,6 +32,7 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 @Transactional
 @ActiveProfiles("test")
+@Sql(scripts = "/db/test-data/ImageServiceTest-data.sql")
 public class ImageServiceTest {
 
   @TempDir
