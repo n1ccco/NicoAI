@@ -69,13 +69,11 @@ public class ImageService {
   }
 
   private List<Image> getImagesSortedBy(String sortBy, Sort.Direction direction) {
-    if ("likes".equals(sortBy)) {
-      return direction == Sort.Direction.ASC
-          ? imageRepository.findByIsPublicOrderByLikesSizeAsc()
-          : imageRepository.findByIsPublicOrderByLikesSizeDesc();
-    } else {
-      return imageRepository.findByVisibility(Visibility.PUBLIC, Sort.by(direction, sortBy));
-    }
+    Sort sort = "likes".equals(sortBy)
+        ? Sort.by(new Sort.Order(direction, "likeCount"), Sort.Order.desc("id"))
+        : Sort.by(direction, sortBy);
+
+    return imageRepository.findByVisibility(Visibility.PUBLIC, sort);
   }
 
   private List<Image> getImagesByUserId(Long userId, User currentUser) {
