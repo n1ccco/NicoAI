@@ -45,6 +45,8 @@ services:
       context: ./generator
     ports:
       - "5000:5000"
+    volumes:
+      - ${HOME}/models:/app/generator/models
     deploy:
       resources:
         reservations:
