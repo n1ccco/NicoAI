@@ -1,8 +1,10 @@
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/n1ccco/NicoAI/blob/main/LICENSE)
 [![npm version](https://img.shields.io/npm/v/react.svg?style=flat)](https://www.npmjs.com/package/react)
 [![Spring Boot version](https://img.shields.io/maven-central/v/org.springframework.boot/spring-boot.svg?label=spring%20boot)](https://search.maven.org/artifact/org.springframework.boot/spring-boot)
-[![Build](https://github.com/n1ccco/NicoAI/actions/workflows/ci-docker-image-build.yml/badge.svg)](https://github.com/n1ccco/NicoAI/actions/workflows/ci-docker-image-build.yml)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/n1ccco/NicoAI/issues)
+[![Build](https://github.com/n1ccco/NicoAI/actions/workflows/ci-docker-image-frontend.yml/badge.svg)](https://github.com/n1ccco/NicoAI/actions/workflows/ci-docker-image-frontend.yml)
+[![Build](https://github.com/n1ccco/NicoAI/actions/workflows/ci-docker-image-backend.yml/badge.svg)](https://github.com/n1ccco/NicoAI/actions/workflows/ci-docker-image-backend.yml)
+[![Build](https://github.com/n1ccco/NicoAI/actions/workflows/ci-docker-image-generator.yml/badge.svg)](https://github.com/n1ccco/NicoAI/actions/workflows/ci-docker-image-generator.yml)
 # 🎨 Stable Diffusion Web UI 🌐
 
 Welcome to **Stable Diffusion Web UI**, a full-stack web application that lets you generate stunning AI-powered images with ease! This project combines **Java Spring Boot** for the backend, **React TypeScript** for the frontend, and a **Python Flask microservice** integrated with **Stable Diffusion** to handle image generation.
