@@ -1,0 +1,30 @@
+name: Build and Push Frontend Docker Image
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - frontend/**
+
+jobs:
+  build-and-push-frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Build and tag frontend Docker image
+        run: |
+          docker build --target prod -t nicoai-frontend ./frontend
+          docker tag nicoai-frontend ${{ secrets.DOCKERHUB_USERNAME }}/nicoai-frontend:latest
+
+      - name: Push frontend Docker image to Docker Hub
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/nicoai-frontend:latest

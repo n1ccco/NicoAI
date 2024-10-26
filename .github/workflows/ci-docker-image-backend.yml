@@ -1,12 +1,14 @@
-name: Build and Push Docker Images
+name: Build and Push Backend Docker Image
 
 on:
   push:
     branches:
       - main
+    paths:
+      - backend/**
 
 jobs:
-  build-and-push:
+  build-and-push-backend:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,13 +26,5 @@ jobs:
           docker build --target prod -t nicoai-backend ./backend
           docker tag nicoai-backend ${{ secrets.DOCKERHUB_USERNAME }}/nicoai-backend:latest
 
-      - name: Build and tag frontend Docker image
-        run: |
-          docker build --target prod -t nicoai-frontend ./frontend
-          docker tag nicoai-frontend ${{ secrets.DOCKERHUB_USERNAME }}/nicoai-frontend:latest
-
       - name: Push backend Docker image to Docker Hub
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/nicoai-backend:latest
-
-      - name: Push frontend Docker image to Docker Hub
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/nicoai-frontend:latest
