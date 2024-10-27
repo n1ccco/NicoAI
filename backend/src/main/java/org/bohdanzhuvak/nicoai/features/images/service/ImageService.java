@@ -20,9 +20,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -57,14 +55,16 @@ public class ImageService {
 
     Long currentUserId = currentUser != null ? currentUser.getId() : null;
 
+    Set<Long> imageIds = images.stream()
+        .map(Image::getId)
+        .collect(Collectors.toSet());
+
+    Set<Long> likedImageIds = currentUserId != null
+        ? interactionService.getLikedImageIdsForUserFromList(currentUserId, imageIds)
+        : Collections.emptySet();
+
     return images.stream()
-        .map(image -> {
-          boolean isLiked = false;
-          if (currentUserId != null) {
-            isLiked = interactionService.checkIfUserLikedImage(image.getId(), currentUserId);
-          }
-          return imageResponseMapper.toImageResponseSimplified(image, isLiked);
-        })
+        .map(image -> imageResponseMapper.toImageResponseSimplified(image, likedImageIds.contains(image.getId())))
         .collect(Collectors.toList());
   }
 
@@ -84,24 +84,21 @@ public class ImageService {
   }
 
   public ImageResponse getImage(Long id, @Nullable User currentUser) {
-    Image foundImage = imageRepository.findById(id)
+    Image foundImage = imageRepository.findByIdWithAllData(id)
         .orElseThrow(() -> new ImageNotFoundException("Image not found"));
     boolean isAuthorized = foundImage.getVisibility() == Visibility.PUBLIC ||
         (currentUser != null && (currentUser.getId().equals(foundImage.getAuthor().getId()) || currentUser.isAdmin()));
     return Optional.of(isAuthorized)
         .filter(auth -> auth)
         .map(auth -> {
-          boolean isLiked = false;
-          if (currentUser != null) {
-            isLiked = interactionService.checkIfUserLikedImage(foundImage.getId(), currentUser.getId());
-          }
+          boolean isLiked = currentUser != null && interactionService.checkIfUserLikedImage(foundImage.getId(), currentUser.getId());
           return imageResponseMapper.toImageResponse(foundImage, isLiked);
         })
         .orElseThrow(() -> new UnauthorizedActionException("Unauthorized action"));
   }
 
   public ImageBlobResponse getImageBlob(Long id, @Nullable User currentUser) {
-    Image foundImage = imageRepository.findById(id)
+    Image foundImage = imageRepository.findByIdWithPartData(id)
         .orElseThrow(() -> new ImageNotFoundException("Image not found"));
 
     boolean isAuthorized = foundImage.getVisibility() == Visibility.PUBLIC ||

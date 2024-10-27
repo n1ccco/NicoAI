@@ -6,13 +6,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Entity
 @Table(name = "prompts_data")
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PromptData {
+public class PromptData implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;

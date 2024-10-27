@@ -21,14 +21,14 @@ public class User implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long Id;
-  @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "author")
+  @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "author", fetch = FetchType.LAZY)
   private List<Image> images;
   private String username;
 
   @JsonIgnore
   private String password;
 
-  @ManyToMany(mappedBy = "likes")
+  @ManyToMany(mappedBy = "likes", fetch = FetchType.LAZY)
   private List<Image> likes;
 
   @ElementCollection(fetch = FetchType.EAGER)

@@ -6,13 +6,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Entity
 @Table(name = "images_data")
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ImageData {
+public class ImageData implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;

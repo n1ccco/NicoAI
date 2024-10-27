@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.bohdanzhuvak.nicoai.features.users.model.User;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,17 +15,17 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Image {
+public class Image implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn
   private User author;
   @Builder.Default
   @Enumerated(EnumType.STRING)
   private Visibility visibility = Visibility.PRIVATE;
-  @ManyToMany
+  @ManyToMany(fetch = FetchType.LAZY)
   @Builder.Default
   @JoinTable(name = "user_likes", joinColumns = @JoinColumn(name = "image_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
   private Set<User> likes = new HashSet<User>();
@@ -32,11 +33,11 @@ public class Image {
   @Builder.Default
   private Long likeCount = 0L;
 
-  @OneToOne(cascade = CascadeType.ALL)
+  @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   @JoinColumn
   private PromptData promptData;
 
-  @OneToOne(cascade = CascadeType.ALL)
+  @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   @JoinColumn
   private ImageData imageData;
 }

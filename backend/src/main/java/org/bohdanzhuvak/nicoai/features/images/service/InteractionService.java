@@ -12,6 +12,8 @@ import org.bohdanzhuvak.nicoai.features.users.model.User;
 import org.bohdanzhuvak.nicoai.shared.exception.ImageNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 public class InteractionService {
@@ -26,6 +28,10 @@ public class InteractionService {
     LikeId likeId = new LikeId(userId, imageId);
 
     return likeRepository.existsById(likeId);
+  }
+
+  public Set<Long> getLikedImageIdsForUserFromList(Long userId, Set<Long> imageIds) {
+    return likeRepository.findImageIdByUserIdAndImageIdIn(userId, imageIds);
   }
 
   public void changeImage(Long id,
