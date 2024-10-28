@@ -4,13 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.bohdanzhuvak.nicoai.features.images.ImageFactory;
 import org.bohdanzhuvak.nicoai.features.images.ImageResponseMapper;
 import org.bohdanzhuvak.nicoai.features.images.SortMapper;
-import org.bohdanzhuvak.nicoai.features.images.dto.request.InteractionImageRequest;
 import org.bohdanzhuvak.nicoai.features.images.dto.request.PromptRequest;
 import org.bohdanzhuvak.nicoai.features.images.dto.response.GenerateResponse;
 import org.bohdanzhuvak.nicoai.features.images.dto.response.ImageBlobResponse;
 import org.bohdanzhuvak.nicoai.features.images.dto.response.ImageResponse;
 import org.bohdanzhuvak.nicoai.features.images.dto.response.ImageResponseSimplified;
 import org.bohdanzhuvak.nicoai.features.images.model.Image;
+import org.bohdanzhuvak.nicoai.features.images.model.PromptData;
 import org.bohdanzhuvak.nicoai.features.images.model.Visibility;
 import org.bohdanzhuvak.nicoai.features.images.repository.ImageRepository;
 import org.bohdanzhuvak.nicoai.features.users.model.User;
@@ -43,8 +43,8 @@ public class ImageService {
     return new GenerateResponse(imageId);
   }
 
-  public List<ImageResponseSimplified> getAllImages(String sortBy, String order, User currentUser, Long userId) {
-    Sort.Direction direction = SortMapper.mapSortDirection(order);
+  public List<ImageResponseSimplified> getAllImages(String sortBy, String sortDirection, User currentUser, Long userId) {
+    Sort.Direction direction = SortMapper.mapSortDirection(sortDirection);
     String sanitizedSortBy = SortMapper.mapSortBy(sortBy);
     List<Image> images;
     if (userId != null) {
@@ -97,6 +97,19 @@ public class ImageService {
         .orElseThrow(() -> new UnauthorizedActionException("Unauthorized action"));
   }
 
+  public PromptData getImagePrompt(Long id, @Nullable User currentUser) {
+    Image foundImage = imageRepository.findByIdWithAllData(id)
+        .orElseThrow(() -> new ImageNotFoundException("Image not found"));
+
+    boolean isAuthorized = foundImage.getVisibility() == Visibility.PUBLIC ||
+        (currentUser != null && (currentUser.getId().equals(foundImage.getAuthor().getId()) || currentUser.isAdmin()));
+
+    return Optional.of(isAuthorized)
+        .filter(auth -> auth)
+        .map(auth -> foundImage.getPromptData())
+        .orElseThrow(() -> new UnauthorizedActionException("Unauthorized action"));
+  }
+
   public ImageBlobResponse getImageBlob(Long id, @Nullable User currentUser) {
     Image foundImage = imageRepository.findByIdWithPartData(id)
         .orElseThrow(() -> new ImageNotFoundException("Image not found"));
@@ -109,12 +122,6 @@ public class ImageService {
         .map(auth -> fileService.readFileBytes(foundImage.getImageData().getName()))
         .map(blobImage -> ImageBlobResponse.builder().imageBlob(blobImage).build())
         .orElseThrow(() -> new UnauthorizedActionException("Unauthorized action"));
-  }
-
-  public void changeImage(Long id,
-                          InteractionImageRequest interactionImageRequest,
-                          User currentUser) {
-    interactionService.changeImage(id, interactionImageRequest, currentUser);
   }
 
   public void deleteImage(Long id, User currentUser) {

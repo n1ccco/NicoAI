@@ -11,7 +11,7 @@ public class UserMapper {
     return UserDto.builder()
         .Id(user.getId())
         .username(user.getUsername())
-        .roles(user.getRoles())
+        .role(user.getRoles().getFirst().replaceFirst("ROLE_", ""))
         .build();
   }
 }

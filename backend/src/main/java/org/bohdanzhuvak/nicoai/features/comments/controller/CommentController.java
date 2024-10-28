@@ -9,8 +9,6 @@ import org.bohdanzhuvak.nicoai.shared.security.CurrentUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/comments")
 @RequiredArgsConstructor
@@ -19,16 +17,16 @@ public class CommentController {
   private final CommentService commentService;
 
   @GetMapping
-  public List<CommentResponse> getComments(@RequestParam(name = "imageId", required = false) Long imageId) {
-    return commentService.getComments(imageId);
+  public CommentResponse getComments(@RequestParam(name = "imageId") Long imageId, @RequestParam(name = "page", required = false) Integer page) {
+    return commentService.getComments(imageId, page);
   }
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public CommentResponse postComment(
+  public void postComment(
       @RequestBody CommentRequest commentRequest,
       @CurrentUser User currentUser) {
-    return commentService.postComment(commentRequest, currentUser);
+    commentService.postComment(commentRequest, currentUser);
   }
 
   @DeleteMapping("{commentId}")

@@ -1,13 +1,14 @@
 package org.bohdanzhuvak.nicoai.features.images.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.bohdanzhuvak.nicoai.features.images.dto.request.InteractionImageRequest;
 import org.bohdanzhuvak.nicoai.features.images.dto.request.PromptRequest;
 import org.bohdanzhuvak.nicoai.features.images.dto.response.GenerateResponse;
 import org.bohdanzhuvak.nicoai.features.images.dto.response.ImageBlobResponse;
 import org.bohdanzhuvak.nicoai.features.images.dto.response.ImageResponse;
 import org.bohdanzhuvak.nicoai.features.images.dto.response.ImageResponseSimplified;
+import org.bohdanzhuvak.nicoai.features.images.model.PromptData;
 import org.bohdanzhuvak.nicoai.features.images.service.ImageService;
+import org.bohdanzhuvak.nicoai.features.images.service.InteractionService;
 import org.bohdanzhuvak.nicoai.features.users.model.User;
 import org.bohdanzhuvak.nicoai.shared.security.CurrentUser;
 import org.springframework.http.HttpStatus;
@@ -22,14 +23,15 @@ import java.util.List;
 public class ImageController {
 
   private final ImageService imageService;
+  private final InteractionService interactionService;
 
   @GetMapping
   public List<ImageResponseSimplified> getImages(
       @RequestParam(name = "sortBy", defaultValue = "date") String sortBy,
-      @RequestParam(name = "order", defaultValue = "asc") String sortOrder,
+      @RequestParam(name = "sortDirection", defaultValue = "asc") String sortDirection,
       @RequestParam(name = "userId", required = false) Long userId,
       @CurrentUser @Nullable User currentUser) {
-    return imageService.getAllImages(sortBy, sortOrder, currentUser, userId);
+    return imageService.getAllImages(sortBy, sortDirection, currentUser, userId);
   }
 
   @GetMapping("/{id}")
@@ -46,18 +48,32 @@ public class ImageController {
     return imageService.getImageBlob(id, currentUser);
   }
 
-  @PatchMapping("/{id}")
-  @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void changeImage(
+  @GetMapping(value = "/{id}/prompt")
+  public PromptData getImagePrompt(
       @PathVariable Long id,
-      @RequestBody InteractionImageRequest interactionImageRequest,
+      @CurrentUser @Nullable User currentUser) {
+    return imageService.getImagePrompt(id, currentUser);
+  }
+
+  @PatchMapping("/{id}/visibility")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void changeImageVisibility(
+      @PathVariable Long id,
       @CurrentUser User currentUser) {
-    imageService.changeImage(id, interactionImageRequest, currentUser);
+    interactionService.changeImageVisibility(id, currentUser);
+  }
+
+  @PostMapping("/{id}/like")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void likeImage(
+      @PathVariable Long id,
+      @CurrentUser User currentUser) {
+    interactionService.likeImage(id, currentUser);
   }
 
   @PostMapping
   public GenerateResponse generateImage(
-      @ModelAttribute PromptRequest promptRequest,
+      @RequestBody PromptRequest promptRequest,
       @CurrentUser User currentUser) {
     return imageService.generateImage(promptRequest, currentUser);
   }

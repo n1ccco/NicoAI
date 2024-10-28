@@ -1,6 +1,0 @@
-export { default as getImageEffect } from './getImageEffect'
-export { default as postImageDataEffect } from './postImageDataEffect'
-export { default as changeImagePrivacyEffect } from './changeImagePrivacyEffect'
-export { default as getAllImagesEffect } from './getAllImagesEffect'
-export { default as likeImageEffect } from './likeImageEffect'
-export { default as deleteImageEffect } from './deleteImageEffect'

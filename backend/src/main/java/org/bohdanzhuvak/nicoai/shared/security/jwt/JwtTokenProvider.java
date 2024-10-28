@@ -7,7 +7,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
-import org.bohdanzhuvak.nicoai.features.users.dto.UserDto;
+import org.bohdanzhuvak.nicoai.features.users.model.User;
 import org.bohdanzhuvak.nicoai.shared.exception.InvalidTokenException;
 import org.bohdanzhuvak.nicoai.shared.exception.TokenExpiredException;
 import org.bohdanzhuvak.nicoai.shared.security.CustomUserDetails;
@@ -36,22 +36,22 @@ public class JwtTokenProvider {
 
   private final CustomUserServiceImpl userDetailsService;
 
-  public String generateAccessToken(UserDto userDto) {
+  public String generateAccessToken(User user) {
 
-    return generateToken(userDto, Date.from(LocalDateTime.now().plus(jwtProperties.getValidityAccess()).atZone(ZoneId.systemDefault()).toInstant()));
+    return generateToken(user, Date.from(LocalDateTime.now().plus(jwtProperties.getValidityAccess()).atZone(ZoneId.systemDefault()).toInstant()));
   }
 
-  public String generateRefreshToken(UserDto userDto) {
-    return generateToken(userDto, Date.from(LocalDateTime.now().plus(jwtProperties.getValidityRefresh()).atZone(ZoneId.systemDefault()).toInstant()));
+  public String generateRefreshToken(User user) {
+    return generateToken(user, Date.from(LocalDateTime.now().plus(jwtProperties.getValidityRefresh()).atZone(ZoneId.systemDefault()).toInstant()));
   }
 
-  private String generateToken(UserDto userDto, Date expiration) {
+  private String generateToken(User user, Date expiration) {
 
     Map<String, Object> claims = new HashMap<>();
-    claims.put(Claims.SUBJECT, userDto.getUsername());
+    claims.put(Claims.SUBJECT, user.getUsername());
 
-    if (!userDto.getRoles().isEmpty()) {
-      String authorities = String.join(",", userDto.getRoles());
+    if (!user.getRoles().isEmpty()) {
+      String authorities = String.join(",", user.getRoles());
       claims.put(AUTHORITIES_KEY, authorities);
     }
 

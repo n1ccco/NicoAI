@@ -14,6 +14,7 @@ import org.bohdanzhuvak.nicoai.features.users.dto.UserDto;
 import org.bohdanzhuvak.nicoai.features.users.model.User;
 import org.bohdanzhuvak.nicoai.shared.security.CurrentUser;
 import org.bohdanzhuvak.nicoai.shared.security.jwt.JwtProperties;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.naming.AuthenticationException;
@@ -25,15 +26,15 @@ public class AuthenticationController {
   private final JwtProperties jwtProperties;
   private final AuthenticationService authenticationService;
 
-  @PostMapping("/signin")
+  @PostMapping("/login")
   public AuthenticationResponse signin(@RequestBody AuthenticationRequest authenticationRequest, HttpServletResponse response) throws AuthenticationException {
     JwtAuthenticationDto jwtAuthenticationDto = authenticationService.signIn(authenticationRequest);
 
     Cookie refreshTokenCookie = new Cookie("refreshToken", jwtAuthenticationDto.getRefreshToken());
-    refreshTokenCookie.setHttpOnly(false);
+    refreshTokenCookie.setHttpOnly(true);
     refreshTokenCookie.setSecure(false);
     refreshTokenCookie.setPath("/");
-    refreshTokenCookie.setMaxAge((int) jwtProperties.getValidityRefresh().toMillis());
+    refreshTokenCookie.setMaxAge((int) jwtProperties.getValidityRefresh().getSeconds());
     response.addCookie(refreshTokenCookie);
 
     return AuthenticationResponse.builder()
@@ -42,9 +43,9 @@ public class AuthenticationController {
         .build();
   }
 
-  @PostMapping("/signup")
-  public void signup(@RequestBody RegistrationRequest registrationRequest) {
-    authenticationService.signUp(registrationRequest);
+  @PostMapping("/register")
+  public AuthenticationResponse signup(@RequestBody RegistrationRequest registrationRequest) {
+    return authenticationService.signUp(registrationRequest);
   }
 
   @PostMapping("/refresh")
@@ -64,6 +65,17 @@ public class AuthenticationController {
     }
 
     return authenticationService.refreshAccessToken(refreshToken);
+  }
+
+  @PostMapping("/logout")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public String logout(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+    Cookie refreshTokenCookie = new Cookie("refreshToken", null);
+    refreshTokenCookie.setHttpOnly(true);
+    refreshTokenCookie.setPath("/");
+    refreshTokenCookie.setMaxAge(0);
+    response.addCookie(refreshTokenCookie);
+    return "Logout successful";
   }
 
   @GetMapping("/me")

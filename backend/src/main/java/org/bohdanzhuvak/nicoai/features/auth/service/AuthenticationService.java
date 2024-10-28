@@ -3,6 +3,7 @@ package org.bohdanzhuvak.nicoai.features.auth.service;
 import lombok.RequiredArgsConstructor;
 import org.bohdanzhuvak.nicoai.features.auth.dto.request.AuthenticationRequest;
 import org.bohdanzhuvak.nicoai.features.auth.dto.request.RegistrationRequest;
+import org.bohdanzhuvak.nicoai.features.auth.dto.response.AuthenticationResponse;
 import org.bohdanzhuvak.nicoai.features.auth.dto.response.JwtAuthenticationDto;
 import org.bohdanzhuvak.nicoai.features.auth.dto.response.JwtRefreshResponse;
 import org.bohdanzhuvak.nicoai.features.users.UserMapper;
@@ -11,6 +12,7 @@ import org.bohdanzhuvak.nicoai.features.users.model.User;
 import org.bohdanzhuvak.nicoai.features.users.repository.UserRepository;
 import org.bohdanzhuvak.nicoai.shared.exception.AuthenticationFailedException;
 import org.bohdanzhuvak.nicoai.shared.exception.TokenRefreshException;
+import org.bohdanzhuvak.nicoai.shared.exception.UnauthorizedActionException;
 import org.bohdanzhuvak.nicoai.shared.exception.UserAlreadyExistsException;
 import org.bohdanzhuvak.nicoai.shared.security.jwt.JwtTokenProvider;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -31,9 +33,9 @@ public class AuthenticationService {
 
   public JwtAuthenticationDto signIn(AuthenticationRequest authenticationRequest) {
     User user = authenticateUser(authenticationRequest);
+    String token = jwtTokenProvider.generateAccessToken(user);
+    String refreshToken = jwtTokenProvider.generateRefreshToken(user);
     UserDto userDto = userMapper.toUserDto(user);
-    String token = jwtTokenProvider.generateAccessToken(userDto);
-    String refreshToken = jwtTokenProvider.generateRefreshToken(userDto);
     return JwtAuthenticationDto.builder()
         .token(token)
         .refreshToken(refreshToken)
@@ -52,7 +54,7 @@ public class AuthenticationService {
     return user;
   }
 
-  public void signUp(RegistrationRequest registrationRequest) {
+  public AuthenticationResponse signUp(RegistrationRequest registrationRequest) {
     if (userRepository.existsByUsername(registrationRequest.getUsername())) {
       throw new UserAlreadyExistsException("Username is already taken");
     }
@@ -64,13 +66,17 @@ public class AuthenticationService {
         .build();
 
     userRepository.save(user);
+    return AuthenticationResponse.builder()
+        .jwt(jwtTokenProvider.generateAccessToken(user))
+        .user(userMapper.toUserDto(user))
+        .build();
   }
 
   public UserDto getCurrentUser(User currentUser) {
     if (isUserAuthenticated()) {
       return userMapper.toUserDto(currentUser);
     }
-    return null;
+    throw new UnauthorizedActionException("You should be logged in");
   }
 
   public boolean isUserAuthenticated() {
@@ -86,8 +92,7 @@ public class AuthenticationService {
       User user = userRepository.findByUsername(username)
           .orElseThrow(() -> new TokenRefreshException("User not found"));
 
-      UserDto userDto = userMapper.toUserDto(user);
-      String newAccessToken = jwtTokenProvider.generateAccessToken(userDto);
+      String newAccessToken = jwtTokenProvider.generateAccessToken(user);
 
       return JwtRefreshResponse.builder()
           .token(newAccessToken)
