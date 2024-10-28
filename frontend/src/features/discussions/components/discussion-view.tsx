@@ -29,7 +29,7 @@ export const DiscussionView = ({ discussionId }: { discussionId: string }) => {
       </span>
       {discussion.author && (
         <span className="ml-2 text-sm font-bold">
-          by {discussion.author.firstName} {discussion.author.lastName}
+          by {discussion.author.username} {discussion.author.username}
         </span>
       )}
       <div className="mt-6 flex flex-col space-y-16">

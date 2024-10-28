@@ -29,23 +29,13 @@ export const discussionsHandlers = [
 
       const page = Number(url.searchParams.get('page') || 1);
 
-      const total = db.discussion.count({
-        where: {
-          teamId: {
-            equals: user?.teamId,
-          },
-        },
-      });
+      const total = db.discussion.count({});
 
       const totalPages = Math.ceil(total / 10);
 
       const result = db.discussion
         .findMany({
-          where: {
-            teamId: {
-              equals: user?.teamId,
-            },
-          },
+          where: {},
           take: 10,
           skip: 10 * (page - 1),
         })
@@ -94,9 +84,6 @@ export const discussionsHandlers = [
             id: {
               equals: discussionId,
             },
-            teamId: {
-              equals: user?.teamId,
-            },
           },
         });
 
@@ -141,7 +128,6 @@ export const discussionsHandlers = [
       const data = (await request.json()) as DiscussionBody;
       requireAdmin(user);
       const result = db.discussion.create({
-        teamId: user?.teamId,
         authorId: user?.id,
         ...data,
       });
@@ -170,9 +156,6 @@ export const discussionsHandlers = [
         requireAdmin(user);
         const result = db.discussion.update({
           where: {
-            teamId: {
-              equals: user?.teamId,
-            },
             id: {
               equals: discussionId,
             },

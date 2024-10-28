@@ -9,7 +9,7 @@ import {
 import { LoginForm } from '../login-form';
 
 test('should login new user and call onSuccess cb which should navigate the user to the app', async () => {
-  const newUser = await createUser({ teamId: undefined });
+  const newUser = await createUser({});
 
   const onSuccess = vi.fn();
 

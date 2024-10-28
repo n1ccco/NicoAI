@@ -18,12 +18,8 @@ export type Meta = {
 };
 
 export type User = Entity<{
-  firstName: string;
-  lastName: string;
-  email: string;
+  username: string;
   role: 'ADMIN' | 'USER';
-  teamId: string;
-  bio: string;
 }>;
 
 export type AuthResponse = {
@@ -39,7 +35,6 @@ export type Team = Entity<{
 export type Discussion = Entity<{
   title: string;
   body: string;
-  teamId: string;
   author: User;
 }>;
 

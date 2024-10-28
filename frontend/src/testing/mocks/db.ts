@@ -4,19 +4,9 @@ import { nanoid } from 'nanoid';
 const models = {
   user: {
     id: primaryKey(nanoid),
-    firstName: String,
-    lastName: String,
-    email: String,
+    username: String,
     password: String,
-    teamId: String,
     role: String,
-    bio: String,
-    createdAt: Date.now,
-  },
-  team: {
-    id: primaryKey(nanoid),
-    name: String,
-    description: String,
     createdAt: Date.now,
   },
   discussion: {
@@ -24,7 +14,6 @@ const models = {
     title: String,
     body: String,
     authorId: String,
-    teamId: String,
     createdAt: Date.now,
   },
   comment: {

@@ -13,16 +13,12 @@ import {
 } from '../utils';
 
 type RegisterBody = {
-  firstName: string;
-  lastName: string;
-  email: string;
+  username: string;
   password: string;
-  teamId?: string;
-  teamName?: string;
 };
 
 type LoginBody = {
-  email: string;
+  username: string;
   password: string;
 };
 
@@ -34,8 +30,8 @@ export const authHandlers = [
 
       const existingUser = db.user.findFirst({
         where: {
-          email: {
-            equals: userObject.email,
+          username: {
+            equals: userObject.username,
           },
         },
       });
@@ -47,48 +43,17 @@ export const authHandlers = [
         );
       }
 
-      let teamId;
       let role;
-
-      if (!userObject.teamId) {
-        const team = db.team.create({
-          name: userObject.teamName ?? `${userObject.firstName} Team`,
-        });
-        await persistDb('team');
-        teamId = team.id;
-        role = 'ADMIN';
-      } else {
-        const existingTeam = db.team.findFirst({
-          where: {
-            id: {
-              equals: userObject.teamId,
-            },
-          },
-        });
-
-        if (!existingTeam) {
-          return HttpResponse.json(
-            {
-              message: 'The team you are trying to join does not exist!',
-            },
-            { status: 400 },
-          );
-        }
-        teamId = userObject.teamId;
-        role = 'USER';
-      }
-
       db.user.create({
         ...userObject,
         role,
         password: hash(userObject.password),
-        teamId,
       });
 
       await persistDb('user');
 
       const result = authenticate({
-        email: userObject.email,
+        username: userObject.username,
         password: userObject.password,
       });
 

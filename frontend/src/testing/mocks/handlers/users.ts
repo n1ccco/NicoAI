@@ -11,10 +11,7 @@ import {
 } from '../utils';
 
 type ProfileBody = {
-  email: string;
-  firstName: string;
-  lastName: string;
-  bio: string;
+  username: string;
 };
 
 export const usersHandlers = [
@@ -22,19 +19,12 @@ export const usersHandlers = [
     await networkDelay();
 
     try {
-      const { user, error } = requireAuth(cookies);
+      const { error } = requireAuth(cookies);
       if (error) {
         return HttpResponse.json({ message: error }, { status: 401 });
       }
       const result = db.user
-        .findMany({
-          where: {
-            teamId: {
-              equals: user?.teamId,
-            },
-          },
-        })
-        .map(sanitizeUser);
+        .findMany({}).map(sanitizeUser);
 
       return HttpResponse.json({ data: result });
     } catch (error: any) {
@@ -86,9 +76,6 @@ export const usersHandlers = [
         where: {
           id: {
             equals: userId,
-          },
-          teamId: {
-            equals: user?.teamId,
           },
         },
       });

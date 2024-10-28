@@ -1,7 +1,6 @@
 import {
   randCompanyName,
   randUserName,
-  randEmail,
   randParagraph,
   randUuid,
   randPassword,
@@ -10,14 +9,9 @@ import {
 
 const generateUser = () => ({
   id: randUuid() + Math.random(),
-  firstName: randUserName({ withAccents: false }),
-  lastName: randUserName({ withAccents: false }),
-  email: randEmail(),
+  username: randUserName({ withAccents: false }),
   password: randPassword(),
-  teamId: randUuid(),
-  teamName: randCompanyName(),
   role: 'ADMIN',
-  bio: randParagraph(),
   createdAt: Date.now(),
 });
 
@@ -52,7 +46,6 @@ export const createDiscussion = <
 >(
   overrides?: T & {
     authorId?: string;
-    teamId?: string;
   },
 ) => {
   return { ...generateDiscussion(), ...overrides };
