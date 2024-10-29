@@ -43,10 +43,9 @@ export const authHandlers = [
         );
       }
 
-      let role;
       db.user.create({
         ...userObject,
-        role,
+        role: 'USER',
         password: hash(userObject.password),
       });
 

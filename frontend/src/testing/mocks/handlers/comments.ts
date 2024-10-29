@@ -111,11 +111,9 @@ export const commentsHandlers = [
             id: {
               equals: commentId,
             },
-            ...(user?.role === 'USER' && {
-              authorId: {
-                equals: user.id,
-              },
-            }),
+            authorId: {
+              equals: user?.id,
+            },
           },
         });
         await persistDb('comment');

@@ -32,7 +32,7 @@ export const UpdateDiscussion = ({ discussionId }: UpdateDiscussionProps) => {
   const discussion = discussionQuery.data?.data;
 
   return (
-    <Authorization allowedRoles={[ROLES.ADMIN]}>
+    <Authorization allowedRoles={[ROLES.ADMIN, ROLES.USER]}>
       <FormDrawer
         isDone={updateDiscussionMutation.isSuccess}
         triggerButton={

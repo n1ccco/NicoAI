@@ -20,7 +20,7 @@ export const discussionsHandlers = [
     await networkDelay();
 
     try {
-      const { user, error } = requireAuth(cookies);
+      const { error } = requireAuth(cookies);
       if (error) {
         return HttpResponse.json({ message: error }, { status: 401 });
       }
@@ -29,7 +29,7 @@ export const discussionsHandlers = [
 
       const page = Number(url.searchParams.get('page') || 1);
 
-      const total = db.discussion.count({});
+      const total = db.discussion.count();
 
       const totalPages = Math.ceil(total / 10);
 
@@ -74,7 +74,7 @@ export const discussionsHandlers = [
       await networkDelay();
 
       try {
-        const { user, error } = requireAuth(cookies);
+        const { error } = requireAuth(cookies);
         if (error) {
           return HttpResponse.json({ message: error }, { status: 401 });
         }
@@ -126,7 +126,6 @@ export const discussionsHandlers = [
         return HttpResponse.json({ message: error }, { status: 401 });
       }
       const data = (await request.json()) as DiscussionBody;
-      requireAdmin(user);
       const result = db.discussion.create({
         authorId: user?.id,
         ...data,
@@ -153,15 +152,28 @@ export const discussionsHandlers = [
         }
         const data = (await request.json()) as DiscussionBody;
         const discussionId = params.discussionId as string;
-        requireAdmin(user);
-        const result = db.discussion.update({
+        let result = db.discussion.update({
           where: {
             id: {
               equals: discussionId,
             },
+            authorId: {
+              equals: user?.id,
+            },
           },
           data,
         });
+
+        if (!result && user?.role === 'ADMIN') {
+          result = db.discussion.update({
+            where: {
+              id: {
+                equals: discussionId,
+              },
+            },
+            data,
+          });
+        }
         await persistDb('discussion');
         return HttpResponse.json(result);
       } catch (error: any) {

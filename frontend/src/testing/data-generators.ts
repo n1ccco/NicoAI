@@ -1,5 +1,4 @@
 import {
-  randCompanyName,
   randUserName,
   randParagraph,
   randUuid,
@@ -19,19 +18,6 @@ export const createUser = <T extends Partial<ReturnType<typeof generateUser>>>(
   overrides?: T,
 ) => {
   return { ...generateUser(), ...overrides };
-};
-
-const generateTeam = () => ({
-  id: randUuid(),
-  name: randCompanyName(),
-  description: randParagraph(),
-  createdAt: Date.now(),
-});
-
-export const createTeam = <T extends Partial<ReturnType<typeof generateTeam>>>(
-  overrides?: T,
-) => {
-  return { ...generateTeam(), ...overrides };
 };
 
 const generateDiscussion = () => ({
