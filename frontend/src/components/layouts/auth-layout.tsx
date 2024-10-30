@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import logo from '@/assets/logo.svg';
 import { Head } from '@/components/seo';
 import { Link } from '@/components/ui/link';
-import { useUser } from '@/lib/auth';
+import { useUser } from '@/lib/auth/auth';
 
 type LayoutProps = {
   children: React.ReactNode;

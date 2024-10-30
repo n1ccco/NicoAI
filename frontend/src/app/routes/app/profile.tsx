@@ -1,6 +1,6 @@
 import { ContentLayout } from '@/components/layouts';
 import { UpdateProfile } from '@/features/users/components/update-profile';
-import { useUser } from '@/lib/auth';
+import { useUser } from '@/lib/auth/auth';
 
 type EntryProps = {
   label: string;

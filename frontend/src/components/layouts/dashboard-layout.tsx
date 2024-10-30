@@ -1,12 +1,12 @@
-import { Home, PanelLeft, Folder, Users, User2 } from 'lucide-react';
+import { Folder, Home, PanelLeft, User2, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { NavLink, useNavigate, useNavigation } from 'react-router-dom';
 
 import logo from '@/assets/logo.svg';
 import { Button } from '@/components/ui/button';
 import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
-import { useLogout } from '@/lib/auth';
-import { ROLES, useAuthorization } from '@/lib/authorization';
+import { useLogout } from '@/lib/auth/auth';
+import { ROLES, useAuthorization } from '@/lib/auth/authorization';
 import { cn } from '@/utils/cn';
 
 import {
@@ -82,6 +82,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const navigation = [
     { name: 'Dashboard', to: '.', icon: Home },
     { name: 'Discussions', to: './discussions', icon: Folder },
+    { name: 'Images', to: './images/4', icon: Folder },
     checkAccess({ allowedRoles: [ROLES.ADMIN] }) && {
       name: 'Users',
       to: './users',

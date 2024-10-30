@@ -1,12 +1,12 @@
 import { QueryClient, useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import {
+  createBrowserRouter,
   LoaderFunctionArgs,
   RouterProvider,
-  createBrowserRouter,
 } from 'react-router-dom';
 
-import { ProtectedRoute } from '@/lib/auth';
+import { ProtectedRoute } from '@/lib/auth/protected-route';
 
 import { AppRoot } from './routes/app/root';
 
@@ -89,6 +89,17 @@ export const createAppRouter = (queryClient: QueryClient) =>
           lazy: async () => {
             const { ProfileRoute } = await import('./routes/app/profile');
             return { Component: ProfileRoute };
+          },
+        },
+        {
+          path: 'images/:imageId',
+          lazy: async () => {
+            const { ImageRoute } = await import('./routes/app/images/image');
+            return { Component: ImageRoute };
+          },
+          loader: async (args: LoaderFunctionArgs) => {
+            const { imageLoader } = await import('./routes/app/images/image');
+            return imageLoader(queryClient)(args);
           },
         },
         {

@@ -3,8 +3,8 @@ import { ArchiveX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MDPreview } from '@/components/ui/md-preview';
 import { Spinner } from '@/components/ui/spinner';
-import { useUser } from '@/lib/auth';
-import { POLICIES, Authorization } from '@/lib/authorization';
+import { useUser } from '@/lib/auth/auth';
+import { Authorization, POLICIES } from '@/lib/auth/authorization';
 import { User } from '@/types/api';
 import { formatDate } from '@/utils/format';
 

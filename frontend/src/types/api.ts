@@ -56,20 +56,19 @@ export interface GenerateResponse {
 export interface ImageBlobResponse {
   imageBlob: Array<string>;
 }
-export interface ImageResponse {
+
+export interface ImageSimplified {
   id: number;
   countLikes: number;
-  authorId: number;
+  isLiked: boolean;
+}
+
+export interface ImageDetailed extends ImageSimplified {
+  authorId: string;
   authorName: string;
   imageData: Array<string>;
   promptData: PromptData;
   isPublic: boolean;
-  isLiked: boolean;
-}
-export interface ImageResponseSimplified {
-  id: number;
-  countLikes?: number;
-  isLiked?: boolean;
 }
 export interface InteractionImageRequest {
   action?: string;

@@ -1,6 +1,6 @@
 import { createUser, renderApp, screen } from '@/testing/test-utils';
 
-import { Authorization, ROLES } from '../authorization';
+import { Authorization, ROLES } from '../auth/authorization';
 
 test('should view protected resource if user role is matching', async () => {
   const user = await createUser({

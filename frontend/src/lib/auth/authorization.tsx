@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Comment, User } from '@/types/api';
+import { Comment, ImageDetailed, User } from '@/types/api';
 
 import { useUser } from './auth';
 
@@ -18,6 +18,17 @@ export const POLICIES = {
     }
 
     if (user.role === 'USER' && comment.author?.id === user.id) {
+      return true;
+    }
+
+    return false;
+  },
+  'image:delete': (user: User, image: ImageDetailed) => {
+    if (user.role === 'ADMIN') {
+      return true;
+    }
+
+    if (user.role === 'USER' && image.authorId === user.id) {
       return true;
     }
 

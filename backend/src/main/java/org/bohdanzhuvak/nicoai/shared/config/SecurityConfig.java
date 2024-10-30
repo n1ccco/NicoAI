@@ -27,8 +27,8 @@ public class SecurityConfig {
         .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .exceptionHandling(c -> c.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
         .authorizeHttpRequests(authorize -> authorize
-            .requestMatchers("/api/auth/signin").permitAll()
-            .requestMatchers("/api/auth/signup").permitAll()
+            .requestMatchers("/api/auth/login").permitAll()
+            .requestMatchers("/api/auth/register").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/auth/refresh").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/images/**").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/images").hasRole("USER")

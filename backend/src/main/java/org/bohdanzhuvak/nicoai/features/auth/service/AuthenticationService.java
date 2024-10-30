@@ -11,6 +11,7 @@ import org.bohdanzhuvak.nicoai.features.users.model.User;
 import org.bohdanzhuvak.nicoai.features.users.repository.UserRepository;
 import org.bohdanzhuvak.nicoai.shared.exception.AuthenticationFailedException;
 import org.bohdanzhuvak.nicoai.shared.exception.TokenRefreshException;
+import org.bohdanzhuvak.nicoai.shared.exception.UnauthorizedActionException;
 import org.bohdanzhuvak.nicoai.shared.exception.UserAlreadyExistsException;
 import org.bohdanzhuvak.nicoai.shared.security.jwt.JwtTokenProvider;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -31,9 +32,9 @@ public class AuthenticationService {
 
   public JwtAuthenticationDto signIn(AuthenticationRequest authenticationRequest) {
     User user = authenticateUser(authenticationRequest);
+    String token = jwtTokenProvider.generateAccessToken(user);
+    String refreshToken = jwtTokenProvider.generateRefreshToken(user);
     UserDto userDto = userMapper.toUserDto(user);
-    String token = jwtTokenProvider.generateAccessToken(userDto);
-    String refreshToken = jwtTokenProvider.generateRefreshToken(userDto);
     return JwtAuthenticationDto.builder()
         .token(token)
         .refreshToken(refreshToken)
@@ -70,7 +71,7 @@ public class AuthenticationService {
     if (isUserAuthenticated()) {
       return userMapper.toUserDto(currentUser);
     }
-    return null;
+    throw new UnauthorizedActionException("You should be logged in");
   }
 
   public boolean isUserAuthenticated() {
@@ -86,8 +87,7 @@ public class AuthenticationService {
       User user = userRepository.findByUsername(username)
           .orElseThrow(() -> new TokenRefreshException("User not found"));
 
-      UserDto userDto = userMapper.toUserDto(user);
-      String newAccessToken = jwtTokenProvider.generateAccessToken(userDto);
+      String newAccessToken = jwtTokenProvider.generateAccessToken(user);
 
       return JwtRefreshResponse.builder()
           .token(newAccessToken)

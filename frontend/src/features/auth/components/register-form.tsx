@@ -3,11 +3,11 @@ import { Link, useSearchParams } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
 import { Form, Input } from '@/components/ui/form';
-import { useRegister, registerInputSchema } from '@/lib/auth';
+import { useRegister } from '@/lib/auth/auth';
+import { registerInputSchema } from '@/lib/auth/types';
 
 type RegisterFormProps = {
   onSuccess: () => void;
-  chooseTeam: boolean;
 };
 
 export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {

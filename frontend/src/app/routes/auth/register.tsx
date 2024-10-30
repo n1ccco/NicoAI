@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { AuthLayout } from '@/components/layouts/auth-layout';
@@ -8,7 +7,6 @@ export const RegisterRoute = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get('redirectTo');
-  const [chooseTeam, setChooseTeam] = useState(false);
 
   return (
     <AuthLayout title="Register your account">
@@ -18,8 +16,6 @@ export const RegisterRoute = () => {
             replace: true,
           })
         }
-        chooseTeam={chooseTeam}
-        setChooseTeam={() => setChooseTeam(!chooseTeam)}
       />
     </AuthLayout>
   );

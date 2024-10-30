@@ -25,7 +25,7 @@ public class AuthenticationController {
   private final JwtProperties jwtProperties;
   private final AuthenticationService authenticationService;
 
-  @PostMapping("/signin")
+  @PostMapping("/login")
   public AuthenticationResponse signin(@RequestBody AuthenticationRequest authenticationRequest, HttpServletResponse response) throws AuthenticationException {
     JwtAuthenticationDto jwtAuthenticationDto = authenticationService.signIn(authenticationRequest);
 
@@ -42,7 +42,7 @@ public class AuthenticationController {
         .build();
   }
 
-  @PostMapping("/signup")
+  @PostMapping("/register")
   public void signup(@RequestBody RegistrationRequest registrationRequest) {
     authenticationService.signUp(registrationRequest);
   }
