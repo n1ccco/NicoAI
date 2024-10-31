@@ -4,17 +4,10 @@ import {
   getUser,
   loginWithUsernameAndPassword,
   logout,
-  refreshToken,
   registerWithUsernameAndPassword,
-} from '@/lib/auth/hooks';
+} from '@/lib/auth/auth-api';
 import { LoginInput, RegisterInput } from '@/lib/auth/types';
 import { TokenManagementEntity } from '@/lib/store/auth/token';
-
-export const refreshTokenFn = async (): Promise<string> => {
-  const response = await refreshToken();
-  TokenManagementEntity.patcher(response.token);
-  return response.token;
-};
 
 const authConfig = {
   userFn: async () => {
