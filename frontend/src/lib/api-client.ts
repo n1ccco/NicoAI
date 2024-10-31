@@ -2,20 +2,14 @@ import Axios, { InternalAxiosRequestConfig } from 'axios';
 
 import { useNotifications } from '@/components/ui/notifications';
 import { env } from '@/config/env';
+import { addAuthToken } from '@/lib/auth/token-utils';
 import { TokenManagementEntity } from '@/lib/store/auth/token';
 
-const addAuthToken = (config: InternalAxiosRequestConfig) => {
-  const token = TokenManagementEntity.selector();
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-};
-
-const authRequestInterceptor = (config: InternalAxiosRequestConfig) => {
+const authRequestInterceptor = async (config: InternalAxiosRequestConfig) => {
   if (config.headers) {
     config.headers.Accept = 'application/json';
   }
-  addAuthToken(config);
+  await addAuthToken(config);
   return config;
 };
 
@@ -41,11 +35,6 @@ const handleResponseError = (error: any) => {
 
 export const api = Axios.create({
   baseURL: env.API_URL,
-});
-
-export const apiWithCredentials = Axios.create({
-  ...api.defaults,
-  withCredentials: true,
 });
 
 api.interceptors.request.use(authRequestInterceptor);

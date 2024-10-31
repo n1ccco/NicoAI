@@ -14,6 +14,7 @@ import org.bohdanzhuvak.nicoai.features.users.dto.UserDto;
 import org.bohdanzhuvak.nicoai.features.users.model.User;
 import org.bohdanzhuvak.nicoai.shared.security.CurrentUser;
 import org.bohdanzhuvak.nicoai.shared.security.jwt.JwtProperties;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.naming.AuthenticationException;
@@ -64,6 +65,17 @@ public class AuthenticationController {
     }
 
     return authenticationService.refreshAccessToken(refreshToken);
+  }
+
+  @PostMapping("/logout")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public String logout(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+    Cookie refreshTokenCookie = new Cookie("refreshToken", null);
+    refreshTokenCookie.setHttpOnly(true);
+    refreshTokenCookie.setPath("/");
+    refreshTokenCookie.setMaxAge(0);
+    response.addCookie(refreshTokenCookie);
+    return "Logout successful";
   }
 
   @GetMapping("/me")

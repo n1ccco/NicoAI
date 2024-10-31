@@ -74,7 +74,7 @@ export interface InteractionImageRequest {
   action?: string;
 }
 export interface JwtRefreshResponse {
-  token?: string;
+  token: string;
 }
 export interface PromptData {
   id?: number;
