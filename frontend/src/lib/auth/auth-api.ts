@@ -13,7 +13,7 @@ export const logout = (): Promise<void> => {
 export const loginWithUsernameAndPassword = (
   data: LoginInput,
 ): Promise<AuthResponse> => {
-  return api.post('/auth/login', data);
+  return api.post('/auth/login', data, { withCredentials: true });
 };
 
 export const registerWithUsernameAndPassword = (

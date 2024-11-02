@@ -53,14 +53,15 @@ export interface CommentResponse {
 export interface GenerateResponse {
   imageId: number;
 }
-export interface ImageBlobResponse {
-  imageBlob: Array<string>;
+export interface ImageBlob {
+  imageBlob: string;
 }
 
 export interface ImageSimplified {
-  id: number;
+  id: string;
   countLikes: number;
   isLiked: boolean;
+  imageBlob?: string;
 }
 
 export interface ImageDetailed extends ImageSimplified {

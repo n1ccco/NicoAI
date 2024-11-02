@@ -14,7 +14,7 @@ import java.util.Optional;
 
 public interface ImageRepository extends JpaRepository<Image, Long> {
   @EntityGraph(attributePaths = {"imageData", "promptData", "author"})
-  @Cacheable(value = "image_all_data", key = "#id")
+  @Cacheable(value = "image_all_data", key = "#id", unless = "#result == null")
   @Query("SELECT i FROM Image i WHERE i.id = :id")
   Optional<Image> findByIdWithAllData(@Param("id") Long id);
 

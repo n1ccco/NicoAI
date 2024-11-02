@@ -1,4 +1,5 @@
 import { Trash } from 'lucide-react';
+import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { ConfirmationDialog } from '@/components/ui/dialog';
@@ -11,6 +12,7 @@ type DeleteImageProps = {
 
 export const DeleteImage = ({ id }: DeleteImageProps) => {
   const { addNotification } = useNotifications();
+  const [isDone, setIsDone] = useState(false);
   const deleteImageMutation = useDeleteImage({
     mutationConfig: {
       onSuccess: () => {
@@ -18,6 +20,7 @@ export const DeleteImage = ({ id }: DeleteImageProps) => {
           type: 'success',
           title: 'Image Deleted',
         });
+        setIsDone(true);
       },
     },
   });
@@ -39,9 +42,10 @@ export const DeleteImage = ({ id }: DeleteImageProps) => {
           variant="destructive"
           onClick={() => deleteImageMutation.mutate({ imageId: id })}
         >
-          Delete Comment
+          Delete image
         </Button>
       }
+      isDone={isDone}
     />
   );
 };

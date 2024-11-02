@@ -1,6 +1,7 @@
 import { Spinner } from '@/components/ui/spinner';
 import { useImage } from '@/features/images/api/get-image';
 import { DeleteImage } from '@/features/images/components/delete-image';
+import { ImageDisplay } from '@/features/images/components/image-display';
 import { useUser } from '@/lib/auth/auth';
 import { Authorization, POLICIES } from '@/lib/auth/authorization';
 import { User } from '@/types/api';
@@ -24,11 +25,7 @@ export const ImageView = ({ imageId }: { imageId: string }) => {
 
   return (
     <div className="relative mx-auto max-w-md self-start overflow-hidden rounded-lg bg-gray-800 p-6 shadow-md">
-      <img
-        src={`data:image/jpeg;base64,${image.imageData}`}
-        alt={`${image.id}`}
-        className="mb-4 h-auto w-full rounded-lg shadow-md"
-      />
+      <ImageDisplay imageId={image.id} />
       <Authorization
         policyCheck={POLICIES['image:delete'](user.data as User, image)}
       >

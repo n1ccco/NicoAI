@@ -31,10 +31,10 @@ public class AuthenticationController {
     JwtAuthenticationDto jwtAuthenticationDto = authenticationService.signIn(authenticationRequest);
 
     Cookie refreshTokenCookie = new Cookie("refreshToken", jwtAuthenticationDto.getRefreshToken());
-    refreshTokenCookie.setHttpOnly(false);
+    refreshTokenCookie.setHttpOnly(true);
     refreshTokenCookie.setSecure(false);
     refreshTokenCookie.setPath("/");
-    refreshTokenCookie.setMaxAge((int) jwtProperties.getValidityRefresh().toMillis());
+    refreshTokenCookie.setMaxAge((int) jwtProperties.getValidityRefresh().getSeconds());
     response.addCookie(refreshTokenCookie);
 
     return AuthenticationResponse.builder()
