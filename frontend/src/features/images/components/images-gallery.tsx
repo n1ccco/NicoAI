@@ -11,12 +11,18 @@ import { ImageDisplay } from '@/features/images/components/image-display';
 export type ImagesListProps = {
   sortBy: 'date' | 'likes';
   sortDirection: 'asc' | 'desc';
+  userId?: string;
 };
 
-export const ImagesGallery = ({ sortBy, sortDirection }: ImagesListProps) => {
+export const ImagesGallery = ({
+  sortBy,
+  sortDirection,
+  userId,
+}: ImagesListProps) => {
   const imagesQuery = useImages({
     sortBy,
     sortDirection,
+    userId,
   });
 
   if (imagesQuery.isLoading) {
@@ -44,7 +50,7 @@ export const ImagesGallery = ({ sortBy, sortDirection }: ImagesListProps) => {
     <ImageGalleryContainer>
       {imageEntries.map((image) => (
         <ImageCard key={image.id}>
-          <Link to={`./${image.id}`}>
+          <Link to={`/app/images/${image.id}`}>
             <ImageDisplay imageId={image.id} />
           </Link>
           {image.caption && <ImageCaption>{image.caption}</ImageCaption>}

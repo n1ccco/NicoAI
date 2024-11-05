@@ -103,6 +103,17 @@ export const createAppRouter = (queryClient: QueryClient) =>
           },
         },
         {
+          path: 'users/:userId/images',
+          lazy: async () => {
+            const { ImagesRoute } = await import('./routes/app/images/images');
+            return { Component: ImagesRoute };
+          },
+          loader: async (args: LoaderFunctionArgs) => {
+            const { imagesLoader } = await import('./routes/app/images/images');
+            return imagesLoader(queryClient)(args);
+          },
+        },
+        {
           path: 'images/:imageId',
           lazy: async () => {
             const { ImageRoute } = await import('./routes/app/images/image');

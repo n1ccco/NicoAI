@@ -1,5 +1,9 @@
 import { QueryClient } from '@tanstack/react-query';
-import { LoaderFunctionArgs, useSearchParams } from 'react-router-dom';
+import {
+  LoaderFunctionArgs,
+  useParams,
+  useSearchParams,
+} from 'react-router-dom';
 
 import { ContentLayout } from '@/components/layouts';
 import { getImagesQueryOptions } from '@/features/images/api/get-images';
@@ -8,15 +12,20 @@ import { ImagesGallery } from '@/features/images/components/images-gallery';
 
 export const imagesLoader =
   (queryClient: QueryClient) =>
-  async ({ request }: LoaderFunctionArgs) => {
+  async ({ request, params }: LoaderFunctionArgs) => {
     const url = new URL(request.url);
 
     const sortBy =
       url.searchParams.get('sortBy') === 'likes' ? 'likes' : 'date';
     const sortDirection =
       url.searchParams.get('sortDirection') === 'desc' ? 'desc' : 'asc';
+    const userId = params.userId || undefined;
 
-    const query = getImagesQueryOptions({ sortBy }, { sortDirection });
+    const query = getImagesQueryOptions(
+      { sortBy },
+      { sortDirection },
+      { userId },
+    );
 
     return (
       queryClient.getQueryData(query.queryKey) ??
@@ -29,13 +38,19 @@ export const ImagesRoute = () => {
   const sortBy = searchParams.get('sortBy') === 'likes' ? 'likes' : 'date';
   const sortDirection =
     searchParams.get('sortDirection') === 'desc' ? 'desc' : 'asc';
+  const { userId } = useParams();
+
   return (
     <ContentLayout title="Images">
       <div className="flex justify-end">
         <GenerateImage />
       </div>
       <div className="mt-4">
-        <ImagesGallery sortBy={sortBy} sortDirection={sortDirection} />
+        <ImagesGallery
+          sortBy={sortBy}
+          sortDirection={sortDirection}
+          userId={userId}
+        />
       </div>
     </ContentLayout>
   );

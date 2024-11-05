@@ -5,7 +5,7 @@ import { NavLink, useNavigate, useNavigation } from 'react-router-dom';
 import logo from '@/assets/logo.svg';
 import { Button } from '@/components/ui/button';
 import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
-import { useLogout } from '@/lib/auth/auth';
+import { useLogout, useUser } from '@/lib/auth/auth';
 import { ROLES, useAuthorization } from '@/lib/auth/authorization';
 import { cn } from '@/utils/cn';
 
@@ -79,6 +79,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const logout = useLogout();
   const { checkAccess } = useAuthorization();
   const navigate = useNavigate();
+  const userId = useUser().data?.id;
   const navigation = [
     { name: 'Dashboard', to: '.', icon: Home },
     { name: 'Discussions', to: './discussions', icon: Folder },
@@ -178,6 +179,13 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={() => navigate(`./users/${userId}/images`)}
+                className={cn('block px-4 py-2 text-sm text-gray-700')}
+              >
+                Your Images
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => navigate('./profile')}
                 className={cn('block px-4 py-2 text-sm text-gray-700')}
