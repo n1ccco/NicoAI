@@ -31,28 +31,18 @@ export type Discussion = Entity<{
 
 export type Comment = Entity<{
   body: string;
-  discussionId: string;
   author: User;
 }>;
 
-export interface AuthenticationRequest {
-  username: string;
-  password: string;
-}
 export interface CommentRequest {
   body: string;
   imageId: number;
 }
-export interface CommentResponse {
-  id: number;
-  authorId: number;
-  authorName: string;
-  body: string;
-  createdAt: string;
-}
+
 export interface GenerateResponse {
   imageId: number;
 }
+
 export interface ImageBlob {
   imageBlob: string;
 }
@@ -67,7 +57,6 @@ export interface ImageSimplified {
 export interface ImageDetailed extends ImageSimplified {
   authorId: string;
   authorName: string;
-  imageData: Array<string>;
   promptData: PromptData;
   isPublic: boolean;
 }

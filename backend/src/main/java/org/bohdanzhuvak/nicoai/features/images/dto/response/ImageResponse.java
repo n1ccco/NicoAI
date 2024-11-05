@@ -20,6 +20,5 @@ public class ImageResponse {
   private Long countLikes;
   private Long authorId;
   private String authorName;
-  private byte[] imageData;
   private PromptData promptData;
 }

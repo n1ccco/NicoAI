@@ -1,20 +1,24 @@
 package org.bohdanzhuvak.nicoai.features.comments.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
+import java.util.List;
 
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class CommentResponse {
-  private Long id;
-  private Long authorId;
-  private String authorName;
-  private String body;
-  private Instant createdAt;
+  private List<CommentDto> data;
+  private Meta meta;
+
+  @Data
+  @AllArgsConstructor
+  @NoArgsConstructor
+  public static class Meta {
+    private int page;
+    private long total;
+    private int totalPages;
+  }
 }

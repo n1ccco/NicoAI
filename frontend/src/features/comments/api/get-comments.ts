@@ -5,43 +5,42 @@ import { QueryConfig } from '@/lib/react-query';
 import { Comment, Meta } from '@/types/api';
 
 export const getComments = ({
-  discussionId,
+  imageId,
   page = 1,
 }: {
-  discussionId: string;
+  imageId: string;
   page?: number;
 }): Promise<{ data: Comment[]; meta: Meta }> => {
   return api.get(`/comments`, {
     params: {
-      discussionId,
+      imageId,
       page,
     },
   });
 };
 
-export const getInfiniteCommentsQueryOptions = (discussionId: string) => {
+export const getInfiniteCommentsQueryOptions = (imageId: string) => {
   return infiniteQueryOptions({
-    queryKey: ['comments', discussionId],
+    queryKey: ['comments', imageId],
     queryFn: ({ pageParam = 1 }) => {
-      return getComments({ discussionId, page: pageParam as number });
+      return getComments({ imageId, page: pageParam as number });
     },
     getNextPageParam: (lastPage) => {
       if (lastPage?.meta?.page === lastPage?.meta?.totalPages) return undefined;
-      const nextPage = lastPage.meta.page + 1;
-      return nextPage;
+      return lastPage.meta.page + 1;
     },
     initialPageParam: 1,
   });
 };
 
 type UseCommentsOptions = {
-  discussionId: string;
+  imageId: string;
   page?: number;
   queryConfig?: QueryConfig<typeof getComments>;
 };
 
-export const useInfiniteComments = ({ discussionId }: UseCommentsOptions) => {
+export const useInfiniteComments = ({ imageId }: UseCommentsOptions) => {
   return useInfiniteQuery({
-    ...getInfiniteCommentsQueryOptions(discussionId),
+    ...getInfiniteCommentsQueryOptions(imageId),
   });
 };

@@ -13,12 +13,12 @@ import { useInfiniteComments } from '../api/get-comments';
 import { DeleteComment } from './delete-comment';
 
 type CommentsListProps = {
-  discussionId: string;
+  imageId: string;
 };
 
-export const CommentsList = ({ discussionId }: CommentsListProps) => {
+export const CommentsList = ({ imageId }: CommentsListProps) => {
   const user = useUser();
-  const commentsQuery = useInfiniteComments({ discussionId });
+  const commentsQuery = useInfiniteComments({ imageId });
 
   if (commentsQuery.isLoading) {
     return (
@@ -69,7 +69,7 @@ export const CommentsList = ({ discussionId }: CommentsListProps) => {
                     </span>
                   )}
                 </div>
-                <DeleteComment discussionId={discussionId} id={comment.id} />
+                <DeleteComment imageId={imageId} id={comment.id} />
               </div>
             </Authorization>
 

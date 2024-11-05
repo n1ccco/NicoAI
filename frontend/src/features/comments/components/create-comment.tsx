@@ -10,13 +10,13 @@ import {
 } from '../api/create-comment';
 
 type CreateCommentProps = {
-  discussionId: string;
+  imageId: string;
 };
 
-export const CreateComment = ({ discussionId }: CreateCommentProps) => {
+export const CreateComment = ({ imageId }: CreateCommentProps) => {
   const { addNotification } = useNotifications();
   const createCommentMutation = useCreateComment({
-    discussionId,
+    imageId,
     mutationConfig: {
       onSuccess: () => {
         addNotification({
@@ -59,7 +59,7 @@ export const CreateComment = ({ discussionId }: CreateCommentProps) => {
         options={{
           defaultValues: {
             body: '',
-            discussionId: discussionId,
+            imageId: imageId,
           },
         }}
       >

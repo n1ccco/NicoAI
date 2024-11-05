@@ -10,13 +10,13 @@ export const deleteComment = ({ commentId }: { commentId: string }) => {
 };
 
 type UseDeleteCommentOptions = {
-  discussionId: string;
+  imageId: string;
   mutationConfig?: MutationConfig<typeof deleteComment>;
 };
 
 export const useDeleteComment = ({
   mutationConfig,
-  discussionId,
+  imageId,
 }: UseDeleteCommentOptions) => {
   const queryClient = useQueryClient();
 
@@ -25,7 +25,7 @@ export const useDeleteComment = ({
   return useMutation({
     onSuccess: (...args) => {
       queryClient.invalidateQueries({
-        queryKey: getInfiniteCommentsQueryOptions(discussionId).queryKey,
+        queryKey: getInfiniteCommentsQueryOptions(imageId).queryKey,
       });
       onSuccess?.(...args);
     },

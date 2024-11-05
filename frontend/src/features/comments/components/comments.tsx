@@ -2,17 +2,17 @@ import { CommentsList } from './comments-list';
 import { CreateComment } from './create-comment';
 
 type CommentsProps = {
-  discussionId: string;
+  imageId: string;
 };
 
-export const Comments = ({ discussionId }: CommentsProps) => {
+export const Comments = ({ imageId }: CommentsProps) => {
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
         <h3 className="text-xl font-bold">Comments:</h3>
-        <CreateComment discussionId={discussionId} />
+        <CreateComment imageId={imageId} />
       </div>
-      <CommentsList discussionId={discussionId} />
+      <CommentsList imageId={imageId} />
     </div>
   );
 };

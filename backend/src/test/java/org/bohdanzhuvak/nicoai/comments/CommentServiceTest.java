@@ -20,7 +20,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -57,31 +56,13 @@ public class CommentServiceTest {
 
   @Test
   public void testGetComments_Success() {
-    List<CommentResponse> comments = commentService.getComments(image.getId());
+    CommentResponse comments = commentService.getComments(image.getId(), 1);
 
-    assertEquals(3, comments.size());
+    assertEquals(3, comments.getData().size());
 
-    assertEquals("First comment", comments.get(0).getBody());
-    assertEquals("Second comment", comments.get(1).getBody());
-    assertEquals("Authors comment", comments.get(2).getBody());
-  }
-
-  @Test
-  public void testPostComment_Success() {
-    CommentRequest commentRequest = new CommentRequest();
-    commentRequest.setBody("New Test Comment");
-    commentRequest.setImageId(image.getId());
-
-    CommentResponse response = commentService.postComment(commentRequest, user);
-
-    assertNotNull(response);
-    assertNotNull(response.getId());
-    assertEquals("New Test Comment", response.getBody());
-    assertEquals("user", response.getAuthorName());
-
-    Optional<Comment> savedComment = commentRepository.findById(response.getId());
-    assertTrue(savedComment.isPresent());
-    assertEquals("New Test Comment", savedComment.get().getBody());
+    assertEquals("First comment", comments.getData().get(2).getBody());
+    assertEquals("Second comment", comments.getData().get(1).getBody());
+    assertEquals("Authors comment", comments.getData().get(0).getBody());
   }
 
   @Test

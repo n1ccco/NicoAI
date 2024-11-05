@@ -8,13 +8,13 @@ import { useDeleteComment } from '../api/delete-comment';
 
 type DeleteCommentProps = {
   id: string;
-  discussionId: string;
+  imageId: string;
 };
 
-export const DeleteComment = ({ id, discussionId }: DeleteCommentProps) => {
+export const DeleteComment = ({ id, imageId }: DeleteCommentProps) => {
   const { addNotification } = useNotifications();
   const deleteCommentMutation = useDeleteComment({
-    discussionId,
+    imageId,
     mutationConfig: {
       onSuccess: () => {
         addNotification({

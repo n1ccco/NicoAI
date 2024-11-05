@@ -8,7 +8,7 @@ import { Comment } from '@/types/api';
 import { getInfiniteCommentsQueryOptions } from './get-comments';
 
 export const createCommentInputSchema = z.object({
-  discussionId: z.string().min(1, 'Required'),
+  imageId: z.string().min(1, 'Required'),
   body: z.string().min(1, 'Required'),
 });
 
@@ -23,13 +23,13 @@ export const createComment = ({
 };
 
 type UseCreateCommentOptions = {
-  discussionId: string;
+  imageId: string;
   mutationConfig?: MutationConfig<typeof createComment>;
 };
 
 export const useCreateComment = ({
   mutationConfig,
-  discussionId,
+  imageId,
 }: UseCreateCommentOptions) => {
   const queryClient = useQueryClient();
 
@@ -38,7 +38,7 @@ export const useCreateComment = ({
   return useMutation({
     onSuccess: (...args) => {
       queryClient.invalidateQueries({
-        queryKey: getInfiniteCommentsQueryOptions(discussionId).queryKey,
+        queryKey: getInfiniteCommentsQueryOptions(imageId).queryKey,
       });
       onSuccess?.(...args);
     },
