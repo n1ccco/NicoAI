@@ -3,6 +3,7 @@ import { LoaderFunctionArgs, useSearchParams } from 'react-router-dom';
 
 import { ContentLayout } from '@/components/layouts';
 import { getImagesQueryOptions } from '@/features/images/api/get-images';
+import { GenerateImage } from '@/features/images/components/generate-image';
 import { ImagesGallery } from '@/features/images/components/images-gallery';
 
 export const imagesLoader =
@@ -30,6 +31,9 @@ export const ImagesRoute = () => {
     searchParams.get('sortDirection') === 'desc' ? 'desc' : 'asc';
   return (
     <ContentLayout title="Images">
+      <div className="flex justify-end">
+        <GenerateImage />
+      </div>
       <div className="mt-4">
         <ImagesGallery sortBy={sortBy} sortDirection={sortDirection} />
       </div>

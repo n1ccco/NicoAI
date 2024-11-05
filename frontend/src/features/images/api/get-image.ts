@@ -14,7 +14,7 @@ export const getImage = ({
 
 export const getImageQueryOptions = (imageId: string) => {
   return queryOptions({
-    queryKey: ['images', 'detailed', imageId],
+    queryKey: ['imageDetails', imageId],
     queryFn: () => getImage({ imageId }),
   });
 };

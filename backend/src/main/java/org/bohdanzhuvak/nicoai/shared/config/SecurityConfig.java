@@ -31,7 +31,6 @@ public class SecurityConfig {
             .requestMatchers("/api/auth/register").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/auth/refresh").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/images/**").permitAll()
-            .requestMatchers(HttpMethod.POST, "/api/images").hasRole("USER")
             .requestMatchers(HttpMethod.GET, "/api/images/*/comments").permitAll()
             .requestMatchers("/swagger-ui/**").permitAll()
             .requestMatchers("/v3/api-docs/**").permitAll()

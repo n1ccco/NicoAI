@@ -14,7 +14,7 @@ export const getImageBlob = ({
 
 export const getImageBlobQueryOptions = (imageId: string) => {
   return queryOptions({
-    queryKey: ['images', 'blob', imageId],
+    queryKey: ['imageBlobs', imageId],
     queryFn: () => getImageBlob({ imageId }),
   });
 };

@@ -34,11 +34,6 @@ export type Comment = Entity<{
   author: User;
 }>;
 
-export interface CommentRequest {
-  body: string;
-  imageId: number;
-}
-
 export interface GenerateResponse {
   imageId: number;
 }
@@ -68,14 +63,6 @@ export interface JwtRefreshResponse {
 }
 export interface PromptData {
   id?: number;
-  prompt?: string;
-  negativePrompt?: string;
-  height?: number;
-  width?: number;
-  numInterferenceSteps?: number;
-  guidanceScale?: number;
-}
-export interface PromptRequest {
   prompt?: string;
   negativePrompt?: string;
   height?: number;

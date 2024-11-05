@@ -21,7 +21,7 @@ export const getImagesQueryOptions = (
   { sortDirection = 'asc' }: { sortDirection: 'asc' | 'desc' },
 ) => {
   return queryOptions({
-    queryKey: ['images', { sortDirection }, { sortBy }],
+    queryKey: ['images', sortDirection, sortBy],
     queryFn: () => getImages({ sortBy }, { sortDirection }),
   });
 };

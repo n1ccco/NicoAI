@@ -57,7 +57,7 @@ public class ImageController {
 
   @PostMapping
   public GenerateResponse generateImage(
-      @ModelAttribute PromptRequest promptRequest,
+      @RequestBody PromptRequest promptRequest,
       @CurrentUser User currentUser) {
     return imageService.generateImage(promptRequest, currentUser);
   }

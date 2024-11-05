@@ -20,7 +20,7 @@ import java.util.Objects;
 public class User implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long Id;
+  private Long id;
   @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "author", fetch = FetchType.LAZY)
   private List<Image> images;
   private String username;
@@ -46,11 +46,11 @@ public class User implements Serializable {
     if (o == null || getClass() != o.getClass())
       return false;
     User user = (User) o;
-    return Id.equals(user.Id);
+    return id.equals(user.id);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(Id);
+    return Objects.hash(id);
   }
 }
