@@ -7,6 +7,7 @@ import org.bohdanzhuvak.nicoai.features.images.dto.response.GenerateResponse;
 import org.bohdanzhuvak.nicoai.features.images.dto.response.ImageBlobResponse;
 import org.bohdanzhuvak.nicoai.features.images.dto.response.ImageResponse;
 import org.bohdanzhuvak.nicoai.features.images.dto.response.ImageResponseSimplified;
+import org.bohdanzhuvak.nicoai.features.images.model.PromptData;
 import org.bohdanzhuvak.nicoai.features.images.service.ImageService;
 import org.bohdanzhuvak.nicoai.features.users.model.User;
 import org.bohdanzhuvak.nicoai.shared.security.CurrentUser;
@@ -44,6 +45,13 @@ public class ImageController {
       @PathVariable Long id,
       @CurrentUser @Nullable User currentUser) {
     return imageService.getImageBlob(id, currentUser);
+  }
+
+  @GetMapping(value = "/{id}/prompt")
+  public PromptData getImagePrompt(
+      @PathVariable Long id,
+      @CurrentUser @Nullable User currentUser) {
+    return imageService.getImagePrompt(id, currentUser);
   }
 
   @PatchMapping("/{id}")

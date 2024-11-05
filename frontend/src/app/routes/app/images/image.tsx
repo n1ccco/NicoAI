@@ -6,6 +6,7 @@ import { ContentLayout } from '@/components/layouts';
 import { getInfiniteCommentsQueryOptions } from '@/features/comments/api/get-comments';
 import { Comments } from '@/features/comments/components/comments';
 import { getImageQueryOptions } from '@/features/images/api/get-image';
+import { getImagePromptQueryOptions } from '@/features/images/api/get-image-prompt';
 import { ImageView } from '@/features/images/components/image-view';
 
 export const imageLoader =
@@ -15,10 +16,13 @@ export const imageLoader =
 
     const imageQuery = getImageQueryOptions(imageId);
     const commentsQuery = getInfiniteCommentsQueryOptions(imageId);
+    const imagePromptQuery = getImagePromptQueryOptions(imageId);
 
     const promises = [
       queryClient.getQueryData(imageQuery.queryKey) ??
         (await queryClient.fetchQuery(imageQuery)),
+      queryClient.getQueryData(imagePromptQuery.queryKey) ??
+        (await queryClient.fetchQuery(imagePromptQuery)),
       queryClient.getQueryData(commentsQuery.queryKey) ??
         (await queryClient.fetchInfiniteQuery(commentsQuery)),
     ] as const;
@@ -38,6 +42,7 @@ export const ImageRoute = () => {
     <>
       <ContentLayout title="Image">
         <ImageView imageId={imageId} />
+
         <div className="mt-8">
           <ErrorBoundary
             fallback={

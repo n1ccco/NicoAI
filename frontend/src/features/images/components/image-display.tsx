@@ -21,7 +21,7 @@ export const ImageDisplay = ({ imageId }: { imageId: string }) => {
     <img
       src={`data:image/jpeg;base64,${image.imageBlob}`}
       alt={`${imageId}`}
-      className="mb-4 h-auto w-full rounded-lg shadow-md"
+      className="size-full rounded-lg object-cover shadow-md"
     />
   );
 };

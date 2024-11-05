@@ -52,7 +52,7 @@ export interface ImageSimplified {
 export interface ImageDetailed extends ImageSimplified {
   authorId: string;
   authorName: string;
-  promptData: PromptData;
+  promptData: Prompt;
   isPublic: boolean;
 }
 export interface InteractionImageRequest {
@@ -61,12 +61,12 @@ export interface InteractionImageRequest {
 export interface JwtRefreshResponse {
   token: string;
 }
-export interface PromptData {
-  id?: number;
-  prompt?: string;
-  negativePrompt?: string;
-  height?: number;
-  width?: number;
-  numInterferenceSteps?: number;
-  guidanceScale?: number;
+export interface Prompt {
+  id: string;
+  prompt: string;
+  negativePrompt: string;
+  height: string;
+  width: string;
+  numInterferenceSteps: string;
+  guidanceScale: string;
 }

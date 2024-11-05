@@ -11,6 +11,7 @@ import org.bohdanzhuvak.nicoai.features.images.dto.response.ImageBlobResponse;
 import org.bohdanzhuvak.nicoai.features.images.dto.response.ImageResponse;
 import org.bohdanzhuvak.nicoai.features.images.dto.response.ImageResponseSimplified;
 import org.bohdanzhuvak.nicoai.features.images.model.Image;
+import org.bohdanzhuvak.nicoai.features.images.model.PromptData;
 import org.bohdanzhuvak.nicoai.features.images.model.Visibility;
 import org.bohdanzhuvak.nicoai.features.images.repository.ImageRepository;
 import org.bohdanzhuvak.nicoai.features.users.model.User;
@@ -94,6 +95,19 @@ public class ImageService {
           boolean isLiked = currentUser != null && interactionService.checkIfUserLikedImage(foundImage.getId(), currentUser.getId());
           return imageResponseMapper.toImageResponse(foundImage, isLiked);
         })
+        .orElseThrow(() -> new UnauthorizedActionException("Unauthorized action"));
+  }
+
+  public PromptData getImagePrompt(Long id, @Nullable User currentUser) {
+    Image foundImage = imageRepository.findByIdWithAllData(id)
+        .orElseThrow(() -> new ImageNotFoundException("Image not found"));
+
+    boolean isAuthorized = foundImage.getVisibility() == Visibility.PUBLIC ||
+        (currentUser != null && (currentUser.getId().equals(foundImage.getAuthor().getId()) || currentUser.isAdmin()));
+
+    return Optional.of(isAuthorized)
+        .filter(auth -> auth)
+        .map(auth -> foundImage.getPromptData())
         .orElseThrow(() -> new UnauthorizedActionException("Unauthorized action"));
   }
 

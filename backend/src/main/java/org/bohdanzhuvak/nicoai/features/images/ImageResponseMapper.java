@@ -14,7 +14,6 @@ public class ImageResponseMapper {
   public ImageResponse toImageResponse(Image image, boolean isLiked) {
     return ImageResponse.builder()
         .id(image.getId())
-        .promptData(image.getPromptData())
         .authorId(image.getAuthor().getId())
         .authorName(image.getAuthor().getUsername())
         .isPublic(image.getVisibility() == Visibility.PUBLIC)

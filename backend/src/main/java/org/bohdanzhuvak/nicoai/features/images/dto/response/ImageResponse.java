@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.bohdanzhuvak.nicoai.features.images.model.PromptData;
 
 @Data
 @Builder
@@ -20,5 +19,4 @@ public class ImageResponse {
   private Long countLikes;
   private Long authorId;
   private String authorName;
-  private PromptData promptData;
 }

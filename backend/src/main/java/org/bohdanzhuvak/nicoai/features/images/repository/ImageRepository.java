@@ -13,13 +13,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ImageRepository extends JpaRepository<Image, Long> {
-  @EntityGraph(attributePaths = {"imageData", "promptData", "author"})
-  @Cacheable(value = "image_all_data", key = "#id", unless = "#result == null")
+  @EntityGraph(attributePaths = {"author", "promptData"})
+  @Cacheable(value = "image_with_prompt_data", key = "#id", unless = "#result == null")
   @Query("SELECT i FROM Image i WHERE i.id = :id")
   Optional<Image> findByIdWithAllData(@Param("id") Long id);
 
   @EntityGraph(attributePaths = {"author", "imageData"})
-  @Cacheable(value = "image_partial_data", key = "#id")
+  @Cacheable(value = "image_with_blob_data", key = "#id")
   @Query("SELECT i FROM Image i WHERE i.id = :id")
   Optional<Image> findByIdWithPartData(@Param("id") Long id);
 
