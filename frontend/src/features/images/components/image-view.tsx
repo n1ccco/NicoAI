@@ -4,6 +4,7 @@ import { useImage } from '@/features/images/api/get-image';
 import { DeleteImage } from '@/features/images/components/delete-image';
 import { ImageDisplay } from '@/features/images/components/image-display';
 import { ImagePrompt } from '@/features/images/components/image-prompt';
+import { LikeButton } from '@/features/reactions/components/toggle-like';
 import { useUser } from '@/lib/auth/auth';
 import { Authorization, POLICIES } from '@/lib/auth/authorization';
 import { User } from '@/types/api';
@@ -29,24 +30,32 @@ export const ImageView = ({ imageId }: { imageId: string }) => {
     <div className="flex flex-col items-start rounded-lg bg-white p-6 shadow-md md:flex-row">
       <div className="mb-4 md:mb-0">
         <ImageDisplay imageId={image.id} />
-        <span>
-          By{' '}
-          <Link to={`/app/users/${image.authorId}/images`}>
-            {image.authorName}
-          </Link>
-        </span>
-        <Authorization
-          policyCheck={POLICIES['image:delete'](user.data as User, image)}
-        >
-          <div className="mt-3 flex items-center justify-between">
-            {/*<Toggle
+        <div className="mt-2 flex flex-row justify-between">
+          <span>
+            By{' '}
+            <Link to={`/app/users/${image.authorId}/images`}>
+              {image.authorName}
+            </Link>
+          </span>
+          <Authorization
+            policyCheck={POLICIES['image:delete'](user.data as User, image)}
+          >
+            <div className="flex items-center justify-between">
+              {/*<Toggle
             initialState={image.isPublic}
             onToggle={handleToggle}
             toggleName="Make public"
           />*/}
-            <DeleteImage id={imageId} />
-          </div>
-        </Authorization>
+              <DeleteImage id={imageId} />
+            </div>
+          </Authorization>
+          <LikeButton
+            entityId={image.id}
+            entityType="images"
+            liked={image.isLiked}
+            likeCount={image.countLikes}
+          />
+        </div>
       </div>
       <ImagePrompt imageId={imageId} />
     </div>

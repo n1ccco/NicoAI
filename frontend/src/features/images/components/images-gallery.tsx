@@ -7,6 +7,7 @@ import { Link } from '@/components/ui/link';
 import { Spinner } from '@/components/ui/spinner';
 import { useImages } from '@/features/images/api/get-images';
 import { ImageDisplay } from '@/features/images/components/image-display';
+import { LikeButton } from '@/features/reactions/components/toggle-like';
 
 export type ImagesListProps = {
   sortBy: 'date' | 'likes';
@@ -41,9 +42,8 @@ export const ImagesGallery = ({
     id: image.id,
     src: ``,
     alt: `Image ${image.id}`,
-    caption: image.isLiked
-      ? `${image.countLikes} Likes`
-      : `${image.countLikes} Likes`,
+    isLiked: image.isLiked,
+    countLikes: image.countLikes,
   }));
 
   return (
@@ -53,7 +53,15 @@ export const ImagesGallery = ({
           <Link to={`/app/images/${image.id}`}>
             <ImageDisplay imageId={image.id} />
           </Link>
-          {image.caption && <ImageCaption>{image.caption}</ImageCaption>}
+
+          <ImageCaption>
+            <LikeButton
+              entityId={image.id}
+              entityType="images"
+              liked={image.isLiked}
+              likeCount={image.countLikes}
+            />
+          </ImageCaption>
         </ImageCard>
       ))}
     </ImageGalleryContainer>

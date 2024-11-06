@@ -69,4 +69,18 @@ public class InteractionService {
     imageRepository.save(image);
   }
 
+  public void likeImage(Long id, User user) {
+    Image image = imageRepository.findById(id).orElseThrow(() -> new ImageNotFoundException("Image not found"));
+    LikeId likeId = new LikeId(user.getId(), image.getId());
+    if (!likeRepository.existsById(likeId)) {
+      Like like = new Like(likeId, user, image);
+      likeRepository.save(like);
+      image.setLikeCount(image.getLikeCount() + 1);
+    } else {
+      likeRepository.deleteById(likeId);
+      image.setLikeCount(image.getLikeCount() - 1);
+    }
+    imageRepository.save(image);
+  }
+
 }

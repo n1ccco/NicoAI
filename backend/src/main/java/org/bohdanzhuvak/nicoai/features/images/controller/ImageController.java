@@ -9,6 +9,7 @@ import org.bohdanzhuvak.nicoai.features.images.dto.response.ImageResponse;
 import org.bohdanzhuvak.nicoai.features.images.dto.response.ImageResponseSimplified;
 import org.bohdanzhuvak.nicoai.features.images.model.PromptData;
 import org.bohdanzhuvak.nicoai.features.images.service.ImageService;
+import org.bohdanzhuvak.nicoai.features.images.service.InteractionService;
 import org.bohdanzhuvak.nicoai.features.users.model.User;
 import org.bohdanzhuvak.nicoai.shared.security.CurrentUser;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,7 @@ import java.util.List;
 public class ImageController {
 
   private final ImageService imageService;
+  private final InteractionService interactionService;
 
   @GetMapping
   public List<ImageResponseSimplified> getImages(
@@ -61,6 +63,14 @@ public class ImageController {
       @RequestBody InteractionImageRequest interactionImageRequest,
       @CurrentUser User currentUser) {
     imageService.changeImage(id, interactionImageRequest, currentUser);
+  }
+
+  @PostMapping("/{id}/like")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void likeImage(
+      @PathVariable Long id,
+      @CurrentUser User currentUser) {
+    interactionService.likeImage(id, currentUser);
   }
 
   @PostMapping

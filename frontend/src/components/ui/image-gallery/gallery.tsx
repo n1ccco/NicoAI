@@ -24,7 +24,7 @@ export const ImageCard = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'relative overflow-hidden rounded-lg shadow-lg transition-transform hover:scale-105 bg-gray-800 p-6',
+      'relative overflow-hidden rounded-lg shadow-lg transition-transform hover:scale-105 bg-gray-800 px-3 pt-3 pb-12',
       className,
     )}
     {...props}
