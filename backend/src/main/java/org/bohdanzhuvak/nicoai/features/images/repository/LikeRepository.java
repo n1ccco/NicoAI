@@ -11,6 +11,6 @@ import java.util.Set;
 public interface LikeRepository extends JpaRepository<Like, LikeId> {
   boolean existsById(LikeId id);
 
-  @Query(value = "SELECT l.image.id FROM Like l WHERE l.user.Id = :userId AND l.image.id IN :imageIds")
+  @Query(value = "SELECT l.image.id FROM Like l WHERE l.user.id = :userId AND l.image.id IN :imageIds")
   Set<Long> findImageIdByUserIdAndImageIdIn(@Param("userId") Long userId, @Param("imageIds") Set<Long> imageIds);
 }

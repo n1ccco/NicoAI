@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.bohdanzhuvak.nicoai.features.images.ImageFactory;
 import org.bohdanzhuvak.nicoai.features.images.ImageResponseMapper;
 import org.bohdanzhuvak.nicoai.features.images.SortMapper;
-import org.bohdanzhuvak.nicoai.features.images.dto.request.InteractionImageRequest;
 import org.bohdanzhuvak.nicoai.features.images.dto.request.PromptRequest;
 import org.bohdanzhuvak.nicoai.features.images.dto.response.GenerateResponse;
 import org.bohdanzhuvak.nicoai.features.images.dto.response.ImageBlobResponse;
@@ -123,12 +122,6 @@ public class ImageService {
         .map(auth -> fileService.readFileBytes(foundImage.getImageData().getName()))
         .map(blobImage -> ImageBlobResponse.builder().imageBlob(blobImage).build())
         .orElseThrow(() -> new UnauthorizedActionException("Unauthorized action"));
-  }
-
-  public void changeImage(Long id,
-                          InteractionImageRequest interactionImageRequest,
-                          User currentUser) {
-    interactionService.changeImage(id, interactionImageRequest, currentUser);
   }
 
   public void deleteImage(Long id, User currentUser) {

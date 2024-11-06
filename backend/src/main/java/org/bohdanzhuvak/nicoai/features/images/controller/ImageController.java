@@ -1,7 +1,6 @@
 package org.bohdanzhuvak.nicoai.features.images.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.bohdanzhuvak.nicoai.features.images.dto.request.InteractionImageRequest;
 import org.bohdanzhuvak.nicoai.features.images.dto.request.PromptRequest;
 import org.bohdanzhuvak.nicoai.features.images.dto.response.GenerateResponse;
 import org.bohdanzhuvak.nicoai.features.images.dto.response.ImageBlobResponse;
@@ -56,13 +55,12 @@ public class ImageController {
     return imageService.getImagePrompt(id, currentUser);
   }
 
-  @PatchMapping("/{id}")
+  @PatchMapping("/{id}/visibility")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void changeImage(
+  public void changeImageVisibility(
       @PathVariable Long id,
-      @RequestBody InteractionImageRequest interactionImageRequest,
       @CurrentUser User currentUser) {
-    imageService.changeImage(id, interactionImageRequest, currentUser);
+    interactionService.changeImageVisibility(id, currentUser);
   }
 
   @PostMapping("/{id}/like")
