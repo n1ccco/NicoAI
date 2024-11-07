@@ -48,7 +48,7 @@ module.exports = {
           {
             zones: [
               // disables cross-feature imports:
-              // eg. src/features/discussions should not import from src/features/comments, etc.
+              // eg. src/features/images should not import from src/features/comments, etc.
               {
                 target: './src/features/auth',
                 from: './src/features',
@@ -60,14 +60,14 @@ module.exports = {
                 except: ['./comments'],
               },
               {
-                target: './src/features/discussions',
+                target: './src/features/images',
                 from: './src/features',
-                except: ['./discussions'],
+                except: ['./images'],
               },
               {
-                target: './src/features/teams',
+                target: './src/features/reactions',
                 from: './src/features',
-                except: ['./teams'],
+                except: ['./reactions'],
               },
               {
                 target: './src/features/users',
