@@ -38,17 +38,9 @@ export const ImagesGallery = ({
 
   if (!images) return null;
 
-  const imageEntries = images.map((image) => ({
-    id: image.id,
-    src: ``,
-    alt: `Image ${image.id}`,
-    isLiked: image.isLiked,
-    countLikes: image.countLikes,
-  }));
-
   return (
     <ImageGalleryContainer>
-      {imageEntries.map((image) => (
+      {images.map((image) => (
         <ImageCard key={image.id}>
           <Link to={`/app/images/${image.id}`}>
             <ImageDisplay imageId={image.id} />
