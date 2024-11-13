@@ -2,12 +2,12 @@ import { QueryClient } from '@tanstack/react-query';
 import { ErrorBoundary } from 'react-error-boundary';
 import { LoaderFunctionArgs, useParams } from 'react-router-dom';
 
-import { ContentLayout } from '@/components/layouts';
 import { getInfiniteCommentsQueryOptions } from '@/features/comments/api/get-comments';
 import { Comments } from '@/features/comments/components/comments';
 import { getImageQueryOptions } from '@/features/images/api/get-image';
 import { getImagePromptQueryOptions } from '@/features/images/api/get-image-prompt';
 import { ImageView } from '@/features/images/components/image-view';
+import { ContentLayout } from '@/shared/components/layouts';
 
 export const imageLoader =
   (queryClient: QueryClient) =>

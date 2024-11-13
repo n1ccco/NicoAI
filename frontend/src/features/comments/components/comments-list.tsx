@@ -1,12 +1,12 @@
 import { ArchiveX } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
-import { MDPreview } from '@/components/ui/md-preview';
-import { Spinner } from '@/components/ui/spinner';
-import { useUser } from '@/lib/auth/auth';
-import { Authorization, POLICIES } from '@/lib/auth/authorization';
-import { User } from '@/types/api';
-import { formatDate } from '@/utils/format';
+import { Button } from '@/shared/components/ui/button';
+import { MDPreview } from '@/shared/components/ui/md-preview';
+import { Spinner } from '@/shared/components/ui/spinner';
+import { useUser } from '@/shared/lib/auth/auth';
+import { Authorization, POLICIES } from '@/shared/lib/auth/authorization';
+import { User } from '@/shared/types/api';
+import { formatDate } from '@/shared/utils/format';
 
 import { useInfiniteComments } from '../api/get-comments';
 

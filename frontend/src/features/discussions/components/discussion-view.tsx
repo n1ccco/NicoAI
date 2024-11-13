@@ -1,6 +1,6 @@
-import { MDPreview } from '@/components/ui/md-preview';
-import { Spinner } from '@/components/ui/spinner';
-import { formatDate } from '@/utils/format';
+import { MDPreview } from '@/shared/components/ui/md-preview';
+import { Spinner } from '@/shared/components/ui/spinner';
+import { formatDate } from '@/shared/utils/format';
 
 import { useDiscussion } from '../api/get-discussion';
 import { UpdateDiscussion } from '../components/update-discussion';

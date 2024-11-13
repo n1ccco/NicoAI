@@ -1,10 +1,10 @@
 import { Trash } from 'lucide-react';
 import { useState } from 'react';
 
-import { Button } from '@/components/ui/button';
-import { ConfirmationDialog } from '@/components/ui/dialog';
-import { useNotifications } from '@/components/ui/notifications';
 import { useDeleteImage } from '@/features/images/api/delete-image';
+import { Button } from '@/shared/components/ui/button';
+import { ConfirmationDialog } from '@/shared/components/ui/dialog';
+import { useNotifications } from '@/shared/components/ui/notifications';
 
 type DeleteImageProps = {
   id: string;

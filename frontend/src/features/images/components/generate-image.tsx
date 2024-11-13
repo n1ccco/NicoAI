@@ -1,13 +1,13 @@
 import { Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-import { Button } from '@/components/ui/button';
-import { Form, FormDrawer, Input } from '@/components/ui/form';
-import { useNotifications } from '@/components/ui/notifications';
 import {
   generateImageInputSchema,
   useGenerateImage,
 } from '@/features/images/api/generate-image';
+import { Button } from '@/shared/components/ui/button';
+import { Form, FormDrawer, Input } from '@/shared/components/ui/form';
+import { useNotifications } from '@/shared/components/ui/notifications';
 
 export const GenerateImage = () => {
   const { addNotification } = useNotifications();

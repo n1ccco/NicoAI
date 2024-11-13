@@ -1,5 +1,5 @@
-import { Spinner } from '@/components/ui/spinner';
 import { useImagePrompt } from '@/features/images/api/get-image-prompt';
+import { Spinner } from '@/shared/components/ui/spinner';
 
 export const ImagePrompt = ({ imageId }: { imageId: string }) => {
   const imagePromptQuery = useImagePrompt({

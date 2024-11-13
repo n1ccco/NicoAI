@@ -1,5 +1,5 @@
-import { Spinner } from '@/components/ui/spinner';
 import { useImageBlob } from '@/features/images/api/get-image-blob';
+import { Spinner } from '@/shared/components/ui/spinner';
 
 export const ImageDisplay = ({ imageId }: { imageId: string }) => {
   const imageQuery = useImageBlob({

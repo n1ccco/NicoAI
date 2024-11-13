@@ -1,9 +1,9 @@
 import { Pen } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
-import { Form, FormDrawer, Input, Textarea } from '@/components/ui/form';
-import { useNotifications } from '@/components/ui/notifications';
-import { Authorization, ROLES } from '@/lib/auth/authorization';
+import { Button } from '@/shared/components/ui/button';
+import { Form, FormDrawer, Input, Textarea } from '@/shared/components/ui/form';
+import { useNotifications } from '@/shared/components/ui/notifications';
+import { Authorization, ROLES } from '@/shared/lib/auth/authorization';
 
 import { useDiscussion } from '../api/get-discussion';
 import {

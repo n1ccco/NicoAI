@@ -1,8 +1,8 @@
 import { Trash } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
-import { ConfirmationDialog } from '@/components/ui/dialog';
-import { useNotifications } from '@/components/ui/notifications';
+import { Button } from '@/shared/components/ui/button';
+import { ConfirmationDialog } from '@/shared/components/ui/dialog';
+import { useNotifications } from '@/shared/components/ui/notifications';
 
 import { useDeleteComment } from '../api/delete-comment';
 

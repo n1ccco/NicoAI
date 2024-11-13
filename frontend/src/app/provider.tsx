@@ -4,11 +4,11 @@ import * as React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { HelmetProvider } from 'react-helmet-async';
 
-import { MainErrorFallback } from '@/components/errors/main';
-import { Notifications } from '@/components/ui/notifications';
-import { Spinner } from '@/components/ui/spinner';
-import { AuthLoader } from '@/lib/auth/auth';
-import { queryConfig } from '@/lib/react-query';
+import { MainErrorFallback } from '@/shared/components/errors/main';
+import { Notifications } from '@/shared/components/ui/notifications';
+import { Spinner } from '@/shared/components/ui/spinner';
+import { AuthLoader } from '@/shared/lib/auth/auth';
+import { queryConfig } from '@/shared/lib/react-query';
 
 type AppProviderProps = {
   children: React.ReactNode;

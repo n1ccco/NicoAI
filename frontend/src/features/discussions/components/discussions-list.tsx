@@ -1,10 +1,10 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 
-import { Link } from '@/components/ui/link';
-import { Spinner } from '@/components/ui/spinner';
-import { Table } from '@/components/ui/table';
-import { formatDate } from '@/utils/format';
+import { Link } from '@/shared/components/ui/link';
+import { Spinner } from '@/shared/components/ui/spinner';
+import { Table } from '@/shared/components/ui/table';
+import { formatDate } from '@/shared/utils/format';
 
 import { getDiscussionQueryOptions } from '../api/get-discussion';
 import { useDiscussions } from '../api/get-discussions';

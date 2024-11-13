@@ -1,13 +1,13 @@
+import { useImages } from '@/features/images/api/get-images';
+import { ImageDisplay } from '@/features/images/components/image-display';
 import {
   ImageCaption,
   ImageCard,
   ImageGalleryContainer,
-} from '@/components/ui/image-gallery';
-import { Link } from '@/components/ui/link';
-import { Spinner } from '@/components/ui/spinner';
-import { useImages } from '@/features/images/api/get-images';
-import { ImageDisplay } from '@/features/images/components/image-display';
-import { LikeButton } from '@/features/reactions/components/toggle-like';
+} from '@/shared/components/ui/image-gallery';
+import { Link } from '@/shared/components/ui/link';
+import { Spinner } from '@/shared/components/ui/spinner';
+import { LikeButton } from '@/shared/features/reactions/components/toggle-like';
 
 export type ImagesListProps = {
   sortBy: 'date' | 'likes';

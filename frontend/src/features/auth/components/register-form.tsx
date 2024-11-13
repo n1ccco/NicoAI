@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 
-import { Button } from '@/components/ui/button';
-import { Form, Input } from '@/components/ui/form';
-import { useRegister } from '@/lib/auth/auth';
-import { registerInputSchema } from '@/lib/auth/types';
+import { Button } from '@/shared/components/ui/button';
+import { Form, Input } from '@/shared/components/ui/form';
+import { useRegister } from '@/shared/lib/auth/auth';
+import { registerInputSchema } from '@/shared/lib/auth/types';
 
 type RegisterFormProps = {
   onSuccess: () => void;

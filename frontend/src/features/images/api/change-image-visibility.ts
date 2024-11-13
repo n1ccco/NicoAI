@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { api } from '@/lib/api-client';
-import { MutationConfig } from '@/lib/react-query';
-import { ImageDetailed } from '@/types/api';
+import { api } from '@/shared/lib/api-client';
+import { MutationConfig } from '@/shared/lib/react-query';
+import { ImageDetailed } from '@/shared/types/api';
 
 export const changeImageVisibility = ({
   imageId,

@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 
 import logo from '@/assets/logo.svg';
-import { Head } from '@/components/seo';
-import { Button } from '@/components/ui/button';
-import { useUser } from '@/lib/auth/auth';
+import { Head } from '@/shared/components/seo';
+import { Button } from '@/shared/components/ui/button';
+import { useUser } from '@/shared/lib/auth/auth';
 
 export const LandingRoute = () => {
   const navigate = useNavigate();

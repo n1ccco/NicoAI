@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
 
-import { api } from '@/lib/api-client';
-import { MutationConfig } from '@/lib/react-query';
-import { GenerateResponse } from '@/types/api';
+import { api } from '@/shared/lib/api-client';
+import { MutationConfig } from '@/shared/lib/react-query';
+import { GenerateResponse } from '@/shared/types/api';
 
 export const generateImageInputSchema = z.object({
   prompt: z.string().min(1, 'Required'),

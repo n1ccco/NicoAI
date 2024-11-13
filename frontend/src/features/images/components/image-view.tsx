@@ -1,14 +1,14 @@
-import { Link } from '@/components/ui/link';
-import { Spinner } from '@/components/ui/spinner';
 import { useImage } from '@/features/images/api/get-image';
 import { ChangeImageVisibility } from '@/features/images/components/change-image-visibility';
 import { DeleteImage } from '@/features/images/components/delete-image';
 import { ImageDisplay } from '@/features/images/components/image-display';
 import { ImagePrompt } from '@/features/images/components/image-prompt';
-import { LikeButton } from '@/features/reactions/components/toggle-like';
-import { useUser } from '@/lib/auth/auth';
-import { Authorization, POLICIES } from '@/lib/auth/authorization';
-import { User } from '@/types/api';
+import { Link } from '@/shared/components/ui/link';
+import { Spinner } from '@/shared/components/ui/spinner';
+import { LikeButton } from '@/shared/features/reactions/components/toggle-like';
+import { useUser } from '@/shared/lib/auth/auth';
+import { Authorization, POLICIES } from '@/shared/lib/auth/authorization';
+import { User } from '@/shared/types/api';
 
 export const ImageView = ({ imageId }: { imageId: string }) => {
   const user = useUser();

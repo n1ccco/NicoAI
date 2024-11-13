@@ -6,7 +6,7 @@ import {
   RouterProvider,
 } from 'react-router-dom';
 
-import { ProtectedRoute } from '@/lib/auth/protected-route';
+import { ProtectedRoute } from '@/shared/lib/auth/protected-route';
 
 import { AppRoot } from './routes/app/root';
 

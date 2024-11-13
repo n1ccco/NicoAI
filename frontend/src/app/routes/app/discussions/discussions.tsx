@@ -1,11 +1,11 @@
 import { QueryClient, useQueryClient } from '@tanstack/react-query';
 import { LoaderFunctionArgs } from 'react-router-dom';
 
-import { ContentLayout } from '@/components/layouts';
 import { getInfiniteCommentsQueryOptions } from '@/features/comments/api/get-comments';
 import { getDiscussionsQueryOptions } from '@/features/discussions/api/get-discussions';
 import { CreateDiscussion } from '@/features/discussions/components/create-discussion';
 import { DiscussionsList } from '@/features/discussions/components/discussions-list';
+import { ContentLayout } from '@/shared/components/layouts';
 
 export const discussionsLoader =
   (queryClient: QueryClient) =>

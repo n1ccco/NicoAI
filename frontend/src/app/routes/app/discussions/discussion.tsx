@@ -2,8 +2,6 @@ import { QueryClient } from '@tanstack/react-query';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useParams, LoaderFunctionArgs } from 'react-router-dom';
 
-import { ContentLayout } from '@/components/layouts';
-import { Spinner } from '@/components/ui/spinner';
 import { getInfiniteCommentsQueryOptions } from '@/features/comments/api/get-comments';
 import { Comments } from '@/features/comments/components/comments';
 import {
@@ -11,6 +9,8 @@ import {
   getDiscussionQueryOptions,
 } from '@/features/discussions/api/get-discussion';
 import { DiscussionView } from '@/features/discussions/components/discussion-view';
+import { ContentLayout } from '@/shared/components/layouts';
+import { Spinner } from '@/shared/components/ui/spinner';
 
 export const discussionLoader =
   (queryClient: QueryClient) =>

@@ -5,10 +5,10 @@ import {
   useSearchParams,
 } from 'react-router-dom';
 
-import { ContentLayout } from '@/components/layouts';
 import { getImagesQueryOptions } from '@/features/images/api/get-images';
 import { GenerateImage } from '@/features/images/components/generate-image';
 import { ImagesGallery } from '@/features/images/components/images-gallery';
+import { ContentLayout } from '@/shared/components/layouts';
 
 export const imagesLoader =
   (queryClient: QueryClient) =>

@@ -1,5 +1,5 @@
-import { Button } from '@/components/ui/button';
-import { useNotifications } from '@/components/ui/notifications';
+import { Button } from '@/shared/components/ui/button';
+import { useNotifications } from '@/shared/components/ui/notifications';
 
 import { useChangeImageVisibility } from '../api/change-image-visibility';
 

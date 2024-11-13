@@ -1,5 +1,6 @@
 import type { Mock } from 'vitest';
 
+import { formatDate } from '@/shared/utils/format';
 import { createDiscussion } from '@/testing/data-generators';
 import {
   renderApp,
@@ -8,7 +9,6 @@ import {
   waitFor,
   within,
 } from '@/testing/test-utils';
-import { formatDate } from '@/utils/format';
 
 import { DiscussionsRoute } from '../discussions';
 

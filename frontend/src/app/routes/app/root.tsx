@@ -2,8 +2,8 @@ import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Outlet, useLocation } from 'react-router-dom';
 
-import { DashboardLayout } from '@/components/layouts';
-import { Spinner } from '@/components/ui/spinner';
+import { DashboardLayout } from '@/shared/components/layouts';
+import { Spinner } from '@/shared/components/ui/spinner';
 
 export const AppRoot = () => {
   const location = useLocation();
