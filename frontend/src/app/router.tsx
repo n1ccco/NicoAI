@@ -1,135 +1,108 @@
 import { QueryClient, useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import {
-  createBrowserRouter,
-  LoaderFunctionArgs,
-  RouterProvider,
-} from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
+import { paths } from '@/config/paths';
 import { ProtectedRoute } from '@/shared/lib/auth/protected-route';
 
-import { AppRoot } from './routes/app/root';
+import { AppRoot, AppRootErrorBoundary } from './routes/app/root';
 
 export const createAppRouter = (queryClient: QueryClient) =>
   createBrowserRouter([
     {
-      path: '/',
+      path: paths.home.path,
       lazy: async () => {
         const { LandingRoute } = await import('./routes/landing');
         return { Component: LandingRoute };
       },
     },
     {
-      path: '/auth/register',
+      path: paths.auth.register.path,
       lazy: async () => {
         const { RegisterRoute } = await import('./routes/auth/register');
         return { Component: RegisterRoute };
       },
     },
     {
-      path: '/auth/login',
+      path: paths.auth.login.path,
       lazy: async () => {
         const { LoginRoute } = await import('./routes/auth/login');
         return { Component: LoginRoute };
       },
     },
     {
-      path: '/app',
+      path: paths.app.root.path,
       element: (
         <ProtectedRoute>
           <AppRoot />
         </ProtectedRoute>
       ),
+      ErrorBoundary: AppRootErrorBoundary,
       children: [
         {
-          path: 'discussions',
+          path: paths.app.images.path,
           lazy: async () => {
-            const { DiscussionsRoute } = await import(
-              './routes/app/discussions/discussions'
+            const { ImagesRoute, imagesLoader } = await import(
+              './routes/app/images/images'
             );
-            return { Component: DiscussionsRoute };
+            return {
+              Component: ImagesRoute,
+              loader: imagesLoader(queryClient),
+            };
           },
-          loader: async (args: LoaderFunctionArgs) => {
-            const { discussionsLoader } = await import(
-              './routes/app/discussions/discussions'
-            );
-            return discussionsLoader(queryClient)(args);
-          },
+          ErrorBoundary: AppRootErrorBoundary,
         },
         {
-          path: 'discussions/:discussionId',
+          path: paths.app.user.path,
           lazy: async () => {
-            const { DiscussionRoute } = await import(
-              './routes/app/discussions/discussion'
+            const { ImagesRoute, imagesLoader } = await import(
+              './routes/app/images/images'
             );
-            return { Component: DiscussionRoute };
+            return {
+              Component: ImagesRoute,
+              loader: imagesLoader(queryClient),
+            };
           },
-
-          loader: async (args: LoaderFunctionArgs) => {
-            const { discussionLoader } = await import(
-              './routes/app/discussions/discussion'
-            );
-            return discussionLoader(queryClient)(args);
-          },
+          ErrorBoundary: AppRootErrorBoundary,
         },
         {
-          path: 'users',
+          path: paths.app.image.path,
           lazy: async () => {
-            const { UsersRoute } = await import('./routes/app/users');
-            return { Component: UsersRoute };
+            const { ImageRoute, imageLoader } = await import(
+              './routes/app/images/image'
+            );
+            return { Component: ImageRoute, loader: imageLoader(queryClient) };
           },
-
-          loader: async () => {
-            const { usersLoader } = await import('./routes/app/users');
-            return usersLoader(queryClient)();
-          },
+          ErrorBoundary: AppRootErrorBoundary,
         },
         {
-          path: 'profile',
+          path: paths.app.users.path,
+          lazy: async () => {
+            const { UsersRoute, usersLoader } = await import(
+              './routes/app/users'
+            );
+            return {
+              Component: UsersRoute,
+              loader: usersLoader(queryClient),
+            };
+          },
+          ErrorBoundary: AppRootErrorBoundary,
+        },
+        {
+          path: paths.app.profile.path,
           lazy: async () => {
             const { ProfileRoute } = await import('./routes/app/profile');
             return { Component: ProfileRoute };
           },
+          ErrorBoundary: AppRootErrorBoundary,
         },
         {
-          path: 'images',
-          lazy: async () => {
-            const { ImagesRoute } = await import('./routes/app/images/images');
-            return { Component: ImagesRoute };
-          },
-          loader: async (args: LoaderFunctionArgs) => {
-            const { imagesLoader } = await import('./routes/app/images/images');
-            return imagesLoader(queryClient)(args);
-          },
-        },
-        {
-          path: 'users/:userId/images',
-          lazy: async () => {
-            const { ImagesRoute } = await import('./routes/app/images/images');
-            return { Component: ImagesRoute };
-          },
-          loader: async (args: LoaderFunctionArgs) => {
-            const { imagesLoader } = await import('./routes/app/images/images');
-            return imagesLoader(queryClient)(args);
-          },
-        },
-        {
-          path: 'images/:imageId',
-          lazy: async () => {
-            const { ImageRoute } = await import('./routes/app/images/image');
-            return { Component: ImageRoute };
-          },
-          loader: async (args: LoaderFunctionArgs) => {
-            const { imageLoader } = await import('./routes/app/images/image');
-            return imageLoader(queryClient)(args);
-          },
-        },
-        {
-          path: '',
+          path: paths.app.dashboard.path,
           lazy: async () => {
             const { DashboardRoute } = await import('./routes/app/dashboard');
             return { Component: DashboardRoute };
           },
+          ErrorBoundary: AppRootErrorBoundary,
         },
       ],
     },
@@ -139,6 +112,7 @@ export const createAppRouter = (queryClient: QueryClient) =>
         const { NotFoundRoute } = await import('./routes/not-found');
         return { Component: NotFoundRoute };
       },
+      ErrorBoundary: AppRootErrorBoundary,
     },
   ]);
 

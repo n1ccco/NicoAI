@@ -1,5 +1,6 @@
 import { Navigate, useLocation } from 'react-router-dom';
 
+import { paths } from '@/config/paths';
 import { useUser } from '@/shared/lib/auth/auth';
 
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -8,10 +9,7 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
   if (!user.data) {
     return (
-      <Navigate
-        to={`/auth/login?redirectTo=${encodeURIComponent(location.pathname)}`}
-        replace
-      />
+      <Navigate to={paths.auth.login.getHref(location.pathname)} replace />
     );
   }
 

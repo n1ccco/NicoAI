@@ -1,5 +1,6 @@
 import { Link, useSearchParams } from 'react-router-dom';
 
+import { paths } from '@/config/paths';
 import { Button } from '@/shared/components/ui/button';
 import { Form, Input } from '@/shared/components/ui/form';
 import { useLogin } from '@/shared/lib/auth/auth';
@@ -53,7 +54,7 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
       <div className="mt-2 flex items-center justify-end">
         <div className="text-sm">
           <Link
-            to={`/auth/register${redirectTo ? `?redirectTo=${encodeURIComponent(redirectTo)}` : ''}`}
+            to={paths.auth.register.getHref(redirectTo)}
             className="font-medium text-blue-600 hover:text-blue-500"
           >
             Register

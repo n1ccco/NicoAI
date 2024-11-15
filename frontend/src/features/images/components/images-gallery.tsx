@@ -1,6 +1,7 @@
 import { ArchiveX } from 'lucide-react';
 import * as React from 'react';
 
+import { paths } from '@/config/paths';
 import { useImages } from '@/features/images/api/get-images';
 import { ImageDisplay } from '@/features/images/components/image-display';
 import {
@@ -53,7 +54,7 @@ export const ImagesGallery = ({
     <ImageGalleryContainer>
       {images.map((image) => (
         <ImageCard key={image.id}>
-          <Link to={`/app/images/${image.id}`}>
+          <Link to={paths.app.image.getHref(image.id)}>
             <ImageDisplay imageId={image.id} />
           </Link>
 

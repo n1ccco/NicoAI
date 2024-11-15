@@ -35,7 +35,7 @@ export type Comment = Entity<{
 }>;
 
 export interface GenerateResponse {
-  imageId: number;
+  imageId: string;
 }
 
 export interface ImageBlob {

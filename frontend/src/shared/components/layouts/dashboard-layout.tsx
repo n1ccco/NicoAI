@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { NavLink, useNavigate, useNavigation } from 'react-router-dom';
 
 import logo from '@/assets/logo.svg';
+import { paths } from '@/config/paths';
 import { Button } from '@/shared/components/ui/button';
 import {
   Drawer,
@@ -30,7 +31,7 @@ type SideNavigationItem = {
 
 const Logo = () => {
   return (
-    <Link className="flex items-center text-white" to="/">
+    <Link className="flex items-center text-white" to={paths.home.getHref()}>
       <img className="h-8 w-auto" src={logo} alt="Workflow" />
       <span className="text-sm font-semibold text-white">
         Bulletproof React
@@ -85,12 +86,11 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const userId = useUser().data?.id;
   const navigation = [
-    { name: 'Dashboard', to: '.', icon: Home },
-    { name: 'Discussions', to: './discussions', icon: Folder },
-    { name: 'Images', to: './images', icon: Folder },
+    { name: 'Dashboard', to: paths.app.dashboard.getHref(), icon: Home },
+    { name: 'Images', to: paths.app.images.getHref(), icon: Folder },
     checkAccess({ allowedRoles: [ROLES.ADMIN] }) && {
       name: 'Users',
-      to: './users',
+      to: paths.app.users.getHref(),
       icon: Users,
     },
   ].filter(Boolean) as SideNavigationItem[];
@@ -184,14 +184,14 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem
-                onClick={() => navigate(`./users/${userId}/images`)}
+                onClick={() => navigate(paths.app.user.getHref(userId || ''))}
                 className={cn('block px-4 py-2 text-sm text-gray-700')}
               >
                 Your Images
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                onClick={() => navigate('./profile')}
+                onClick={() => navigate(paths.app.profile.getHref())}
                 className={cn('block px-4 py-2 text-sm text-gray-700')}
               >
                 Your Profile

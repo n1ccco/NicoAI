@@ -1,6 +1,7 @@
 import { Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
+import { paths } from '@/config/paths';
 import {
   generateImageInputSchema,
   useGenerateImage,
@@ -19,7 +20,7 @@ export const GenerateImage = () => {
           type: 'success',
           title: 'Image Generated',
         });
-        navigate(`/app/images/${data.imageId}`);
+        navigate(paths.app.image.getHref(data.imageId));
       },
     },
   });

@@ -1,3 +1,4 @@
+import { paths } from '@/config/paths';
 import { useImage } from '@/features/images/api/get-image';
 import { ChangeImageVisibility } from '@/features/images/components/change-image-visibility';
 import { DeleteImage } from '@/features/images/components/delete-image';
@@ -38,7 +39,7 @@ export const ImageView = ({ imageId }: { imageId: string }) => {
       <div className="mt-2 flex flex-row justify-between">
         <span>
           By{' '}
-          <Link to={`/app/users/${image.authorId}/images`}>
+          <Link to={paths.app.user.getHref(image.authorId)}>
             {image.authorName}
           </Link>
         </span>

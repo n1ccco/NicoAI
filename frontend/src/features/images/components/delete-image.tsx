@@ -2,6 +2,7 @@ import { Trash } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { paths } from '@/config/paths';
 import { useDeleteImage } from '@/features/images/api/delete-image';
 import { Button } from '@/shared/components/ui/button';
 import { ConfirmationDialog } from '@/shared/components/ui/dialog';
@@ -23,7 +24,7 @@ export const DeleteImage = ({ id }: DeleteImageProps) => {
           title: 'Image Deleted',
         });
         setIsDone(true);
-        navigate('/app/images');
+        navigate(paths.app.images.getHref());
       },
     },
   });
