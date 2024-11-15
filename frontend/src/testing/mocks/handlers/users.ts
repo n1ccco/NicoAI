@@ -15,16 +15,15 @@ type ProfileBody = {
 };
 
 export const usersHandlers = [
-  http.get(`${env.API_URL}/users`, async ({ cookies }) => {
+  http.get(`${env.API_URL}/users`, async ({ request }) => {
     await networkDelay();
 
     try {
-      const { error } = requireAuth(cookies);
+      const { error } = requireAuth(request);
       if (error) {
         return HttpResponse.json({ message: error }, { status: 401 });
       }
-      const result = db.user
-        .findMany({}).map(sanitizeUser);
+      const result = db.user.findMany({}).map(sanitizeUser);
 
       return HttpResponse.json({ data: result });
     } catch (error: any) {

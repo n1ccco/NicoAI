@@ -6,13 +6,13 @@ import { networkDelay } from '../utils';
 
 import { authHandlers } from './auth';
 import { commentsHandlers } from './comments';
-import { discussionsHandlers } from './discussions';
+import { imagesHandler } from './images';
 import { usersHandlers } from './users';
 
 export const handlers = [
   ...authHandlers,
   ...commentsHandlers,
-  ...discussionsHandlers,
+  ...imagesHandler,
   ...usersHandlers,
   http.get(`${env.API_URL}/healthcheck`, async () => {
     await networkDelay();

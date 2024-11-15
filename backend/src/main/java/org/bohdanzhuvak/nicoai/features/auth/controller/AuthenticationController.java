@@ -44,8 +44,8 @@ public class AuthenticationController {
   }
 
   @PostMapping("/register")
-  public void signup(@RequestBody RegistrationRequest registrationRequest) {
-    authenticationService.signUp(registrationRequest);
+  public AuthenticationResponse signup(@RequestBody RegistrationRequest registrationRequest) {
+    return authenticationService.signUp(registrationRequest);
   }
 
   @PostMapping("/refresh")

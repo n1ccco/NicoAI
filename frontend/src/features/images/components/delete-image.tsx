@@ -1,5 +1,6 @@
 import { Trash } from 'lucide-react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { useDeleteImage } from '@/features/images/api/delete-image';
 import { Button } from '@/shared/components/ui/button';
@@ -12,6 +13,7 @@ type DeleteImageProps = {
 
 export const DeleteImage = ({ id }: DeleteImageProps) => {
   const { addNotification } = useNotifications();
+  const navigate = useNavigate();
   const [isDone, setIsDone] = useState(false);
   const deleteImageMutation = useDeleteImage({
     mutationConfig: {
@@ -21,6 +23,7 @@ export const DeleteImage = ({ id }: DeleteImageProps) => {
           title: 'Image Deleted',
         });
         setIsDone(true);
+        navigate('/app/images');
       },
     },
   });

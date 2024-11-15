@@ -11,16 +11,20 @@ export const generateImageInputSchema = z.object({
   height: z
     .number()
     .int()
+    .min(8, 'Min number is 8')
+    .max(1024, 'Max number is 1024')
     .refine((val) => val % 8 === 0),
   width: z
     .number()
     .int()
+    .min(8, 'Min number is 8')
+    .max(1024, 'Max number is 1024')
     .refine((val) => val % 8 === 0),
   numInterferenceSteps: z
     .number()
     .int()
-    .min(10, 'Required')
-    .max(50, 'Required'),
+    .min(10, 'Min number is 10')
+    .max(50, 'Max number is 50'),
   guidanceScale: z.number().int().min(2, 'Required').max(15, 'Required'),
 });
 

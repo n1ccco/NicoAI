@@ -1,83 +1,45 @@
+import { ImageRoute } from '@/app/routes/app/images/image';
 import {
   renderApp,
   screen,
   userEvent,
   waitFor,
-  createDiscussion,
+  createImage,
   createUser,
   within,
 } from '@/testing/test-utils';
+import '@testing-library/jest-dom';
 
-import { DiscussionRoute } from '../discussion';
-
-const renderDiscussion = async () => {
+const renderImage = async () => {
   const fakeUser = await createUser();
-  const fakeDiscussion = await createDiscussion();
+  const fakeImage = await createImage();
 
-  const utils = await renderApp(<DiscussionRoute />, {
+  const utils = await renderApp(<ImageRoute />, {
     user: fakeUser,
-    path: `/app/discussions/:discussionId`,
-    url: `/app/discussions/${fakeDiscussion.id}`,
+    path: `/app/images/:imageId`,
+    url: `/app/images/${fakeImage.id}`,
   });
 
-  await screen.findByText(fakeDiscussion.title);
+  await screen.findByText(fakeImage.id);
 
   return {
     ...utils,
     fakeUser,
-    fakeDiscussion,
+    fakeImage,
   };
 };
 
-test('should render discussion', async () => {
-  const { fakeDiscussion } = await renderDiscussion();
-  expect(screen.getByText(fakeDiscussion.body)).toBeInTheDocument();
-});
+//todo: doesn't work
 
-test('should update discussion', async () => {
-  const { fakeDiscussion } = await renderDiscussion();
-
-  const titleUpdate = '-Updated';
-  const bodyUpdate = '-Updated';
-
-  await userEvent.click(
-    screen.getByRole('button', { name: /update discussion/i }),
-  );
-
-  const drawer = await screen.findByRole('dialog', {
-    name: /update discussion/i,
-  });
-
-  const titleField = within(drawer).getByText(/title/i);
-  const bodyField = within(drawer).getByText(/body/i);
-
-  const newTitle = `${fakeDiscussion.title}${titleUpdate}`;
-  const newBody = `${fakeDiscussion.body}${bodyUpdate}`;
-
-  // replacing the title with the new title
-  await userEvent.type(titleField, newTitle);
-
-  // appending updated to the body
-  await userEvent.type(bodyField, bodyUpdate);
-
-  const submitButton = within(drawer).getByRole('button', {
-    name: /submit/i,
-  });
-
-  await userEvent.click(submitButton);
-
-  await waitFor(() => expect(drawer).not.toBeInTheDocument());
-
-  expect(
-    await screen.findByRole('heading', { name: newTitle }),
-  ).toBeInTheDocument();
-  expect(await screen.findByText(newBody)).toBeInTheDocument();
+test('should render image', async () => {
+  const { fakeImage } = await renderImage();
+  expect(screen.getByText(fakeImage.id)).toBeInTheDocument();
 });
 
 test(
-  'should create and delete a comment on the discussion',
+  'should create and delete a comment on the image',
   async () => {
-    await renderDiscussion();
+    await renderImage();
 
     const comment = 'Hello World';
 

@@ -24,6 +24,10 @@ export const ImagePrompt = ({ imageId }: { imageId: string }) => {
       </h2>
       <div className="space-y-2">
         <div className="flex justify-between">
+          <span className="m-3 font-medium text-gray-700">Image Id:</span>
+          <span className="text-gray-900">{imageId}</span>
+        </div>
+        <div className="flex justify-between">
           <span className="m-3 font-medium text-gray-700">Prompt:</span>
           <span className="text-gray-900">{image.prompt}</span>
         </div>

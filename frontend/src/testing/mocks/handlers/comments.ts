@@ -7,26 +7,26 @@ import { networkDelay, requireAuth, sanitizeUser } from '../utils';
 
 type CreateCommentBody = {
   body: string;
-  discussionId: string;
+  imageId: string;
 };
 
 export const commentsHandlers = [
-  http.get(`${env.API_URL}/comments`, async ({ request, cookies }) => {
+  http.get(`${env.API_URL}/comments`, async ({ request }) => {
     await networkDelay();
 
     try {
-      const { error } = requireAuth(cookies);
+      const { error } = requireAuth(request);
       if (error) {
         return HttpResponse.json({ message: error }, { status: 401 });
       }
       const url = new URL(request.url);
-      const discussionId = url.searchParams.get('discussionId') || '';
+      const imageId = url.searchParams.get('imageId') || '';
       const page = Number(url.searchParams.get('page') || 1);
 
       const total = db.comment.count({
         where: {
-          discussionId: {
-            equals: discussionId,
+          imageId: {
+            equals: imageId,
           },
         },
       });
@@ -36,8 +36,8 @@ export const commentsHandlers = [
       const comments = db.comment
         .findMany({
           where: {
-            discussionId: {
-              equals: discussionId,
+            imageId: {
+              equals: imageId,
             },
           },
           take: 10,
@@ -72,11 +72,11 @@ export const commentsHandlers = [
     }
   }),
 
-  http.post(`${env.API_URL}/comments`, async ({ request, cookies }) => {
+  http.post(`${env.API_URL}/comments`, async ({ request }) => {
     await networkDelay();
 
     try {
-      const { user, error } = requireAuth(cookies);
+      const { user, error } = requireAuth(request);
       if (error) {
         return HttpResponse.json({ message: error }, { status: 401 });
       }
@@ -97,11 +97,11 @@ export const commentsHandlers = [
 
   http.delete(
     `${env.API_URL}/comments/:commentId`,
-    async ({ params, cookies }) => {
+    async ({ params, request }) => {
       await networkDelay();
 
       try {
-        const { user, error } = requireAuth(cookies);
+        const { user, error } = requireAuth(request);
         if (error) {
           return HttpResponse.json({ message: error }, { status: 401 });
         }

@@ -3,7 +3,9 @@ import {
   randParagraph,
   randUuid,
   randPassword,
-  randCatchPhrase,
+  randNumber,
+  randBoolean,
+  randSentence,
 } from '@ngneat/falso';
 
 const generateUser = () => ({
@@ -20,21 +22,26 @@ export const createUser = <T extends Partial<ReturnType<typeof generateUser>>>(
   return { ...generateUser(), ...overrides };
 };
 
-const generateDiscussion = () => ({
+const generateImage = () => ({
   id: randUuid(),
-  title: randCatchPhrase(),
-  body: randParagraph(),
-  createdAt: Date.now(),
+  countLikes: randNumber(),
+  isLiked: randBoolean(),
+  prompt: randSentence(),
+  negativePrompt: randSentence(),
+  height: 512,
+  width: 512,
+  numInterferenceSteps: randNumber({ min: 10, max: 50 }),
+  guidanceScale: randNumber({ min: 2, max: 15 }),
 });
 
-export const createDiscussion = <
-  T extends Partial<ReturnType<typeof generateDiscussion>>,
+export const createImage = <
+  T extends Partial<ReturnType<typeof generateImage>>,
 >(
   overrides?: T & {
     authorId?: string;
   },
 ) => {
-  return { ...generateDiscussion(), ...overrides };
+  return { ...generateImage(), ...overrides };
 };
 
 const generateComment = () => ({
@@ -48,7 +55,7 @@ export const createComment = <
 >(
   overrides?: T & {
     authorId?: string;
-    discussionId?: string;
+    imageId?: string;
   },
 ) => {
   return { ...generateComment(), ...overrides };

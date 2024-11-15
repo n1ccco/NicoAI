@@ -55,12 +55,14 @@ export const GenerateImage = () => {
           <>
             <Input
               label="Prompt"
+              placeholder="Enter prompt"
               error={formState.errors['prompt']}
               registration={register('prompt')}
             />
 
             <Input
               label="Negative Prompt"
+              placeholder="Enter negative prompt"
               error={formState.errors['negativePrompt']}
               registration={register('negativePrompt')}
             />

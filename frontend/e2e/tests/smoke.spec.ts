@@ -1,56 +1,43 @@
 import { test, expect } from '@playwright/test';
 
-import {
-  createDiscussion,
-  createComment,
-} from '../../src/testing/data-generators';
+import { createImage, createComment } from '../../src/testing/data-generators';
 test('smoke', async ({ page }) => {
-  const discussion = createDiscussion();
+  const image = createImage();
   const comment = createComment();
 
   await page.goto('/');
   await page.getByRole('button', { name: 'Get started' }).click();
   await page.waitForURL('/app');
 
-  // create discussion:
-  await page.getByRole('link', { name: 'Discussions' }).click();
-  await page.waitForURL('/app/discussions');
+  // create image:
+  await page.getByRole('link', { name: 'Images' }).click();
+  await page.waitForURL('/app/images');
 
-  await page.getByRole('button', { name: 'Create Discussion' }).click();
-  await page.getByLabel('Title').click();
-  await page.getByLabel('Title').fill(discussion.title);
-  await page.getByLabel('Body').click();
-  await page.getByLabel('Body').fill(discussion.body);
-  await page.getByRole('button', { name: 'Submit' }).click();
+  await page.getByRole('button', { name: 'Generate Image' }).click();
+  await page.getByPlaceholder('Enter prompt').click();
+  await page.getByPlaceholder('Enter prompt').fill(image.prompt);
+
+  await page.getByRole('textbox', { name: 'Negative Prompt' }).click();
   await page
-    .getByLabel('Discussion Created')
-    .getByRole('button', { name: 'Close' })
-    .click();
+    .getByRole('textbox', { name: 'Negative Prompt' })
+    .fill(image.negativePrompt);
 
-  // visit discussion page:
-  await page.getByRole('link', { name: 'View' }).click();
+  await page.getByLabel('Height').click();
+  await page.getByLabel('Height').fill(image.height.toString());
 
-  await expect(
-    page.getByRole('heading', { name: discussion.title }),
-  ).toBeVisible();
-  await expect(page.getByText(discussion.body)).toBeVisible();
+  await page.getByLabel('Width').click();
+  await page.getByLabel('Width').fill(image.width.toString());
 
-  // update discussion:
-  await page.getByRole('button', { name: 'Update Discussion' }).click();
-  await page.getByLabel('Title').click();
-  await page.getByLabel('Title').fill(`${discussion.title} - updated`);
-  await page.getByLabel('Body').click();
-  await page.getByLabel('Body').fill(`${discussion.body} - updated`);
-  await page.getByRole('button', { name: 'Submit' }).click();
+  await page.getByLabel('Interference Steps').click();
   await page
-    .getByLabel('Discussion Updated')
-    .getByRole('button', { name: 'Close' })
-    .click();
+    .getByLabel('Interference Steps')
+    .fill(image.numInterferenceSteps.toString());
 
-  await expect(
-    page.getByRole('heading', { name: `${discussion.title} - updated` }),
-  ).toBeVisible();
-  await expect(page.getByText(`${discussion.body} - updated`)).toBeVisible();
+  await page.getByLabel('Guidance Scale').click();
+  await page.getByLabel('Guidance Scale').fill(image.guidanceScale.toString());
+  await page.getByRole('button', { name: 'Submit' }).click();
+
+  await expect(page.getByText(image.prompt)).toBeVisible();
 
   // create comment:
   await page.getByRole('button', { name: 'Create Comment' }).click();
@@ -78,15 +65,11 @@ test('smoke', async ({ page }) => {
   ).toBeVisible();
   await expect(page.getByText(comment.body)).toBeHidden();
 
-  // go back to discussions:
-  await page.getByRole('link', { name: 'Discussions' }).click();
-  await page.waitForURL('/app/discussions');
-
-  // delete discussion:
-  await page.getByRole('button', { name: 'Delete Discussion' }).click();
-  await page.getByRole('button', { name: 'Delete Discussion' }).click();
+  // delete image:
+  await page.getByRole('button', { name: 'Delete Image' }).click();
+  await page.getByRole('button', { name: 'Delete Image' }).click();
   await page
-    .getByLabel('Discussion Deleted')
+    .getByLabel('Image Deleted')
     .getByRole('button', { name: 'Close' })
     .click();
   await expect(

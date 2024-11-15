@@ -7,21 +7,30 @@ const models = {
     username: String,
     password: String,
     role: String,
-    createdAt: Date.now,
   },
-  discussion: {
+  image: {
     id: primaryKey(nanoid),
-    title: String,
-    body: String,
     authorId: String,
+    isLiked: Boolean,
+    countLikes: Number,
     createdAt: Date.now,
   },
   comment: {
     id: primaryKey(nanoid),
     body: String,
     authorId: String,
-    discussionId: String,
+    imageId: String,
     createdAt: Date.now,
+  },
+  prompt: {
+    id: primaryKey(nanoid),
+    imageId: String,
+    prompt: String,
+    negativePrompt: String,
+    height: String,
+    width: String,
+    numInterferenceSteps: String,
+    guidanceScale: String,
   },
 };
 

@@ -1,3 +1,6 @@
+import { ArchiveX } from 'lucide-react';
+import * as React from 'react';
+
 import { useImages } from '@/features/images/api/get-images';
 import { ImageDisplay } from '@/features/images/components/image-display';
 import {
@@ -37,6 +40,14 @@ export const ImagesGallery = ({
   const images = imagesQuery.data;
 
   if (!images) return null;
+  if (!images.length) {
+    return (
+      <div className="flex h-80 flex-col items-center justify-center bg-white text-gray-500">
+        <ArchiveX className="size-16" />
+        <h4>No Entries Found</h4>
+      </div>
+    );
+  }
 
   return (
     <ImageGalleryContainer>

@@ -3,20 +3,42 @@ import { delay } from 'msw';
 
 import { db } from './db';
 
+const JWT_EXPIRATION_TIME = 3600;
+
 export const encode = (obj: any) => {
-  const btoa =
-    typeof window === 'undefined'
-      ? (str: string) => Buffer.from(str, 'binary').toString('base64')
-      : window.btoa;
-  return btoa(JSON.stringify(obj));
+  const base64UrlEncode = (str: string) => {
+    return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  };
+
+  const header = {
+    alg: 'HS256',
+    typ: 'JWT',
+  };
+
+  const expiration = Math.floor(Date.now() / 1000) + JWT_EXPIRATION_TIME;
+  const payload = { ...obj, exp: expiration };
+
+  const headerEncoded = base64UrlEncode(JSON.stringify(header));
+  const payloadEncoded = base64UrlEncode(JSON.stringify(payload));
+
+  const signature = base64UrlEncode(`${headerEncoded}.${payloadEncoded}`);
+
+  return `${headerEncoded}.${payloadEncoded}.${signature}`;
 };
 
-export const decode = (str: string) => {
-  const atob =
-    typeof window === 'undefined'
-      ? (str: string) => Buffer.from(str, 'base64').toString('binary')
-      : window.atob;
-  return JSON.parse(atob(str));
+export const decode = (token: string) => {
+  const [headerEncoded, payloadEncoded, signature] = token.split('.');
+
+  const base64UrlDecode = (str: string) => {
+    return atob(str.replace(/-/g, '+').replace(/_/g, '/'));
+  };
+
+  try {
+    const payloadDecoded = base64UrlDecode(payloadEncoded);
+    return JSON.parse(payloadDecoded);
+  } catch {
+    throw new Error('Invalid token');
+  }
 };
 
 export const hash = (str: string) => {
@@ -77,14 +99,31 @@ export function authenticate({
 
 export const AUTH_COOKIE = `bulletproof_react_app_token`;
 
-export function requireAuth(cookies: Record<string, string>) {
+export function requireAuth(request: {
+  headers?: Headers;
+  cookies?: Record<string, string>;
+}) {
   try {
-    const encodedToken = cookies[AUTH_COOKIE] || Cookies.get(AUTH_COOKIE);
+    let encodedToken = null;
+    if (request.headers) {
+      const authHeader = request.headers.get('Authorization');
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        encodedToken = authHeader.substring(7);
+      }
+    }
+    if (!encodedToken && request.cookies) {
+      encodedToken = request.cookies[AUTH_COOKIE] || Cookies.get(AUTH_COOKIE);
+    }
+
     if (!encodedToken) {
       return { error: 'Unauthorized', user: null };
     }
-    const decodedToken = decode(encodedToken) as { id: string };
 
+    const decodedToken = decode(encodedToken) as { id: string; exp: number };
+
+    if (decodedToken.exp < Math.floor(Date.now() / 1000)) {
+      return { error: 'Token expired', user: null };
+    }
     const user = db.user.findFirst({
       where: {
         id: {
@@ -97,8 +136,8 @@ export function requireAuth(cookies: Record<string, string>) {
       return { error: 'Unauthorized', user: null };
     }
 
-    return { user: sanitizeUser(user) };
-  } catch (err: any) {
+    return { user: sanitizeUser(user), error: null };
+  } catch {
     return { error: 'Unauthorized', user: null };
   }
 }

@@ -113,12 +113,26 @@ export const authHandlers = [
     );
   }),
 
-  http.get(`${env.API_URL}/auth/me`, async ({ cookies }) => {
+  http.get(`${env.API_URL}/auth/me`, async ({ request }) => {
     await networkDelay();
 
     try {
-      const { user } = requireAuth(cookies);
-      return HttpResponse.json({ data: user });
+      const { user } = requireAuth(request);
+      return HttpResponse.json(user);
+    } catch (error: any) {
+      return HttpResponse.json(
+        { message: error?.message || 'Server Error' },
+        { status: 500 },
+      );
+    }
+  }),
+
+  http.post(`${env.API_URL}/auth/refresh`, async ({ cookies }) => {
+    await networkDelay();
+
+    try {
+      const { user } = requireAuth({ cookies });
+      return HttpResponse.json(user);
     } catch (error: any) {
       return HttpResponse.json(
         { message: error?.message || 'Server Error' },

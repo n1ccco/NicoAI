@@ -10,7 +10,7 @@ import { RouterProvider, createMemoryRouter } from 'react-router-dom';
 import { AppProvider } from '@/app/provider';
 
 import {
-  createDiscussion as generateDiscussion,
+  createImage as generateImage,
   createUser as generateUser,
 } from './data-generators';
 import { db } from './mocks/db';
@@ -22,9 +22,9 @@ export const createUser = async (userProperties?: any) => {
   return user;
 };
 
-export const createDiscussion = async (discussionProperties?: any) => {
-  const discussion = generateDiscussion(discussionProperties);
-  const res = await db.discussion.create(discussion);
+export const createImage = async (imageProperties?: any) => {
+  const image = generateImage(imageProperties);
+  const res = await db.image.create(image);
   return res;
 };
 
