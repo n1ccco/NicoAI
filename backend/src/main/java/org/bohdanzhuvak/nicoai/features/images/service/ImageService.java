@@ -43,8 +43,8 @@ public class ImageService {
     return new GenerateResponse(imageId);
   }
 
-  public List<ImageResponseSimplified> getAllImages(String sortBy, String order, User currentUser, Long userId) {
-    Sort.Direction direction = SortMapper.mapSortDirection(order);
+  public List<ImageResponseSimplified> getAllImages(String sortBy, String sortDirection, User currentUser, Long userId) {
+    Sort.Direction direction = SortMapper.mapSortDirection(sortDirection);
     String sanitizedSortBy = SortMapper.mapSortBy(sortBy);
     List<Image> images;
     if (userId != null) {

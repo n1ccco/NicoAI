@@ -28,10 +28,10 @@ public class ImageController {
   @GetMapping
   public List<ImageResponseSimplified> getImages(
       @RequestParam(name = "sortBy", defaultValue = "date") String sortBy,
-      @RequestParam(name = "order", defaultValue = "asc") String sortOrder,
+      @RequestParam(name = "sortDirection", defaultValue = "asc") String sortDirection,
       @RequestParam(name = "userId", required = false) Long userId,
       @CurrentUser @Nullable User currentUser) {
-    return imageService.getAllImages(sortBy, sortOrder, currentUser, userId);
+    return imageService.getAllImages(sortBy, sortDirection, currentUser, userId);
   }
 
   @GetMapping("/{id}")

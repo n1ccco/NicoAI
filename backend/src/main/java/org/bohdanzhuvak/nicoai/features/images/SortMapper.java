@@ -7,7 +7,7 @@ public class SortMapper {
   public static String mapSortBy(String sortBy) {
     if ("date".equalsIgnoreCase(sortBy)) {
       return "id";
-    } else if ("rating".equalsIgnoreCase(sortBy)) {
+    } else if ("likes".equalsIgnoreCase(sortBy)) {
       return "likes";
     } else {
       return "id";

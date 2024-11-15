@@ -9,6 +9,7 @@ import { getImagesQueryOptions } from '@/features/images/api/get-images';
 import { GenerateImage } from '@/features/images/components/generate-image';
 import { ImagesGallery } from '@/features/images/components/images-gallery';
 import { ContentLayout } from '@/shared/components/layouts';
+import { SortMenu } from '@/shared/components/ui/sort-select';
 
 export const imagesLoader =
   (queryClient: QueryClient) =>
@@ -42,7 +43,8 @@ export const ImagesRoute = () => {
 
   return (
     <ContentLayout title="Images">
-      <div className="flex justify-end">
+      <div className="flex justify-between">
+        <SortMenu defaultSortBy={sortBy} defaultSortDirection={sortDirection} />
         <GenerateImage />
       </div>
       <div className="mt-4">

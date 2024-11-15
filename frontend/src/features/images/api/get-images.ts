@@ -12,7 +12,7 @@ export const getImages = (
   return api.get(`/images`, {
     params: {
       sortBy: sortBy,
-      order: sortDirection,
+      sortDirection: sortDirection,
       ...(userId && { userId }),
     },
   });
