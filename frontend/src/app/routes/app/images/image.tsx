@@ -27,10 +27,11 @@ export const imageLoader =
         (await queryClient.fetchInfiniteQuery(commentsQuery)),
     ] as const;
 
-    const [discussion, comments] = await Promise.all(promises);
+    const [image, prompt, comments] = await Promise.all(promises);
 
     return {
-      discussion,
+      image,
+      prompt,
       comments,
     };
   };

@@ -23,12 +23,6 @@ export type AuthResponse = {
   user: User;
 };
 
-export type Discussion = Entity<{
-  title: string;
-  body: string;
-  author: User;
-}>;
-
 export type Comment = Entity<{
   body: string;
   author: User;
@@ -55,12 +49,11 @@ export interface ImageDetailed extends ImageSimplified {
   promptData: Prompt;
   isPublic: boolean;
 }
-export interface InteractionImageRequest {
-  action?: string;
-}
+
 export interface JwtRefreshResponse {
   token: string;
 }
+
 export interface Prompt {
   id: string;
   prompt: string;

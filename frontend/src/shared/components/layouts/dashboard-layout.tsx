@@ -1,5 +1,5 @@
 import { Folder, Home, PanelLeft, User2, Users } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { ComponentType, SVGProps, useEffect, useState } from 'react';
 import { NavLink, useNavigate, useNavigation } from 'react-router-dom';
 
 import logo from '@/assets/logo.svg';
@@ -26,16 +26,14 @@ import { Link } from '../ui/link';
 type SideNavigationItem = {
   name: string;
   to: string;
-  icon: (props: React.SVGProps<SVGSVGElement>) => JSX.Element;
+  icon: ComponentType<SVGProps<SVGSVGElement>>;
 };
 
 const Logo = () => {
   return (
     <Link className="flex items-center text-white" to={paths.home.getHref()}>
       <img className="h-8 w-auto" src={logo} alt="Workflow" />
-      <span className="text-sm font-semibold text-white">
-        Bulletproof React
-      </span>
+      <span className="text-sm font-semibold text-white">Nico AI</span>
     </Link>
   );
 };

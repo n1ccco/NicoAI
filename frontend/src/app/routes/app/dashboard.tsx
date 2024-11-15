@@ -7,24 +7,23 @@ export const DashboardRoute = () => {
   return (
     <ContentLayout title="Dashboard">
       <h1 className="text-xl">
-        Welcome <b>{`${user.data?.username}`}</b>
+        Welcome, <b>{user.data?.username || 'User'}</b>
       </h1>
       <h4 className="my-3">
-        Your role is : <b>{user.data?.role}</b>
+        Your role is: <b>{user.data?.role || 'Unknown'}</b>
       </h4>
-      <p className="font-medium">In this application you can:</p>
-      {user.data?.role.includes(ROLES.USER) && (
+      <p className="font-medium">In this application, you can:</p>
+      {user.data?.role?.includes(ROLES.USER) && (
         <ul className="my-4 list-inside list-disc">
-          <li>Create comments in discussions</li>
-          <li>Delete own comments</li>
+          <li>Comment on images</li>
+          <li>Delete your own comments</li>
+          <li>Generate images</li>
+          <li>Delete your own images</li>
         </ul>
       )}
-      {user.data?.role.includes(ROLES.ADMIN) && (
+      {user.data?.role?.includes(ROLES.ADMIN) && (
         <ul className="my-4 list-inside list-disc">
-          <li>Create discussions</li>
-          <li>Edit discussions</li>
-          <li>Delete discussions</li>
-          <li>Comment on discussions</li>
+          <li>Delete all images</li>
           <li>Delete all comments</li>
         </ul>
       )}

@@ -8,7 +8,7 @@ test('should register new user and call onSuccess cb which should navigate the u
 
   const onSuccess = vi.fn();
 
-  await renderApp(<RegisterForm onSuccess={onSuccess} chooseTeam={false} />, {
+  await renderApp(<RegisterForm onSuccess={onSuccess} />, {
     user: null,
   });
 
