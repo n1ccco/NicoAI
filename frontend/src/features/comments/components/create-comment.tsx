@@ -5,8 +5,8 @@ import { Form, FormDrawer, Textarea } from '@/shared/components/ui/form';
 import { useNotifications } from '@/shared/components/ui/notifications';
 
 import {
-  useCreateComment,
   createCommentInputSchema,
+  useCreateComment,
 } from '../api/create-comment';
 
 type CreateCommentProps = {

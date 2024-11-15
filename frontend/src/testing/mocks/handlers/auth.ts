@@ -1,15 +1,15 @@
 import Cookies from 'js-cookie';
-import { HttpResponse, http } from 'msw';
+import { http, HttpResponse } from 'msw';
 
 import { env } from '@/config/env';
 
 import { db, persistDb } from '../db';
 import {
+  AUTH_COOKIE,
   authenticate,
   hash,
-  requireAuth,
-  AUTH_COOKIE,
   networkDelay,
+  requireAuth,
 } from '../utils';
 
 type RegisterBody = {

@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ImageRepositoryTest {
   @Autowired
   private ImageRepository imageRepository;
+
   @Test
   void testFindAllPublicImagesSortedByLikesAsc() {
     List<Image> publicImages = imageRepository.findByVisibility(

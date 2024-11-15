@@ -25,7 +25,8 @@ public class FileService {
       throw new FileStorageException("Failed to save image file: " + filename, e);
     }
   }
-  @Cacheable(value = "image_data", key = "#filename" )
+
+  @Cacheable(value = "image_data", key = "#filename")
   public byte[] readFileBytes(String filename) {
     try {
       Path filePath = Paths.get(imageProperties.getFOLDER_PATH()).resolve(filename);

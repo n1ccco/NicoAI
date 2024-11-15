@@ -2,7 +2,7 @@ import { SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
 
 import { Button } from '@/shared/components/ui/button';
-import { rtlRender, screen, waitFor, userEvent } from '@/testing/test-utils';
+import { rtlRender, screen, userEvent, waitFor } from '@/testing/test-utils';
 
 import { Form } from '../form';
 import { Input } from '../input';

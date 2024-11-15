@@ -1,11 +1,11 @@
 import {
-  randUserName,
-  randParagraph,
-  randUuid,
-  randPassword,
-  randNumber,
   randBoolean,
+  randNumber,
+  randParagraph,
+  randPassword,
   randSentence,
+  randUserName,
+  randUuid,
 } from '@ngneat/falso';
 
 const generateUser = () => ({

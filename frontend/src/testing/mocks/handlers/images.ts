@@ -1,14 +1,14 @@
-import { HttpResponse, http } from 'msw';
+import { http, HttpResponse } from 'msw';
 
 import { env } from '@/config/env';
 import { imageBlob } from '@/testing/assets/image-blob';
 
 import { db, persistDb } from '../db';
 import {
-  requireAuth,
-  requireAdmin,
-  sanitizeUser,
   networkDelay,
+  requireAdmin,
+  requireAuth,
+  sanitizeUser,
 } from '../utils';
 
 type Prompt = {

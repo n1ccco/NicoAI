@@ -9,8 +9,8 @@ import {
   DrawerContent,
   DrawerFooter,
   DrawerHeader,
-  DrawerTrigger,
   DrawerTitle,
+  DrawerTrigger,
 } from '../drawer';
 
 type FormDrawerProps = {

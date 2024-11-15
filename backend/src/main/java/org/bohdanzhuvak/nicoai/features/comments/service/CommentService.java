@@ -30,7 +30,7 @@ public class CommentService {
   private final CommentFactory commentFactory;
 
   public CommentResponse getComments(Long imageId, Integer page) {
-    Page<Comment> commentPage = commentRepository.findByImageId(imageId, PageRequest.of(page - 1, 3, Sort.by("createdAt").descending()) );
+    Page<Comment> commentPage = commentRepository.findByImageId(imageId, PageRequest.of(page - 1, 3, Sort.by("createdAt").descending()));
 
     List<Comment> comments = commentPage.getContent();
     long total = commentPage.getTotalElements();

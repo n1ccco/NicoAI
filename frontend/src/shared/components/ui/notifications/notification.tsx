@@ -1,4 +1,4 @@
-import { Info, CircleAlert, CircleX, CircleCheck } from 'lucide-react';
+import { CircleAlert, CircleCheck, CircleX, Info } from 'lucide-react';
 
 const icons = {
   info: <Info className="size-6 text-blue-500" aria-hidden="true" />,
