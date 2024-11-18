@@ -19,6 +19,7 @@ import { z, ZodType } from 'zod';
 import { cn } from '@/shared/utils/cn';
 
 import { Label } from './label';
+import { Error as ErrorComponent } from '@/shared/components/ui/form/error';
 
 type FormFieldContextValue<
   TFieldValues extends FieldValues = FieldValues,
@@ -177,6 +178,7 @@ type FormProps<TFormValues extends FieldValues, Schema> = {
   children: (methods: UseFormReturn<TFormValues>) => React.ReactNode;
   options?: UseFormProps<TFormValues>;
   id?: string;
+  error?: string;
 };
 
 const Form = <
@@ -189,6 +191,7 @@ const Form = <
   options,
   id,
   schema,
+  error,
 }: FormProps<TFormValues, Schema>) => {
   const form = useForm({ ...options, resolver: zodResolver(schema) });
   return (
@@ -199,6 +202,7 @@ const Form = <
         id={id}
       >
         {children(form)}
+        <ErrorComponent errorMessage={error} />
       </form>
     </FormProvider>
   );

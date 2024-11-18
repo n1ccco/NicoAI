@@ -19,5 +19,5 @@ export const loginWithUsernameAndPassword = (
 export const registerWithUsernameAndPassword = (
   data: RegisterInput,
 ): Promise<AuthResponse> => {
-  return api.post('/auth/register', data);
+  return api.post('/auth/register', data, { withCredentials: true });
 };

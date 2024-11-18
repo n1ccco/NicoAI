@@ -27,15 +27,10 @@ public class AuthenticationController {
   private final AuthenticationService authenticationService;
 
   @PostMapping("/login")
-  public AuthenticationResponse signin(@RequestBody AuthenticationRequest authenticationRequest, HttpServletResponse response) throws AuthenticationException {
-    JwtAuthenticationDto jwtAuthenticationDto = authenticationService.signIn(authenticationRequest);
+  public AuthenticationResponse login(@RequestBody AuthenticationRequest authenticationRequest, HttpServletResponse response) throws AuthenticationException {
+    JwtAuthenticationDto jwtAuthenticationDto = authenticationService.login(authenticationRequest);
 
-    Cookie refreshTokenCookie = new Cookie("refreshToken", jwtAuthenticationDto.getRefreshToken());
-    refreshTokenCookie.setHttpOnly(true);
-    refreshTokenCookie.setSecure(false);
-    refreshTokenCookie.setPath("/");
-    refreshTokenCookie.setMaxAge((int) jwtProperties.getValidityRefresh().getSeconds());
-    response.addCookie(refreshTokenCookie);
+    response.addCookie(refreshTokenCookie(jwtAuthenticationDto.getRefreshToken()));
 
     return AuthenticationResponse.builder()
         .user(jwtAuthenticationDto.getUser())
@@ -44,12 +39,28 @@ public class AuthenticationController {
   }
 
   @PostMapping("/register")
-  public AuthenticationResponse signup(@RequestBody RegistrationRequest registrationRequest) {
-    return authenticationService.signUp(registrationRequest);
+  public AuthenticationResponse register(@RequestBody RegistrationRequest registrationRequest, HttpServletResponse response) {
+    JwtAuthenticationDto jwtAuthenticationDto = authenticationService.register(registrationRequest);
+
+    response.addCookie(refreshTokenCookie(jwtAuthenticationDto.getRefreshToken()));
+
+    return AuthenticationResponse.builder()
+        .user(jwtAuthenticationDto.getUser())
+        .jwt(jwtAuthenticationDto.getToken())
+        .build();
+  }
+
+  private Cookie refreshTokenCookie(String refreshToken) {
+    Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+    refreshTokenCookie.setHttpOnly(true);
+    refreshTokenCookie.setSecure(false);
+    refreshTokenCookie.setPath("/");
+    refreshTokenCookie.setMaxAge((int) jwtProperties.getValidityRefresh().getSeconds());
+    return refreshTokenCookie;
   }
 
   @PostMapping("/refresh")
-  public JwtRefreshResponse refreshToken(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+  public JwtRefreshResponse refreshToken(HttpServletRequest request) throws AuthenticationException {
     Cookie[] cookies = request.getCookies();
     String refreshToken = null;
     if (cookies != null) {
@@ -69,7 +80,7 @@ public class AuthenticationController {
 
   @PostMapping("/logout")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public String logout(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+  public String logout(HttpServletResponse response) throws AuthenticationException {
     Cookie refreshTokenCookie = new Cookie("refreshToken", null);
     refreshTokenCookie.setHttpOnly(true);
     refreshTokenCookie.setPath("/");

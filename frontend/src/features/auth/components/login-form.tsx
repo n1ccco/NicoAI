@@ -5,14 +5,19 @@ import { Button } from '@/shared/components/ui/button';
 import { Form, Input } from '@/shared/components/ui/form';
 import { useLogin } from '@/shared/lib/auth/auth';
 import { loginInputSchema } from '@/shared/lib/auth/types';
+import { useState } from 'react';
 
 type LoginFormProps = {
   onSuccess: () => void;
 };
 
 export const LoginForm = ({ onSuccess }: LoginFormProps) => {
+  const [error, setError] = useState<string | undefined>(undefined);
   const login = useLogin({
     onSuccess,
+    onError: (err: any) => {
+      setError(err.response.data || 'An unknown error occurred.');
+    },
   });
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get('redirectTo');
@@ -23,6 +28,7 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
         onSubmit={(values) => {
           login.mutate(values);
         }}
+        error={error}
         schema={loginInputSchema}
       >
         {({ register, formState }) => (

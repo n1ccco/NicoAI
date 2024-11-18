@@ -3,7 +3,6 @@ package org.bohdanzhuvak.nicoai.features.auth.service;
 import lombok.RequiredArgsConstructor;
 import org.bohdanzhuvak.nicoai.features.auth.dto.request.AuthenticationRequest;
 import org.bohdanzhuvak.nicoai.features.auth.dto.request.RegistrationRequest;
-import org.bohdanzhuvak.nicoai.features.auth.dto.response.AuthenticationResponse;
 import org.bohdanzhuvak.nicoai.features.auth.dto.response.JwtAuthenticationDto;
 import org.bohdanzhuvak.nicoai.features.auth.dto.response.JwtRefreshResponse;
 import org.bohdanzhuvak.nicoai.features.users.UserMapper;
@@ -31,7 +30,7 @@ public class AuthenticationService {
   private final PasswordEncoder passwordEncoder;
   private final UserMapper userMapper;
 
-  public JwtAuthenticationDto signIn(AuthenticationRequest authenticationRequest) {
+  public JwtAuthenticationDto login(AuthenticationRequest authenticationRequest) {
     User user = authenticateUser(authenticationRequest);
     String token = jwtTokenProvider.generateAccessToken(user);
     String refreshToken = jwtTokenProvider.generateRefreshToken(user);
@@ -54,7 +53,7 @@ public class AuthenticationService {
     return user;
   }
 
-  public AuthenticationResponse signUp(RegistrationRequest registrationRequest) {
+  public JwtAuthenticationDto register(RegistrationRequest registrationRequest) {
     if (userRepository.existsByUsername(registrationRequest.getUsername())) {
       throw new UserAlreadyExistsException("Username is already taken");
     }
@@ -66,8 +65,9 @@ public class AuthenticationService {
         .build();
 
     userRepository.save(user);
-    return AuthenticationResponse.builder()
-        .jwt(jwtTokenProvider.generateAccessToken(user))
+    return JwtAuthenticationDto.builder()
+        .token(jwtTokenProvider.generateAccessToken(user))
+        .refreshToken(jwtTokenProvider.generateRefreshToken(user))
         .user(userMapper.toUserDto(user))
         .build();
   }

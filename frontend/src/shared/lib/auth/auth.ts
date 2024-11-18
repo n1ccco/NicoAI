@@ -22,6 +22,7 @@ const authConfig = {
   },
   registerFn: async (data: RegisterInput) => {
     const response = await registerWithUsernameAndPassword(data);
+    TokenManagementEntity.patcher(response.jwt);
     return response.user;
   },
   logoutFn: async () => {
