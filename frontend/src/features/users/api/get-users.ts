@@ -4,7 +4,7 @@ import { api } from '@/shared/lib/api-client';
 import { QueryConfig } from '@/shared/lib/react-query';
 import { User } from '@/shared/types/api';
 
-export const getUsers = (): Promise<{ data: User[] }> => {
+export const getUsers = (): Promise<User[]> => {
   return api.get(`/users`);
 };
 

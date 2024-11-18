@@ -12,6 +12,7 @@ public class UserMapper {
         .Id(user.getId())
         .username(user.getUsername())
         .role(user.getRoles().getFirst().replaceFirst("ROLE_", ""))
+        .createdAt(user.getCreatedAt())
         .build();
   }
 }

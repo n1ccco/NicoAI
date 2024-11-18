@@ -5,6 +5,8 @@ import { formatDate } from '@/shared/utils/format';
 import { useUsers } from '../api/get-users';
 
 import { DeleteUser } from './delete-user';
+import { Link } from '@/shared/components/ui/link';
+import { paths } from '@/config/paths';
 
 export const UsersList = () => {
   const usersQuery = useUsers();
@@ -17,7 +19,7 @@ export const UsersList = () => {
     );
   }
 
-  const users = usersQuery.data?.data;
+  const users = usersQuery.data;
 
   if (!users) return null;
 
@@ -26,8 +28,15 @@ export const UsersList = () => {
       data={users}
       columns={[
         {
+          title: 'Id',
+          field: 'id',
+        },
+        {
           title: 'Username',
           field: 'username',
+          Cell({ entry: { id, username } }) {
+            return <Link to={paths.app.user.getHref(id)}>{username}</Link>;
+          },
         },
         {
           title: 'Role',
@@ -41,7 +50,7 @@ export const UsersList = () => {
           },
         },
         {
-          title: '',
+          title: 'Delete user',
           field: 'id',
           Cell({ entry: { id } }) {
             return <DeleteUser id={id} />;
