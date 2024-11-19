@@ -2,7 +2,7 @@ import { ArchiveX } from 'lucide-react';
 import * as React from 'react';
 
 import { paths } from '@/config/paths';
-import { useImages } from '@/features/images/api/get-images';
+import { useInfiniteImages } from '@/features/images/api/get-images';
 import { ImageDisplay } from '@/features/images/components/image-display';
 import {
   ImageCaption,
@@ -24,11 +24,38 @@ export const ImagesGallery = ({
   sortDirection,
   userId,
 }: ImagesListProps) => {
-  const imagesQuery = useImages({
+  const imagesQuery = useInfiniteImages({
     sortBy,
     sortDirection,
     userId,
   });
+
+  const observerRef = React.useRef<HTMLDivElement | null>(null);
+
+  React.useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && imagesQuery.hasNextPage) {
+          imagesQuery.fetchNextPage();
+        }
+      },
+      {
+        root: null,
+        rootMargin: '100px',
+        threshold: 1.0,
+      },
+    );
+
+    if (observerRef.current) {
+      observer.observe(observerRef.current);
+    }
+
+    return () => {
+      if (observerRef.current) {
+        observer.unobserve(observerRef.current);
+      }
+    };
+  }, [imagesQuery.hasNextPage, imagesQuery.fetchNextPage]);
 
   if (imagesQuery.isLoading) {
     return (
@@ -38,10 +65,9 @@ export const ImagesGallery = ({
     );
   }
 
-  const images = imagesQuery.data;
+  const images = imagesQuery.data?.pages.flatMap((page) => page.data);
 
-  if (!images) return null;
-  if (!images.length) {
+  if (!images?.length) {
     return (
       <div className="flex h-80 flex-col items-center justify-center bg-white text-gray-500">
         <ArchiveX className="size-16" />
@@ -51,23 +77,28 @@ export const ImagesGallery = ({
   }
 
   return (
-    <ImageGalleryContainer>
-      {images.map((image) => (
-        <ImageCard key={image.id}>
-          <Link to={paths.app.image.getHref(image.id)}>
-            <ImageDisplay imageId={image.id} />
-          </Link>
+    <>
+      <ImageGalleryContainer>
+        {images.map((image) => (
+          <ImageCard key={image.id}>
+            <Link to={paths.app.image.getHref(image.id)}>
+              <ImageDisplay imageId={image.id} />
+            </Link>
 
-          <ImageCaption>
-            <LikeButton
-              entityId={image.id}
-              entityType="images"
-              liked={image.isLiked}
-              likeCount={image.countLikes}
-            />
-          </ImageCaption>
-        </ImageCard>
-      ))}
-    </ImageGalleryContainer>
+            <ImageCaption>
+              <LikeButton
+                entityId={image.id}
+                entityType="images"
+                liked={image.isLiked}
+                likeCount={image.countLikes}
+              />
+            </ImageCaption>
+          </ImageCard>
+        ))}
+      </ImageGalleryContainer>
+      <div ref={observerRef} className="flex items-center justify-center py-4">
+        {imagesQuery.isFetchingNextPage && <Spinner />}
+      </div>
+    </>
   );
 };

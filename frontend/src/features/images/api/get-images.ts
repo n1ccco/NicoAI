@@ -1,31 +1,48 @@
-import { queryOptions, useQuery } from '@tanstack/react-query';
+import { infiniteQueryOptions, useInfiniteQuery } from '@tanstack/react-query';
 
 import { api } from '@/shared/lib/api-client';
 import { QueryConfig } from '@/shared/lib/react-query';
-import { ImageSimplified } from '@/shared/types/api';
+import { ImageSimplified, Meta } from '@/shared/types/api';
 
-export const getImages = (
-  { sortBy = 'date' }: { sortBy: 'date' | 'likes' },
-  { sortDirection = 'asc' }: { sortDirection: 'asc' | 'desc' },
-  { userId }: { userId?: string },
-): Promise<ImageSimplified[]> => {
+export const getImages = ({
+  sortBy = 'date',
+  sortDirection = 'asc',
+  userId,
+  page = 1,
+}: {
+  sortBy: 'date' | 'likes';
+  sortDirection: 'asc' | 'desc';
+  userId?: string;
+  page?: number;
+}): Promise<{ data: ImageSimplified[]; meta: Meta }> => {
   return api.get(`/images`, {
     params: {
       sortBy: sortBy,
       sortDirection: sortDirection,
-      ...(userId && { userId }),
+      userId,
+      page,
     },
   });
 };
 
-export const getImagesQueryOptions = (
-  { sortBy = 'date' }: { sortBy: 'date' | 'likes' },
-  { sortDirection = 'asc' }: { sortDirection: 'asc' | 'desc' },
-  { userId }: { userId?: string },
-) => {
-  return queryOptions({
+export const getInfiniteImagesQueryOptions = ({
+  sortBy = 'date',
+  sortDirection = 'asc',
+  userId,
+}: {
+  sortBy: 'date' | 'likes';
+  sortDirection: 'asc' | 'desc';
+  userId?: string;
+}) => {
+  return infiniteQueryOptions({
     queryKey: ['images', sortDirection, sortBy, userId],
-    queryFn: () => getImages({ sortBy }, { sortDirection }, { userId }),
+    queryFn: ({ pageParam = 1 }) =>
+      getImages({ sortBy, sortDirection, userId, page: pageParam as number }),
+    getNextPageParam: (lastPage) => {
+      if (lastPage?.meta?.page === lastPage?.meta?.totalPages) return undefined;
+      return lastPage.meta.page + 1;
+    },
+    initialPageParam: 1,
   });
 };
 
@@ -33,17 +50,16 @@ type UseImageOptions = {
   sortBy: 'date' | 'likes';
   sortDirection: 'asc' | 'desc';
   userId?: string;
-  queryConfig?: QueryConfig<typeof getImagesQueryOptions>;
+  page?: number;
+  queryConfig?: QueryConfig<typeof getImages>;
 };
 
-export const useImages = ({
+export const useInfiniteImages = ({
   sortBy,
   sortDirection,
   userId,
-  queryConfig,
 }: UseImageOptions) => {
-  return useQuery({
-    ...getImagesQueryOptions({ sortBy }, { sortDirection }, { userId }),
-    ...queryConfig,
+  return useInfiniteQuery({
+    ...getInfiniteImagesQueryOptions({ sortBy, sortDirection, userId }),
   });
 };
