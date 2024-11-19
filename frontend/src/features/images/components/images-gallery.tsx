@@ -12,7 +12,6 @@ import {
 import { Link } from '@/shared/components/ui/link';
 import { Spinner } from '@/shared/components/ui/spinner';
 import { LikeButton } from '@/shared/features/reactions/components/toggle-like';
-import { Button } from '@/shared/components/ui/button';
 
 export type ImagesListProps = {
   sortBy: 'date' | 'likes';
@@ -30,6 +29,33 @@ export const ImagesGallery = ({
     sortDirection,
     userId,
   });
+
+  const observerRef = React.useRef<HTMLDivElement | null>(null);
+
+  React.useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && imagesQuery.hasNextPage) {
+          imagesQuery.fetchNextPage();
+        }
+      },
+      {
+        root: null,
+        rootMargin: '100px',
+        threshold: 1.0,
+      },
+    );
+
+    if (observerRef.current) {
+      observer.observe(observerRef.current);
+    }
+
+    return () => {
+      if (observerRef.current) {
+        observer.unobserve(observerRef.current);
+      }
+    };
+  }, [imagesQuery.hasNextPage, imagesQuery.fetchNextPage]);
 
   if (imagesQuery.isLoading) {
     return (
@@ -70,13 +96,9 @@ export const ImagesGallery = ({
           </ImageCard>
         ))}
       </ImageGalleryContainer>
-      {imagesQuery.hasNextPage && (
-        <div className="flex items-center justify-center py-4">
-          <Button onClick={() => imagesQuery.fetchNextPage()}>
-            {imagesQuery.isFetchingNextPage ? <Spinner /> : 'Load More Images'}
-          </Button>
-        </div>
-      )}
+      <div ref={observerRef} className="flex items-center justify-center py-4">
+        {imagesQuery.isFetchingNextPage && <Spinner />}
+      </div>
     </>
   );
 };
