@@ -1,6 +1,5 @@
 import { ArchiveX } from 'lucide-react';
 
-import { Button } from '@/shared/components/ui/button';
 import { MDPreview } from '@/shared/components/ui/md-preview';
 import { Spinner } from '@/shared/components/ui/spinner';
 import { useUser } from '@/shared/lib/auth/auth';
@@ -11,6 +10,7 @@ import { formatDate } from '@/shared/utils/format';
 import { useInfiniteComments } from '../api/get-comments';
 
 import { DeleteComment } from './delete-comment';
+import * as React from 'react';
 
 type CommentsListProps = {
   imageId: string;
@@ -19,6 +19,33 @@ type CommentsListProps = {
 export const CommentsList = ({ imageId }: CommentsListProps) => {
   const user = useUser();
   const commentsQuery = useInfiniteComments({ imageId });
+
+  const observerRef = React.useRef<HTMLDivElement | null>(null);
+
+  React.useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && commentsQuery.hasNextPage) {
+          commentsQuery.fetchNextPage();
+        }
+      },
+      {
+        root: null,
+        rootMargin: '100px',
+        threshold: 1.0,
+      },
+    );
+
+    if (observerRef.current) {
+      observer.observe(observerRef.current);
+    }
+
+    return () => {
+      if (observerRef.current) {
+        observer.unobserve(observerRef.current);
+      }
+    };
+  }, [commentsQuery.hasNextPage, commentsQuery.fetchNextPage]);
 
   if (commentsQuery.isLoading) {
     return (
@@ -77,17 +104,9 @@ export const CommentsList = ({ imageId }: CommentsListProps) => {
           </li>
         ))}
       </ul>
-      {commentsQuery.hasNextPage && (
-        <div className="flex items-center justify-center py-4">
-          <Button onClick={() => commentsQuery.fetchNextPage()}>
-            {commentsQuery.isFetchingNextPage ? (
-              <Spinner />
-            ) : (
-              'Load More Comments'
-            )}
-          </Button>
-        </div>
-      )}
+      <div ref={observerRef} className="flex items-center justify-center py-4">
+        {commentsQuery.isFetchingNextPage && <Spinner />}
+      </div>
     </>
   );
 };
