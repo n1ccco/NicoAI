@@ -2,7 +2,7 @@ import { ArchiveX } from 'lucide-react';
 import * as React from 'react';
 
 import { paths } from '@/config/paths';
-import { useImages } from '@/features/images/api/get-images';
+import { useInfiniteImages } from '@/features/images/api/get-images';
 import { ImageDisplay } from '@/features/images/components/image-display';
 import {
   ImageCaption,
@@ -12,6 +12,7 @@ import {
 import { Link } from '@/shared/components/ui/link';
 import { Spinner } from '@/shared/components/ui/spinner';
 import { LikeButton } from '@/shared/features/reactions/components/toggle-like';
+import { Button } from '@/shared/components/ui/button';
 
 export type ImagesListProps = {
   sortBy: 'date' | 'likes';
@@ -24,7 +25,7 @@ export const ImagesGallery = ({
   sortDirection,
   userId,
 }: ImagesListProps) => {
-  const imagesQuery = useImages({
+  const imagesQuery = useInfiniteImages({
     sortBy,
     sortDirection,
     userId,
@@ -38,10 +39,9 @@ export const ImagesGallery = ({
     );
   }
 
-  const images = imagesQuery.data;
+  const images = imagesQuery.data?.pages.flatMap((page) => page.data);
 
-  if (!images) return null;
-  if (!images.length) {
+  if (!images?.length) {
     return (
       <div className="flex h-80 flex-col items-center justify-center bg-white text-gray-500">
         <ArchiveX className="size-16" />
@@ -51,23 +51,32 @@ export const ImagesGallery = ({
   }
 
   return (
-    <ImageGalleryContainer>
-      {images.map((image) => (
-        <ImageCard key={image.id}>
-          <Link to={paths.app.image.getHref(image.id)}>
-            <ImageDisplay imageId={image.id} />
-          </Link>
+    <>
+      <ImageGalleryContainer>
+        {images.map((image) => (
+          <ImageCard key={image.id}>
+            <Link to={paths.app.image.getHref(image.id)}>
+              <ImageDisplay imageId={image.id} />
+            </Link>
 
-          <ImageCaption>
-            <LikeButton
-              entityId={image.id}
-              entityType="images"
-              liked={image.isLiked}
-              likeCount={image.countLikes}
-            />
-          </ImageCaption>
-        </ImageCard>
-      ))}
-    </ImageGalleryContainer>
+            <ImageCaption>
+              <LikeButton
+                entityId={image.id}
+                entityType="images"
+                liked={image.isLiked}
+                likeCount={image.countLikes}
+              />
+            </ImageCaption>
+          </ImageCard>
+        ))}
+      </ImageGalleryContainer>
+      {imagesQuery.hasNextPage && (
+        <div className="flex items-center justify-center py-4">
+          <Button onClick={() => imagesQuery.fetchNextPage()}>
+            {imagesQuery.isFetchingNextPage ? <Spinner /> : 'Load More Images'}
+          </Button>
+        </div>
+      )}
+    </>
   );
 };

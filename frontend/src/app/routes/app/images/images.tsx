@@ -5,11 +5,11 @@ import {
   useSearchParams,
 } from 'react-router-dom';
 
-import { getImagesQueryOptions } from '@/features/images/api/get-images';
 import { GenerateImage } from '@/features/images/components/generate-image';
 import { ImagesGallery } from '@/features/images/components/images-gallery';
 import { ContentLayout } from '@/shared/components/layouts';
 import { SortMenu } from '@/shared/components/ui/sort-select';
+import { getInfiniteImagesQueryOptions } from '@/features/images/api/get-images';
 
 export const imagesLoader =
   (queryClient: QueryClient) =>
@@ -22,15 +22,15 @@ export const imagesLoader =
       url.searchParams.get('sortDirection') === 'desc' ? 'desc' : 'asc';
     const userId = params.userId || undefined;
 
-    const query = getImagesQueryOptions(
-      { sortBy },
-      { sortDirection },
-      { userId },
-    );
+    const imagesQuery = getInfiniteImagesQueryOptions({
+      sortBy,
+      sortDirection,
+      userId,
+    });
 
     return (
-      queryClient.getQueryData(query.queryKey) ??
-      (await queryClient.fetchQuery(query))
+      queryClient.getQueryData(imagesQuery.queryKey) ??
+      (await queryClient.fetchInfiniteQuery(imagesQuery))
     );
   };
 
