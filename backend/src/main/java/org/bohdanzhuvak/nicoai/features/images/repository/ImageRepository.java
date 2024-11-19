@@ -3,13 +3,13 @@ package org.bohdanzhuvak.nicoai.features.images.repository;
 import org.bohdanzhuvak.nicoai.features.images.model.Image;
 import org.bohdanzhuvak.nicoai.features.images.model.Visibility;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface ImageRepository extends JpaRepository<Image, Long> {
@@ -23,9 +23,9 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
   @Query("SELECT i FROM Image i WHERE i.id = :id")
   Optional<Image> findByIdWithPartData(@Param("id") Long id);
 
-  List<Image> findByAuthorId(Long authorId);
+  Page<Image> findByAuthorId(Long authorId, Pageable pageable);
 
-  List<Image> findByVisibility(Visibility visibility, Sort sort);
+  Page<Image> findByVisibility(Visibility visibility, Pageable pageable);
 
-  List<Image> findByAuthorIdAndVisibility(Long authorId, Visibility visibility);
+  Page<Image> findByAuthorIdAndVisibility(Long authorId, Visibility visibility, Pageable pageable);
 }
