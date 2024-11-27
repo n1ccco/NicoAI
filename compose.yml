@@ -32,6 +32,19 @@ services:
     volumes:
       - redis_data:/data
 
+  elasticsearch:
+    image: elasticsearch:8.16.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.security.enrollment.enabled=false
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+
   frontend:
     container_name: frontend
     build:
@@ -57,6 +70,8 @@ services:
 networks:
   spring-postgres:
 
+
 volumes:
   postgres_data:
   redis_data:
+  es_data:

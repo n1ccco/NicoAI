@@ -9,11 +9,13 @@ export const getImages = ({
   sortDirection = 'asc',
   userId,
   page = 1,
+  keyword,
 }: {
   sortBy: 'date' | 'likes';
   sortDirection: 'asc' | 'desc';
   userId?: string;
   page?: number;
+  keyword?: string;
 }): Promise<{ data: ImageSimplified[]; meta: Meta }> => {
   return api.get(`/images`, {
     params: {
@@ -21,6 +23,7 @@ export const getImages = ({
       sortDirection: sortDirection,
       userId,
       page,
+      keyword,
     },
   });
 };
@@ -29,15 +32,23 @@ export const getInfiniteImagesQueryOptions = ({
   sortBy = 'date',
   sortDirection = 'asc',
   userId,
+  keyword,
 }: {
   sortBy: 'date' | 'likes';
   sortDirection: 'asc' | 'desc';
   userId?: string;
+  keyword?: string;
 }) => {
   return infiniteQueryOptions({
-    queryKey: ['images', sortDirection, sortBy, userId],
+    queryKey: ['images', sortDirection, sortBy, userId, keyword],
     queryFn: ({ pageParam = 1 }) =>
-      getImages({ sortBy, sortDirection, userId, page: pageParam as number }),
+      getImages({
+        sortBy,
+        sortDirection,
+        userId,
+        page: pageParam as number,
+        keyword,
+      }),
     getNextPageParam: (lastPage) => {
       if (lastPage?.meta?.page === lastPage?.meta?.totalPages) return undefined;
       return lastPage.meta.page + 1;
@@ -51,6 +62,7 @@ type UseImageOptions = {
   sortDirection: 'asc' | 'desc';
   userId?: string;
   page?: number;
+  keyword?: string;
   queryConfig?: QueryConfig<typeof getImages>;
 };
 
@@ -58,8 +70,14 @@ export const useInfiniteImages = ({
   sortBy,
   sortDirection,
   userId,
+  keyword,
 }: UseImageOptions) => {
   return useInfiniteQuery({
-    ...getInfiniteImagesQueryOptions({ sortBy, sortDirection, userId }),
+    ...getInfiniteImagesQueryOptions({
+      sortBy,
+      sortDirection,
+      userId,
+      keyword,
+    }),
   });
 };

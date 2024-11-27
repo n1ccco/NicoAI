@@ -6,10 +6,13 @@ import org.bohdanzhuvak.nicoai.features.images.ImageResponseMapper;
 import org.bohdanzhuvak.nicoai.features.images.SortMapper;
 import org.bohdanzhuvak.nicoai.features.images.dto.request.PromptRequest;
 import org.bohdanzhuvak.nicoai.features.images.dto.response.*;
+import org.bohdanzhuvak.nicoai.features.images.model.BaseImage;
 import org.bohdanzhuvak.nicoai.features.images.model.Image;
 import org.bohdanzhuvak.nicoai.features.images.model.PromptData;
 import org.bohdanzhuvak.nicoai.features.images.model.Visibility;
 import org.bohdanzhuvak.nicoai.features.images.repository.ImageRepository;
+import org.bohdanzhuvak.nicoai.features.images.repository.ImageSearchRepository;
+import org.bohdanzhuvak.nicoai.features.images.search.ImageSearch;
 import org.bohdanzhuvak.nicoai.features.users.model.User;
 import org.bohdanzhuvak.nicoai.shared.exception.ImageNotFoundException;
 import org.bohdanzhuvak.nicoai.shared.exception.UnauthorizedActionException;
@@ -27,6 +30,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ImageService {
   private final ImageRepository imageRepository;
+  private final ImageSearchRepository imageSearchRepository;
   private final FileService fileService;
   private final ImageGeneratorService imageGeneratorService;
   private final InteractionService interactionService;
@@ -44,42 +48,55 @@ public class ImageService {
   }
 
   public ImagesResponse getAllImages(String sortBy,
-                                                    String sortDirection,
-                                                    User currentUser,
-                                                    Long userId,
-                                                    Integer page) {
+                                     String sortDirection,
+                                     User currentUser,
+                                     Long userId,
+                                     Integer page,
+                                     String keyword) {
     Sort.Direction direction = SortMapper.mapSortDirection(sortDirection);
     String sanitizedSortBy = SortMapper.mapSortBy(sortBy);
     Pageable pageable = PageRequest.of(page - 1, 6, getSort(sanitizedSortBy, direction));
 
-    Page<Image> imagesPage;
+    Page<? extends BaseImage> imagesPage;
     if (userId != null) {
-      imagesPage = getImagesByUserId(userId, currentUser, pageable);
+      imagesPage = (keyword != null) ? getImagesByUserId(userId, currentUser, pageable, keyword) : getImagesByUserId(userId, currentUser, pageable);
     } else {
-      imagesPage = getImagesSortedBy(pageable);
+      imagesPage = (keyword != null) ? getImagesSortedBy(pageable, keyword) : getImagesSortedBy(pageable);
     }
 
+    ImagesResponse.Meta meta = new ImagesResponse.Meta(
+        page,
+        (int) imagesPage.getTotalElements(),
+        imagesPage.getTotalPages()
+    );
+
+    return buildImagesResponse(imagesPage.getContent(), currentUser, meta);
+  }
+
+  public ImagesResponse buildImagesResponse(
+      List<? extends BaseImage> images,
+      User currentUser,
+      ImagesResponse.Meta meta
+  ) {
     Long currentUserId = currentUser != null ? currentUser.getId() : null;
 
-    Set<Long> imageIds = imagesPage.stream()
-        .map(Image::getId)
+    Set<Long> imageIds = images.stream()
+        .map(BaseImage::getId)
         .collect(Collectors.toSet());
 
     Set<Long> likedImageIds = currentUserId != null
         ? interactionService.getLikedImageIdsForUserFromList(currentUserId, imageIds)
         : Collections.emptySet();
 
-    List<ImageResponseSimplified> imagesResponse = imagesPage.getContent().stream()
-        .map(image -> imageResponseMapper.toImageResponseSimplified(image, likedImageIds.contains(image.getId())))
+    List<ImageResponseSimplified> imagesResponse = images.stream()
+        .map(image -> {
+          boolean isLiked = likedImageIds.contains(image.getId());
+          return imageResponseMapper.toImageResponseSimplified(image, isLiked);
+        })
         .toList();
-    ImagesResponse.Meta meta = new ImagesResponse.Meta(
-        page,
-        (int) imagesPage.getTotalElements(),
-        imagesPage.getTotalPages()
-    );
+
     return new ImagesResponse(imagesResponse, meta);
   }
-
 
   private Sort getSort(String sortBy, Sort.Direction direction) {
     return "likes".equals(sortBy)
@@ -91,11 +108,22 @@ public class ImageService {
     return imageRepository.findByVisibility(Visibility.PUBLIC, pageable);
   }
 
+  private Page<ImageSearch> getImagesSortedBy(Pageable pageable, String keyword) {
+    return imageSearchRepository.findByPromptDescriptionContainingAndVisibility(keyword, Visibility.PUBLIC, pageable);
+  }
+
   private Page<Image> getImagesByUserId(Long userId, User currentUser, Pageable pageable) {
     boolean isOwnerOrAdmin = currentUser != null && (currentUser.isAdmin() || currentUser.getId().equals(userId));
     return isOwnerOrAdmin
         ? imageRepository.findByAuthorId(userId, pageable)
         : imageRepository.findByAuthorIdAndVisibility(userId, Visibility.PUBLIC, pageable);
+  }
+
+  private Page<ImageSearch> getImagesByUserId(Long userId, User currentUser, Pageable pageable, String keyword) {
+    boolean isOwnerOrAdmin = currentUser != null && (currentUser.isAdmin() || currentUser.getId().equals(userId));
+    return isOwnerOrAdmin
+        ? imageSearchRepository.findByPromptDescriptionContainingAndAuthorId(keyword, userId, pageable)
+        : imageSearchRepository.findByPromptDescriptionContainingAndAuthorIdAndVisibility(keyword, userId, Visibility.PUBLIC, pageable);
   }
 
   public ImageResponse getImage(Long id, @Nullable User currentUser) {

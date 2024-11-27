@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ImageRepository extends JpaRepository<Image, Long> {
@@ -22,6 +23,9 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
   @Cacheable(value = "image_with_blob_data", key = "#id")
   @Query("SELECT i FROM Image i WHERE i.id = :id")
   Optional<Image> findByIdWithPartData(@Param("id") Long id);
+
+  @EntityGraph(attributePaths = {"author", "promptData"})
+  List<Image> findAll();
 
   Page<Image> findByAuthorId(Long authorId, Pageable pageable);
 

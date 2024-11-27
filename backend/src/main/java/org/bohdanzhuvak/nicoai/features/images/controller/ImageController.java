@@ -2,7 +2,10 @@ package org.bohdanzhuvak.nicoai.features.images.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.bohdanzhuvak.nicoai.features.images.dto.request.PromptRequest;
-import org.bohdanzhuvak.nicoai.features.images.dto.response.*;
+import org.bohdanzhuvak.nicoai.features.images.dto.response.GenerateResponse;
+import org.bohdanzhuvak.nicoai.features.images.dto.response.ImageBlobResponse;
+import org.bohdanzhuvak.nicoai.features.images.dto.response.ImageResponse;
+import org.bohdanzhuvak.nicoai.features.images.dto.response.ImagesResponse;
 import org.bohdanzhuvak.nicoai.features.images.model.PromptData;
 import org.bohdanzhuvak.nicoai.features.images.service.ImageService;
 import org.bohdanzhuvak.nicoai.features.images.service.InteractionService;
@@ -26,8 +29,9 @@ public class ImageController {
       @RequestParam(name = "sortDirection", defaultValue = "asc") String sortDirection,
       @RequestParam(name = "userId", required = false) Long userId,
       @RequestParam(name = "page", required = false) Integer page,
+      @RequestParam(name = "keyword", required = false) String keyword,
       @CurrentUser @Nullable User currentUser) {
-    return imageService.getAllImages(sortBy, sortDirection, currentUser, userId, page);
+    return imageService.getAllImages(sortBy, sortDirection, currentUser, userId, page, keyword);
   }
 
   @GetMapping("/{id}")

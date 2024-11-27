@@ -36,7 +36,7 @@ export const ImageView = ({ imageId }: { imageId: string }) => {
         </div>
         <ImagePrompt imageId={imageId} />
       </div>
-      <div className="mt-2 flex flex-row justify-between">
+      <div className="mt-2 flex flex-col justify-between space-y-1.5 lg:flex-row lg:space-y-0">
         <span>
           By{' '}
           <Link to={paths.app.user.getHref(image.authorId)}>
@@ -46,13 +46,8 @@ export const ImageView = ({ imageId }: { imageId: string }) => {
         <Authorization
           policyCheck={POLICIES['image:delete'](user.data as User, image)}
         >
-          <div className="flex items-center justify-between space-x-2">
-            <ChangeImageVisibility
-              imageId={imageId}
-              isVisible={image.isPublic}
-            />
-            <DeleteImage id={imageId} />
-          </div>
+          <ChangeImageVisibility imageId={imageId} isVisible={image.isPublic} />
+          <DeleteImage id={imageId} />
         </Authorization>
         <LikeButton
           entityId={image.id}

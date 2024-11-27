@@ -29,7 +29,7 @@ export const GenerateImage = () => {
     <FormDrawer
       isDone={generateImageMutation.isSuccess}
       triggerButton={
-        <Button size="sm" icon={<Plus className="size-4" />}>
+        <Button size="lg" icon={<Plus className="size-4" />}>
           Generate Image
         </Button>
       }

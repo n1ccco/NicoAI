@@ -17,17 +17,20 @@ export type ImagesListProps = {
   sortBy: 'date' | 'likes';
   sortDirection: 'asc' | 'desc';
   userId?: string;
+  keyword?: string;
 };
 
 export const ImagesGallery = ({
   sortBy,
   sortDirection,
   userId,
+  keyword,
 }: ImagesListProps) => {
   const imagesQuery = useInfiniteImages({
     sortBy,
     sortDirection,
     userId,
+    keyword,
   });
 
   const observerRef = React.useRef<HTMLDivElement | null>(null);
