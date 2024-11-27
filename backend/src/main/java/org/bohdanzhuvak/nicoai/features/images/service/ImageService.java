@@ -6,6 +6,7 @@ import org.bohdanzhuvak.nicoai.features.images.ImageResponseMapper;
 import org.bohdanzhuvak.nicoai.features.images.SortMapper;
 import org.bohdanzhuvak.nicoai.features.images.dto.request.PromptRequest;
 import org.bohdanzhuvak.nicoai.features.images.dto.response.*;
+import org.bohdanzhuvak.nicoai.features.images.model.BaseImage;
 import org.bohdanzhuvak.nicoai.features.images.model.Image;
 import org.bohdanzhuvak.nicoai.features.images.model.PromptData;
 import org.bohdanzhuvak.nicoai.features.images.model.Visibility;
@@ -52,34 +53,42 @@ public class ImageService {
     String sanitizedSortBy = SortMapper.mapSortBy(sortBy);
     Pageable pageable = PageRequest.of(page - 1, 6, getSort(sanitizedSortBy, direction));
 
-    Page<Image> imagesPage;
-    if (userId != null) {
-      imagesPage = getImagesByUserId(userId, currentUser, pageable);
-    } else {
-      imagesPage = getImagesSortedBy(pageable);
-    }
+    Page<Image> imagesPage = (userId != null)
+        ? getImagesByUserId(userId, currentUser, pageable)
+        : getImagesSortedBy(pageable);
 
+    return buildImagesResponse(imagesPage.getContent(), currentUser, page, imagesPage.getSize());
+  }
+
+  public ImagesResponse buildImagesResponse(
+      List<? extends BaseImage> images,
+      User currentUser,
+      int page,
+      int size
+  ) {
     Long currentUserId = currentUser != null ? currentUser.getId() : null;
 
-    Set<Long> imageIds = imagesPage.stream()
-        .map(Image::getId)
+    Set<Long> imageIds = images.stream()
+        .map(BaseImage::getId)
         .collect(Collectors.toSet());
 
     Set<Long> likedImageIds = currentUserId != null
         ? interactionService.getLikedImageIdsForUserFromList(currentUserId, imageIds)
         : Collections.emptySet();
 
-    List<ImageResponseSimplified> imagesResponse = imagesPage.getContent().stream()
-        .map(image -> imageResponseMapper.toImageResponseSimplified(image, likedImageIds.contains(image.getId())))
+    List<ImageResponseSimplified> imagesResponse = images.stream()
+        .map(image -> {
+          boolean isLiked = likedImageIds.contains(image.getId());
+          return imageResponseMapper.toImageResponseSimplified(image, isLiked);
+        })
         .toList();
-    ImagesResponse.Meta meta = new ImagesResponse.Meta(
-        page,
-        (int) imagesPage.getTotalElements(),
-        imagesPage.getTotalPages()
-    );
+
+    int totalItems = images.size();
+    int totalPages = (int) Math.ceil((double) totalItems / size);
+    ImagesResponse.Meta meta = new ImagesResponse.Meta(page, totalItems, totalPages);
+
     return new ImagesResponse(imagesResponse, meta);
   }
-
 
   private Sort getSort(String sortBy, Sort.Direction direction) {
     return "likes".equals(sortBy)

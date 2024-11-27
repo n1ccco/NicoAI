@@ -15,7 +15,7 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Image implements Serializable {
+public class Image implements Serializable, BaseImage {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -28,7 +28,7 @@ public class Image implements Serializable {
   @ManyToMany(fetch = FetchType.LAZY)
   @Builder.Default
   @JoinTable(name = "user_likes", joinColumns = @JoinColumn(name = "image_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
-  private Set<User> likes = new HashSet<User>();
+  private Set<User> likes = new HashSet<>();
   @Column(name = "like_count")
   @Builder.Default
   private Long likeCount = 0L;
