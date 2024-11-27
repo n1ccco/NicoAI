@@ -19,10 +19,10 @@ public class ImageSearchController {
   @GetMapping("/search")
   @ResponseStatus(HttpStatus.OK)
   public ImagesResponse searchImages(
-      @RequestParam(required = false) String searchQuery,
+      @RequestParam(required = false) String keyword,
       @RequestParam(name = "page", required = false) Integer page,
       @CurrentUser @Nullable User currentUser) {
 
-    return imageSearchService.searchImages(searchQuery, currentUser, page, 6);
+    return imageSearchService.searchImages(keyword, currentUser, page, 6);
   }
 }

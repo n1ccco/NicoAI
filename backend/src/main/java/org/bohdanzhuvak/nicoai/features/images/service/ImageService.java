@@ -57,14 +57,19 @@ public class ImageService {
         ? getImagesByUserId(userId, currentUser, pageable)
         : getImagesSortedBy(pageable);
 
-    return buildImagesResponse(imagesPage.getContent(), currentUser, page, imagesPage.getSize());
+    ImagesResponse.Meta meta = new ImagesResponse.Meta(
+        page,
+        (int) imagesPage.getTotalElements(),
+        imagesPage.getTotalPages()
+    );
+
+    return buildImagesResponse(imagesPage.getContent(), currentUser, meta);
   }
 
   public ImagesResponse buildImagesResponse(
       List<? extends BaseImage> images,
       User currentUser,
-      int page,
-      int size
+      ImagesResponse.Meta meta
   ) {
     Long currentUserId = currentUser != null ? currentUser.getId() : null;
 
@@ -82,10 +87,6 @@ public class ImageService {
           return imageResponseMapper.toImageResponseSimplified(image, isLiked);
         })
         .toList();
-
-    int totalItems = images.size();
-    int totalPages = (int) Math.ceil((double) totalItems / size);
-    ImagesResponse.Meta meta = new ImagesResponse.Meta(page, totalItems, totalPages);
 
     return new ImagesResponse(imagesResponse, meta);
   }

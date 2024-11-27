@@ -25,13 +25,10 @@ public class ImageSearch implements BaseImage {
   private Long likeCount;
   @Field(type = FieldType.Text, analyzer = "standard")
   private String promptDescription;
+
+  private Visibility visibility;
   @Override
   public User getAuthor() {
-    return null;
-  }
-
-  @Override
-  public Visibility getVisibility() {
     return null;
   }
 
