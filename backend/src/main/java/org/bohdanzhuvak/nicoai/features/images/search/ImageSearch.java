@@ -22,6 +22,8 @@ public class ImageSearch implements BaseImage {
   @Id
   private Long id;
 
+  private Long authorId;
+
   private Long likeCount;
   @Field(type = FieldType.Text, analyzer = "standard")
   private String promptDescription;

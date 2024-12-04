@@ -18,15 +18,17 @@ export const SortMenu: FC<SortMenuProps> = ({
   };
 
   return (
-    <div>
-      <label htmlFor="sortBy" className="mr-2">
-        Sort by:
-      </label>
+    <div className="flex h-9 justify-between rounded-md pl-3 text-xs shadow-md">
+      <div className="flex h-full items-center justify-center">
+        <label htmlFor="sortBy" className="text-lg">
+          Sort by:
+        </label>
+      </div>
       <select
         id="sortBy"
         value={`${defaultSortBy}-${defaultSortDirection}`}
         onChange={handleSortChange}
-        className="border p-2"
+        className="rounded-md bg-transparent px-3 text-sm"
       >
         <option value="date-asc">Date Ascending</option>
         <option value="date-desc">Date Descending</option>

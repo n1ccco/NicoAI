@@ -11,6 +11,8 @@ import org.bohdanzhuvak.nicoai.features.images.model.Image;
 import org.bohdanzhuvak.nicoai.features.images.model.PromptData;
 import org.bohdanzhuvak.nicoai.features.images.model.Visibility;
 import org.bohdanzhuvak.nicoai.features.images.repository.ImageRepository;
+import org.bohdanzhuvak.nicoai.features.images.repository.ImageSearchRepository;
+import org.bohdanzhuvak.nicoai.features.images.search.ImageSearch;
 import org.bohdanzhuvak.nicoai.features.users.model.User;
 import org.bohdanzhuvak.nicoai.shared.exception.ImageNotFoundException;
 import org.bohdanzhuvak.nicoai.shared.exception.UnauthorizedActionException;
@@ -28,6 +30,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ImageService {
   private final ImageRepository imageRepository;
+  private final ImageSearchRepository imageSearchRepository;
   private final FileService fileService;
   private final ImageGeneratorService imageGeneratorService;
   private final InteractionService interactionService;
@@ -45,17 +48,21 @@ public class ImageService {
   }
 
   public ImagesResponse getAllImages(String sortBy,
-                                                    String sortDirection,
-                                                    User currentUser,
-                                                    Long userId,
-                                                    Integer page) {
+                                     String sortDirection,
+                                     User currentUser,
+                                     Long userId,
+                                     Integer page,
+                                     String keyword) {
     Sort.Direction direction = SortMapper.mapSortDirection(sortDirection);
     String sanitizedSortBy = SortMapper.mapSortBy(sortBy);
     Pageable pageable = PageRequest.of(page - 1, 6, getSort(sanitizedSortBy, direction));
 
-    Page<Image> imagesPage = (userId != null)
-        ? getImagesByUserId(userId, currentUser, pageable)
-        : getImagesSortedBy(pageable);
+    Page<? extends BaseImage> imagesPage;
+    if (userId != null) {
+      imagesPage = (keyword != null) ? getImagesByUserId(userId, currentUser, pageable, keyword) : getImagesByUserId(userId, currentUser, pageable);
+    } else {
+      imagesPage = (keyword != null) ? getImagesSortedBy(pageable, keyword) : getImagesSortedBy(pageable);
+    }
 
     ImagesResponse.Meta meta = new ImagesResponse.Meta(
         page,
@@ -101,11 +108,22 @@ public class ImageService {
     return imageRepository.findByVisibility(Visibility.PUBLIC, pageable);
   }
 
+  private Page<ImageSearch> getImagesSortedBy(Pageable pageable, String keyword) {
+    return imageSearchRepository.findByPromptDescriptionContainingAndVisibility(keyword, Visibility.PUBLIC, pageable);
+  }
+
   private Page<Image> getImagesByUserId(Long userId, User currentUser, Pageable pageable) {
     boolean isOwnerOrAdmin = currentUser != null && (currentUser.isAdmin() || currentUser.getId().equals(userId));
     return isOwnerOrAdmin
         ? imageRepository.findByAuthorId(userId, pageable)
         : imageRepository.findByAuthorIdAndVisibility(userId, Visibility.PUBLIC, pageable);
+  }
+
+  private Page<ImageSearch> getImagesByUserId(Long userId, User currentUser, Pageable pageable, String keyword) {
+    boolean isOwnerOrAdmin = currentUser != null && (currentUser.isAdmin() || currentUser.getId().equals(userId));
+    return isOwnerOrAdmin
+        ? imageSearchRepository.findByPromptDescriptionContainingAndAuthorId(keyword, userId, pageable)
+        : imageSearchRepository.findByPromptDescriptionContainingAndAuthorIdAndVisibility(keyword, userId, Visibility.PUBLIC, pageable);
   }
 
   public ImageResponse getImage(Long id, @Nullable User currentUser) {

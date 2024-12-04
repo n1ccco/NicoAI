@@ -27,14 +27,12 @@ export const SearchBar = ({
   };
 
   return (
-    <div className="flex w-full max-w-lg items-center space-x-4 rounded-md bg-white shadow-md">
-      <input
-        type="text"
-        value={keyword}
-        onChange={handleChange}
-        className="w-full rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        placeholder={placeholder}
-      />
-    </div>
+    <input
+      type="text"
+      value={keyword}
+      onChange={handleChange}
+      className="h-9 rounded-md px-3 text-sm shadow-md"
+      placeholder={placeholder}
+    />
   );
 };

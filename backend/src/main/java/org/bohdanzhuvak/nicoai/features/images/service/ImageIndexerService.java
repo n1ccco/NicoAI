@@ -29,6 +29,7 @@ public class ImageIndexerService {
       imageSearch.setPromptDescription(image.getPromptData().getPrompt());
       imageSearch.setLikeCount(image.getLikeCount());
       imageSearch.setVisibility(image.getVisibility());
+      imageSearch.setAuthorId(image.getAuthor().getId());
       imageSearchRepository.save(imageSearch);
     }
   }

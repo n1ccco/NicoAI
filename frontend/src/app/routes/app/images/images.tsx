@@ -1,5 +1,5 @@
 import { QueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   LoaderFunctionArgs,
   useParams,
@@ -46,12 +46,19 @@ export const ImagesRoute = () => {
   const handleSearch = (newKeyword: string) => {
     setKeyword(newKeyword);
   };
+  const encodedKeyword = encodeURIComponent(keyword);
+
+  useEffect(() => {
+    setKeyword('');
+  }, [userId]);
 
   return (
-    <ContentLayout title="Images">
-      <div className="flex justify-between">
+    <ContentLayout
+      title={userId ? `Images of user ${userId}` : 'Images Gallery'}
+    >
+      <div className="flex flex-col space-y-1.5 lg:flex-row lg:justify-between lg:space-x-4">
         <SortMenu defaultSortBy={sortBy} defaultSortDirection={sortDirection} />
-        {!userId && <SearchBar onSearch={handleSearch} />}
+        <SearchBar key={userId} onSearch={handleSearch} />
         <GenerateImage />
       </div>
       <div className="mt-4">
@@ -59,7 +66,7 @@ export const ImagesRoute = () => {
           sortBy={sortBy}
           sortDirection={sortDirection}
           userId={userId}
-          keyword={keyword}
+          {...(encodedKeyword && { keyword: encodedKeyword })}
         />
       </div>
     </ContentLayout>

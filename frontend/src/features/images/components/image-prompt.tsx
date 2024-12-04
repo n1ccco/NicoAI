@@ -18,7 +18,7 @@ export const ImagePrompt = ({ imageId }: { imageId: string }) => {
   if (!image) return null;
 
   return (
-    <div className="md:ml-6 md:w-2/3">
+    <div className="w-full md:ml-6 md:w-2/3">
       <h2 className="mb-4 text-xl font-semibold text-gray-800">
         Prompt Details
       </h2>

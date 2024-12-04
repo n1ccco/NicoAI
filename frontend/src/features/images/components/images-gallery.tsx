@@ -3,7 +3,6 @@ import * as React from 'react';
 
 import { paths } from '@/config/paths';
 import { useInfiniteImages } from '@/features/images/api/get-images';
-import { useInfiniteSearchImages } from '@/features/images/api/search-images';
 import { ImageDisplay } from '@/features/images/components/image-display';
 import {
   ImageCaption,
@@ -18,7 +17,7 @@ export type ImagesListProps = {
   sortBy: 'date' | 'likes';
   sortDirection: 'asc' | 'desc';
   userId?: string;
-  keyword: string;
+  keyword?: string;
 };
 
 export const ImagesGallery = ({
@@ -27,10 +26,12 @@ export const ImagesGallery = ({
   userId,
   keyword,
 }: ImagesListProps) => {
-  //todo: fix conditional hook
-  const imagesQuery = keyword
-    ? useInfiniteSearchImages(keyword)
-    : useInfiniteImages({ sortBy, sortDirection, userId });
+  const imagesQuery = useInfiniteImages({
+    sortBy,
+    sortDirection,
+    userId,
+    keyword,
+  });
 
   const observerRef = React.useRef<HTMLDivElement | null>(null);
 
