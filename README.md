@@ -17,6 +17,8 @@ Welcome to **Stable Diffusion Web UI**, a full-stack web application that lets y
 - **User's Image Page**: Manage and view all your generated images in one place.
 - **User Communication**: Interact with other users through likes and comments.
 - **Authentication & Authorization**: Secure access with role-based authorization and user login.
+- **Image Search**: Quickly find images using **ElasticSearch** for advanced search capabilities.
+- **Caching**: Boost performance with **Redis caching** for frequently accessed data.
 
 ## 🖼️ Screenshots
 
@@ -24,16 +26,16 @@ Welcome to **Stable Diffusion Web UI**, a full-stack web application that lets y
    ![Gallery Page](/screenshots/gallery-page.png)
    *Browse through user-generated artwork.*
 
-2. **Generate Page**
-   ![Generate Page](/screenshots/generate-page.png)
+2. **Generate Menu**
+   ![Generate Menu](/screenshots/generate-menu.png)
    *Enter your prompt and generate images with the power of AI.*
 
 3. **Image Details Page with Comments**
    ![Image Details Page](/screenshots/image-details-page.png)
    *View image details, leave comments, and like images.*
 
-4. **User's Images Page**
-   ![User's Images Page](/screenshots/users-images-page.png)
+4. **Image Search**
+   ![Image Search](/screenshots/image-search.png)
    *View and manage all your generated images.*
 
 5. **User Authentication**
@@ -92,13 +94,26 @@ You can easily deploy the entire stack using Docker Compose and the provided she
 - **Backend**: Java Spring Boot
 - **Stable Diffusion Microservice**: Python Flask
 - **Database**: PostgreSQL
+- **Search**: ElasticSearch
+- **Caching**: Redis
 - **Containerization**: Docker, Docker Compose
 
 ## 🎯 Key Components
 
-- **Java Spring Boot Backend**: Manages API requests, user authentication, database interaction, and likes/comments functionality.
-- **React Frontend**: Provides a sleek and intuitive user interface, including pages for image browsing, generation, and communication.
-- **Stable Diffusion Microservice**: Processes image generation requests via the Stable Diffusion model.
+- **Java Spring Boot Backend**:  
+  Manages API requests, user authentication, database interaction, caching, and likes/comments functionality.
+
+- **React Frontend**:  
+  Provides a sleek and intuitive user interface, including pages for image browsing, generation, and communication.
+
+- **Stable Diffusion Microservice**:  
+  Processes image generation requests via the Stable Diffusion model.
+
+- **ElasticSearch**:  
+  Enables fast and efficient image searching.
+
+- **Redis Caching**:  
+  Improves application performance by caching frequently accessed data.
 
 ## 🤝 Contributing
 
