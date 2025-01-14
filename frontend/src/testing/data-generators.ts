@@ -11,7 +11,7 @@ import {
 const generateUser = () => ({
   id: randUuid() + Math.random(),
   username: randUserName({ withAccents: false }),
-  password: randPassword(),
+  password: randPassword().toString(),
   role: 'ADMIN',
   createdAt: Date.now(),
 });
