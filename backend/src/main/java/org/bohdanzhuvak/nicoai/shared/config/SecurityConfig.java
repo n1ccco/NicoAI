@@ -29,6 +29,7 @@ public class SecurityConfig {
         .authorizeHttpRequests(authorize -> authorize
             .requestMatchers("/api/auth/login").permitAll()
             .requestMatchers("/api/auth/register").permitAll()
+            .requestMatchers("/api/stripe/webhook").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/auth/refresh").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/images/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/images/*/comments").permitAll()

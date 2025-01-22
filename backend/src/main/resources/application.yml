@@ -21,6 +21,10 @@ jwt:
   secret: ${JWT_SECRET}
 image:
   FOLDER_PATH: ${FOLDER_PATH}
+stripe:
+  public-key: ${STRIPE_API_PUBLIC_KEY}
+  secret-key: ${STRIPE_API_SECRET_KEY}
+  webhook-key: ${STRIPE_API_WEBHOOK_KEY}
 
 logging:
   level:
@@ -28,4 +32,3 @@ logging:
       springframework:
         security: DEBUG
       hibernate.type.descriptor.sql.BasicBinder: TRACE
-
